@@ -302,55 +302,24 @@ flutter build macos --release
 ```
 hobby_hub/
 ├── lib/
-│   ├── main.dart                 # Точка входа приложения
-│   ├── core/                     # Ядро приложения
-│   │   ├── constants/           # Константы и конфигурация
-│   │   ├── theme/               # Темы оформления
-│   │   ├── utils/               # Утилиты и хелперы
-│   │   └── widgets/             # Переиспользуемые виджеты
-│   ├── models/                   # Модели данных
-│   │   ├── user.dart
-│   │   ├── hobby.dart
-│   │   └── location.dart
-│   ├── providers/                # State management
-│   │   ├── auth_provider.dart
-│   │   ├── hobby_provider.dart
-│   │   └── user_provider.dart
-│   ├── services/                 # Бизнес-логика и API
-│   │   ├── api_service.dart
-│   │   ├── auth_service.dart
-│   │   ├── storage_service.dart
-│   │   └── location_service.dart
-│   └── ui/                       # Экраны приложения
-│       ├── auth/                # Аутентификация
-│       │   ├── login_screen.dart
-│       │   └── register_screen.dart
-│       ├── home/                # Главный экран
-│       │   ├── home_screen.dart
-│       │   └── widgets/
-│       ├── map/                 # Карта
-│       │   ├── map_screen.dart
-│       │   └── widgets/
-│       ├── profile/             # Профиль
-│       │   ├── profile_screen.dart
-│       │   └── settings_screen.dart
-│       └── shared/              # Общие компоненты
-│           ├── bottom_nav.dart
-│           └── app_bar.dart
+│   ├── core/              # Общие штуки: цвета, шрифты, константы API
+│   ├── models/            # Все модели данных (Hobby, User, Meeting)
+│   ├── services/          # Работа с внешним миром (Firebase, работа с картой)
+│   ├── ui/                # Всё, что касается внешнего вида
+│   │   ├── auth/          # Экран входа/регистрации
+│   │   ├── home/          # Главный экран (лента хобби)
+│   │   ├── map/           # Экран с местами встреч
+│   │   ├── profile/       # Профиль пользователя
+│   │   └── shared/        # Общие виджеты (кнопки, текстовые поля)
+│   └── providers/         # Логика управления состоянием (твои ViewModel)
 ├── test/                         # Тесты
-│   ├── unit/
-│   ├── widget/
-│   └── integration/
+│   └── widget_test/
 ├── android/                      # Android конфигурация
 ├── ios/                          # iOS конфигурация
 ├── macos/                        # macOS конфигурация
 ├── web/                          # Web конфигурация
 ├── windows/                      # Windows конфигурация
 ├── linux/                        # Linux конфигурация
-├── assets/                       # Ресурсы приложения
-│   ├── images/
-│   ├── icons/
-│   └── fonts/
 ├── pubspec.yaml                  # Зависимости проекта
 └── README.md                     # Этот файл
 ```

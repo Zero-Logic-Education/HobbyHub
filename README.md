@@ -361,7 +361,7 @@ hobby_hub/
 - [x] Настройка проекта Flutter
 - [x] Конфигурация структуры папок (core, models, providers, services, ui)
 - [x] Проектирование схемы БД (User, Event, Community, Interest)
-- [ ] Установка Firebase (Auth, Firestore, Storage, Messaging, Analytics)
+- [x] Установка Firebase (Auth, Firestore, Storage, Messaging, Analytics)
 - [ ] Настройка Riverpod для state management
 - [ ] Конфигурация go_router для навигации
 - [ ] Настройка GetIt для dependency injection

@@ -20,6 +20,15 @@ class AppTheme {
     ),
     scaffoldBackgroundColor: AppColors.background,
     
+    // Card
+    cardTheme: const CardThemeData(
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(16)),
+      ),
+      color: AppColors.surface,
+    ),
+    
     // AppBar
     appBarTheme: const AppBarTheme(
       elevation: 0,
@@ -32,15 +41,6 @@ class AppTheme {
         fontWeight: FontWeight.w600,
         color: AppColors.textPrimary,
       ),
-    ),
-    
-    // Card
-    cardTheme: CardTheme(
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      color: AppColors.surface,
     ),
     
     // Button
@@ -222,6 +222,14 @@ class AppTheme {
     ),
     scaffoldBackgroundColor: AppColors.backgroundDark,
     
+    cardTheme: const CardThemeData(
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(16)),
+      ),
+      color: AppColors.surfaceDark,
+    ),
+    
     appBarTheme: const AppBarTheme(
       elevation: 0,
       centerTitle: true,
@@ -233,14 +241,6 @@ class AppTheme {
         fontWeight: FontWeight.w600,
         color: Colors.white,
       ),
-    ),
-    
-    cardTheme: CardTheme(
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      color: AppColors.surfaceDark,
     ),
     
     elevatedButtonTheme: ElevatedButtonThemeData(

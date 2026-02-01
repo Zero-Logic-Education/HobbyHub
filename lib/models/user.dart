@@ -47,7 +47,7 @@ class User {
   final DateTime createdAt;
 
   /// Дата последнего обновления профиля
-  @JsonKey(fromJson: _timestampFromJson, toJson: _timestampToJson)
+  @JsonKey(fromJson: _timestampFromJsonNullable, toJson: _timestampToJson)
   final DateTime? updatedAt;
 
   /// Список ID друзей
@@ -129,7 +129,13 @@ class User {
   }
 
   // Helper методы для конвертации Firestore Timestamp
-  static DateTime? _timestampFromJson(dynamic timestamp) {
+  static DateTime _timestampFromJson(dynamic timestamp) {
+    if (timestamp is Timestamp) return timestamp.toDate();
+    if (timestamp is String) return DateTime.parse(timestamp);
+    return DateTime.now();
+  }
+
+  static DateTime? _timestampFromJsonNullable(dynamic timestamp) {
     if (timestamp == null) return null;
     if (timestamp is Timestamp) return timestamp.toDate();
     if (timestamp is String) return DateTime.parse(timestamp);

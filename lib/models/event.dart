@@ -23,7 +23,7 @@ class Event {
   final DateTime startTime;
 
   /// Дата и время окончания события
-  @JsonKey(fromJson: _timestampFromJson, toJson: _timestampToJson)
+  @JsonKey(fromJson: _timestampFromJsonNullable, toJson: _timestampToJson)
   final DateTime? endTime;
 
   /// Широта местоположения события
@@ -70,7 +70,7 @@ class Event {
   final DateTime createdAt;
 
   /// Дата последнего обновления
-  @JsonKey(fromJson: _timestampFromJson, toJson: _timestampToJson)
+  @JsonKey(fromJson: _timestampFromJsonNullable, toJson: _timestampToJson)
   final DateTime? updatedAt;
 
   /// Рейтинг события (0.0-5.0)
@@ -178,7 +178,13 @@ class Event {
     );
   }
 
-  static DateTime? _timestampFromJson(dynamic timestamp) {
+  static DateTime _timestampFromJson(dynamic timestamp) {
+    if (timestamp is Timestamp) return timestamp.toDate();
+    if (timestamp is String) return DateTime.parse(timestamp);
+    return DateTime.now();
+  }
+
+  static DateTime? _timestampFromJsonNullable(dynamic timestamp) {
     if (timestamp == null) return null;
     if (timestamp is Timestamp) return timestamp.toDate();
     if (timestamp is String) return DateTime.parse(timestamp);

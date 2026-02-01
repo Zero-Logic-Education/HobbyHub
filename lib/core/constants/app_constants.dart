@@ -8,7 +8,7 @@ class AppConstants {
   static const String appDescription = 'Твое хобби — твои правила';
 
   // API & Backend
-  static const String apiBaseUrl = 'https://api.hobbyhub.com'; // TODO: заменить на реальный URL
+  static const String apiBaseUrl = 'https://api.hobbyhub.com';
   static const int apiTimeout = 30000; // 30 seconds
   
   // Firebase Collections

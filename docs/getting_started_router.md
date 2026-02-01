@@ -149,7 +149,7 @@ context.pop();  // Удаляет текущий экран
 
 ## Самые частые ошибки
 
-### ❌ Забыли `context`
+### Забыли context
 
 ```dart
 // НЕПРАВИЛЬНО - ошибка!
@@ -159,7 +159,7 @@ NavigationHelper.goHome();
 NavigationHelper.goHome(context);
 ```
 
-### ❌ Неправильная сигнатура
+### Неправильная сигнатура
 
 ```dart
 // НЕПРАВИЛЬНО - где ID?
@@ -169,7 +169,7 @@ NavigationHelper.goEventDetail(context);
 NavigationHelper.goEventDetail(context, 'event_123');
 ```
 
-### ❌ Возврат назад когда нечего возвращаться
+### Возврат назад когда нечего возвращаться
 
 ```dart
 // НЕПРАВИЛЬНО - может не сработать
@@ -185,9 +185,9 @@ if (context.canPop()) {
 
 ## Где найти информацию
 
-- 📖 [Полное руководство](./go_router_guide.md) - все подробности
-- 📝 [Шпаргалка](./router_cheatsheet.md) - быстрый справочник
-- 📊 [Сводка реализации](./router_implementation_summary.md) - что было сделано
+- [Полное руководство](./go_router_guide.md) - все подробности
+- [Шпаргалка](./router_cheatsheet.md) - быстрый справочник
+- [Сводка реализации](./router_implementation_summary.md) - что было сделано
 
 ## Вопросы?
 
@@ -202,4 +202,4 @@ if (context.canPop()) {
 
 Теперь создавайте экраны! Когда у вас готов новый экран (например, `EventDetailScreen`), просто замените заглушку в `app_router.dart`.
 
-**Удачи в разработке! 🚀**
+Удачи в разработке.

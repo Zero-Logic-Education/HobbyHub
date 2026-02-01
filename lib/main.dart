@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'firebase_options.dart';
-import 'services/firebase/messaging_service.dart';
-import 'ui/home/home_screen.dart';
 import 'core/theme/app_theme.dart';
 import 'providers/ui_provider.dart';
+import 'core/router/app_router.dart';
+import 'core/di/service_locator.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,9 +15,11 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   
+  // Инициализация GetIt (Dependency Injection)
+  await setupServiceLocator();
+  
   // Инициализация Firebase Messaging
-  final messagingService = MessagingService();
-  await messagingService.initialize();
+  await getIt.messagingService.initialize();
   
   runApp(const ProviderScope(child: MyApp()));
 }
@@ -30,13 +32,16 @@ class MyApp extends ConsumerWidget {
     // Получаем тему из Riverpod провайдера
     final isDarkMode = ref.watch(themeProvider);
     
-    return MaterialApp(
+    // Получаем маршрутизатор
+    final router = ref.watch(routerProvider);
+    
+    return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       title: 'HobbyHub',
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
-      home: const HomeScreen(),
+      routerConfig: router,
     );
   }
 }

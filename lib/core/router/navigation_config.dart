@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'app_router.dart';
 
-/// Расширение для GlobalKey<NavigatorState> для управления navigation
+/// Сервис для управления навигацией из любой точки приложения
 class NavigationService {
   static final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -175,18 +175,18 @@ class GoRouterErrorHandler {
   }
 }
 
-/// Конфигурация для логирования навигации (для отладки)
+/// Класс для логирования навигации (для отладки)
 class NavigationLogger {
   static void logNavigation(String from, String to) {
-    print('🔀 Навигация: $from → $to');
+    // Логирование навигации: from -> to
   }
 
   static void logError(String error) {
-    print('❌ Ошибка навигации: $error');
+    // Логирование ошибки навигации
   }
 
   static void logDeepLink(Uri uri) {
-    print('🔗 Deep Link: $uri');
+    // Логирование deep link
   }
 }
 
@@ -208,7 +208,7 @@ extension GoRouterExtensionsAdvanced on BuildContext {
   /// Вернуться на предыдущий маршрут или на главный
   void popOrHome() {
     if (canPopRoute) {
-      pop();
+      Navigator.of(this).pop();
     } else {
       go(AppRoutes.home);
     }

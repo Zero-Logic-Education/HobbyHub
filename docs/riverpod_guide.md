@@ -266,12 +266,12 @@ class _MyFormState extends ConsumerState<MyForm> {
 
 ### 3. Избегайте избыточного использования watch
 ```dart
-// ❌ Неправильно
+// Неправильно
 final a = ref.watch(providerA);
 final b = ref.watch(providerB);
 final c = ref.watch(providerC);
 
-// ✅ Правильно - используйте select для выбора конкретного значения
+// Правильно - используйте select для выбора конкретного значения
 final value = ref.watch(
   providerA.select((data) => data.value)
 );

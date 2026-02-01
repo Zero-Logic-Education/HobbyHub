@@ -42,14 +42,12 @@ class AuthService {
 
   /// Вход с Google
   Future<UserCredential?> signInWithGoogle() async {
-    // TODO: Implement Google Sign-In
     // Requires google_sign_in package
     throw UnimplementedError('Google Sign-In not implemented yet');
   }
 
   /// Вход с Apple
   Future<UserCredential?> signInWithApple() async {
-    // TODO: Implement Apple Sign-In
     // Requires sign_in_with_apple package
     throw UnimplementedError('Apple Sign-In not implemented yet');
   }

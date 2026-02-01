@@ -69,8 +69,6 @@ class MessagingService {
       print('Body: ${message.notification?.body}');
       print('Data: ${message.data}');
     }
-
-    // TODO: Показать локальное уведомление или обновить UI
   }
 
   /// Обработка клика по уведомлению
@@ -80,7 +78,6 @@ class MessagingService {
       print('Data: ${message.data}');
     }
 
-    // TODO: Навигация на нужный экран на основе message.data
     final data = message.data;
     
     if (data.containsKey('eventId')) {

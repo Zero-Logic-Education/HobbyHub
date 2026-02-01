@@ -362,7 +362,7 @@ hobby_hub/
 - [x] Конфигурация структуры папок (core, models, providers, services, ui)
 - [x] Проектирование схемы БД (User, Event, Community, Interest)
 - [x] Установка Firebase (Auth, Firestore, Storage, Messaging, Analytics)
-- [ ] Настройка Riverpod для state management
+- [x] Настройка Riverpod для state management
 - [ ] Конфигурация go_router для навигации
 - [ ] Настройка GetIt для dependency injection
 - [ ] Создание базовых моделей данных (User, Event, Community, Interest)

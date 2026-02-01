@@ -363,10 +363,10 @@ hobby_hub/
 - [x] Проектирование схемы БД (User, Event, Community, Interest)
 - [x] Установка Firebase (Auth, Firestore, Storage, Messaging, Analytics)
 - [x] Настройка Riverpod для state management
-- [ ] Конфигурация go_router для навигации
-- [ ] Настройка GetIt для dependency injection
-- [ ] Создание базовых моделей данных (User, Event, Community, Interest)
-- [ ] Разработка дизайн-системы (цвета, шрифты, темы)
+- [x] Конфигурация go_router для навигации
+- [x] Настройка GetIt для dependency injection
+- [x] Создание базовых моделей данных (User, Event, Community, Interest)
+- [x] Разработка дизайн-системы (цвета, шрифты, темы)
 - [ ] Создание библиотеки общих виджетов
 - [ ] Настройка Security Rules в Firestore
 - [ ] Реализация системы верификации возраста

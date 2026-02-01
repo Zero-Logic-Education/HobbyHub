@@ -358,9 +358,9 @@ hobby_hub/
 
 ### Неделя 1-3: Фундамент
 
-- [ ] Настройка проекта Flutter
-- [ ] Конфигурация структуры папок (core, models, providers, services, ui)
-- [ ] Проектирование схемы БД (User, Event, Community, Interest)
+- [x] Настройка проекта Flutter
+- [x] Конфигурация структуры папок (core, models, providers, services, ui)
+- [x] Проектирование схемы БД (User, Event, Community, Interest)
 - [ ] Установка Firebase (Auth, Firestore, Storage, Messaging, Analytics)
 - [ ] Настройка Riverpod для state management
 - [ ] Конфигурация go_router для навигации

@@ -98,7 +98,7 @@ class _AppTextFieldState extends State<AppTextField> {
               width: _isFocused ? 2 : 1,
             ),
             color: hasError
-                ? AppColors.error.withOpacity(0.05)
+                ? AppColors.error.withValues(alpha: 0.05)
                 : AppColors.lightPink,
           ),
           child: TextFormField(

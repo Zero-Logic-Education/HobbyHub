@@ -72,7 +72,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               preferredSize: Size.fromHeight(1),
               child: Divider(
                 height: 1,
-                color: AppColors.textHint.withOpacity(0.2),
+                color: AppColors.textHint.withValues(alpha: 0.2),
               ),
             )
           : bottom,
@@ -135,7 +135,7 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
         preferredSize: Size.fromHeight(1),
         child: Divider(
           height: 1,
-          color: AppColors.textHint.withOpacity(0.1),
+          color: AppColors.textHint.withValues(alpha: 0.1),
         ),
       ),
     );
@@ -174,6 +174,9 @@ class _SearchAppBarState extends State<SearchAppBar> {
   void initState() {
     super.initState();
     _controller = widget.controller ?? TextEditingController();
+    _controller.addListener(() {
+      setState(() {});
+    });
   }
 
   @override
@@ -309,7 +312,7 @@ class ProfileAppBar extends StatelessWidget implements PreferredSizeWidget {
         preferredSize: Size.fromHeight(1),
         child: Divider(
           height: 1,
-          color: AppColors.textHint.withOpacity(0.1),
+          color: AppColors.textHint.withValues(alpha: 0.1),
         ),
       ),
     );

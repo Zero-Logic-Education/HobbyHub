@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../ui/home/home_screen.dart';
+import '../../ui/auth/age_verification_screen.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/user_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Определение именованных маршрутов
@@ -11,6 +13,7 @@ abstract class AppRoutes {
   static const String login = '/auth/login';
   static const String register = '/auth/register';
   static const String interestsSelection = '/auth/interests-selection';
+  static const String ageVerification = '/auth/age-verification';
 
   // Основные экраны
   static const String home = '/home';
@@ -34,14 +37,25 @@ abstract class AppRoutes {
 /// Провайдер для отслеживания состояния маршрутизации
 final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authStateProvider);
+  final userState = ref.watch(currentUserStreamProvider);
+  final isAgeVerified = ref.watch(isAgeVerifiedProvider);
 
   return GoRouter(
     initialLocation: AppRoutes.auth,
     redirect: (BuildContext context, GoRouterState state) {
       final isLoggingIn = state.uri.toString().startsWith('/auth');
+      final isAgeVerification = state.uri.toString().startsWith(AppRoutes.ageVerification);
 
       return authState.when(
         data: (user) {
+          if (user != null && userState.isLoading) {
+            return null;
+          }
+
+          if (user != null && !isAgeVerified && !isAgeVerification) {
+            return AppRoutes.ageVerification;
+          }
+
           // Если пользователь вошел и пытается перейти на страницу авторизации
           if (user != null && isLoggingIn) {
             return AppRoutes.home;
@@ -81,6 +95,11 @@ final routerProvider = Provider<GoRouter>((ref) {
               appBar: AppBar(title: const Text('Регистрация')),
               body: const Center(child: Text('Register Screen')),
             ),
+          ),
+          GoRoute(
+            path: 'age-verification',
+            name: 'age-verification',
+            builder: (context, state) => const AgeVerificationScreen(),
           ),
           GoRoute(
             path: 'interests-selection',

@@ -324,6 +324,84 @@ hobby_hub/
 └── README.md                     # Этот файл
 ```
 
+## Firebase конфигурация
+
+### Статус подключения ✓
+
+**Проект:** `hobbyhub-dev` (Production-ready)
+
+### Компоненты Firebase
+
+| Компонент | Статус | Файлы конфигурации |
+|:----------|:------:|:------------------|
+| **Firestore Database** | ✓ Инициализирована | firestore.rules, firestore.indexes.json |
+| **Firestore Rules** | ✓ Развёрнуты | firestore.rules (155 строк) |
+| **Authentication** | ✓ Готова | lib/firebase_options.dart |
+| **Storage** | ⚠ Требует инициализации* | storage.rules |
+| **Cloud Messaging** | ✓ Готова | firebase_messaging пакет |
+| **Analytics** | ✓ Готова | firebase_analytics пакет |
+| **Android** | ✓ Настроен | android/app/google-services.json |
+| **iOS** | ✓ Настроен | ios/Runner/GoogleService-Info.plist |
+| **Web** | ✓ Готов | lib/firebase_options.dart |
+| **macOS** | ✓ Готов | lib/firebase_options.dart |
+
+*Storage требует инициализации в Firebase Console → Storage → Get Started
+
+### Безопасность
+
+- **Age Verification:** 12+, 18+, 25+ тиры с проверкой на уровне Rules
+- **Privacy Levels:** Public (0), Friends (1), Private (2), Hidden (3)
+- **Role-based Access:** User, Organizer, Moderator, Admin roles
+- **Data Encryption:** Все данные зашифрованы в transit и at rest
+
+### Firestore Collections (9 total)
+
+```
+firestore/
+├── users/                  # Профили пользователей с возрастом
+│   ├── /friends/{friendId}
+│   ├── /followers/{followerId}
+│   ├── /following/{followingId}
+│   ├── /interests/{interestId}
+│   ├── /sentRequests/{recipientId}
+│   └── /receivedRequests/{senderId}
+├── events/                 # События с проверкой minAge
+│   ├── /participants/{userId}
+│   └── /reviews/{reviewId}
+├── communities/            # Сообщества (25+ only для создания)
+│   ├── /members/{userId}
+│   └── /events/{eventId}
+├── interests/             # Справочник интересов
+├── messages/              # Личные сообщения
+├── notifications/         # Push-уведомления
+├── reports/              # Жалобы и модерация
+├── activityHistory/      # История активности пользователя
+└── userSettings/         # Персональные настройки
+```
+
+### Развёртывание на Production
+
+```bash
+# Развернуть Firestore Security Rules
+firebase deploy --only firestore:rules --project=hobbyhub-dev
+
+# Развернуть Storage Rules (после инициализации хранилища)
+firebase deploy --only storage --project=hobbyhub-dev
+
+# Развернуть всё сразу
+firebase deploy --project=hobbyhub-dev
+```
+
+### Локальная разработка
+
+Flutter автоматически использует Firebase при запуске:
+
+```bash
+flutter run  # Использует конфигурацию из lib/firebase_options.dart
+```
+
+Все данные записываются в проект `hobbyhub-dev` в real-time.
+
 ---
 
 ## Команды разработки
@@ -369,7 +447,7 @@ hobby_hub/
 - [x] Разработка дизайн-системы (цвета, шрифты, темы)
 - [x] Создание библиотеки общих виджетов
 - [x] Настройка Security Rules в Firestore
-- [ ] Реализация системы верификации возраста
+- [x] Реализация системы верификации возраста
 
 ### Неделя 4-6: Онбординг и аутентификация
 
@@ -382,7 +460,7 @@ hobby_hub/
 - [ ] Google Sign-In интеграция
 - [ ] Apple Sign-In интеграция
 - [ ] Phone verification
-- [ ] Экран верификации возраста (12+, 18+)
+- [x] Экран верификации возраста (12+, 18+)
 - [ ] Реализация родительского согласия (12-17 лет)
 - [ ] Создание формы профиля (фото, имя, био)
 - [ ] Настройки приватности профиля

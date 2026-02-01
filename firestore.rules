@@ -1,244 +1,186 @@
 rules_version = '2';
+
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Функции для проверки авторизации
+    // Helper functions
     function isAuthenticated() {
-      return request.auth != null;
+      return request.auth.uid != null;
     }
     
     function isUser(userId) {
       return request.auth.uid == userId;
     }
     
-    function userExists(userId) {
-      return exists(/databases/$(database)/documents/users/$(userId));
-    }
-    
-    function getUserData(userId) {
-      return get(/databases/$(database)/documents/users/$(userId)).data;
-    }
-    
-    function getEventData(eventId) {
-      return get(/databases/$(database)/documents/events/$(eventId)).data;
-    }
-    
-    function getCommunityData(communityId) {
-      return get(/databases/$(database)/documents/communities/$(communityId)).data;
-    }
-    
-    // Проверка возраста по дате рождения
     function isOldEnough(minAge) {
-      let userAge = getUserData(request.auth.uid).age;
-      return userAge >= minAge;
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.age >= minAge;
     }
     
-    // Проверка приватности профиля
-    function canViewUserProfile(targetUserId) {
-      let targetUser = getUserData(targetUserId);
-      let privacyLevel = targetUser.privacyLevel;
-      
-      // privacyLevel: 0 = public, 1 = friends, 2 = private, 3 = hidden
-      return privacyLevel == 0 || 
-             isUser(targetUserId) ||
-             (privacyLevel == 1 && isFriend(targetUserId)) ||
-             (privacyLevel == 2 && isUser(targetUserId));
+    function canViewUserProfile(userId, profilePrivacy) {
+          return profilePrivacy == 0 ||
+            profilePrivacy == 'public' ||
+            isUser(userId) ||
+            ((profilePrivacy == 1 || profilePrivacy == 'friends') && isFriend(userId)) ||
+            isAdmin();
     }
     
     function isFriend(userId) {
       return exists(/databases/$(database)/documents/users/$(request.auth.uid)/friends/$(userId));
     }
     
-    // Коллекция users
+    function isAdmin() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+    
+    // === USERS COLLECTION ===
     match /users/{userId} {
-      // Чтение профиля с учетом приватности
-      allow read: if canViewUserProfile(userId);
+      allow read: if canViewUserProfile(userId, resource.data.privacyLevel);
       
-      // Пользователь может редактировать только свой профиль
-      allow create: if isAuthenticated() && isUser(userId);
+            allow create: if isUser(userId) && 
+              request.resource.data.age >= 12 &&
+              request.resource.data.privacyLevel in [0, 1, 2, 3, 'public', 'friends', 'private', 'custom', 'hidden'];
+      
       allow update: if isUser(userId);
-      allow delete: if isUser(userId);
+      allow delete: if isUser(userId) || isAdmin();
       
-      // Подколлекция friends (друзья)
       match /friends/{friendId} {
         allow read: if isUser(userId);
         allow write: if isUser(userId);
       }
       
-      // Подколлекция sentRequests (отправленные запросы дружбы)
-      match /sentRequests/{targetId} {
+      match /followers/{followerId} {
+        allow read: if isUser(userId) || isUser(followerId);
+        allow write: if isUser(followerId);
+      }
+      
+      match /following/{followingId} {
         allow read: if isUser(userId);
         allow write: if isUser(userId);
       }
       
-      // Подколлекция receivedRequests (полученные запросы дружбы)
+      match /interests/{interestId} {
+        allow read: if isUser(userId) || resource.data.isPublic == true;
+        allow write: if isUser(userId);
+      }
+      
+      match /sentRequests/{recipientId} {
+        allow read: if isUser(userId);
+        allow write: if isUser(userId);
+      }
+      
       match /receivedRequests/{senderId} {
         allow read: if isUser(userId);
         allow write: if isUser(userId);
       }
     }
     
-    // Коллекция events
+    // === EVENTS COLLECTION ===
     match /events/{eventId} {
-      let eventData = getEventData(eventId);
+      allow read: if resource.data.visibility == 'public' ||
+                     (isAuthenticated() && (
+                       resource.data.organizerId == request.auth.uid ||
+                       request.auth.uid in resource.data.participants
+                     ));
       
-      // Чтение событий с учетом видимости и возраста
-      allow read: if isAuthenticated() && (
-        eventData.visibility == 'public' ||
-        eventData.organizerId == request.auth.uid ||
-        request.auth.uid in eventData.participants
-      ) && (
-        !('minAge' in eventData) ||
-        isOldEnough(eventData.minAge)
-      );
-      
-      // Создание события (проверка возраста 25+)
       allow create: if isAuthenticated() && 
-                       isUser(eventData.organizerId) &&
-                       isOldEnough(25);
+              isOldEnough(25) &&
+              request.resource.data.organizerId == request.auth.uid &&
+              request.resource.data.visibility in ['public', 'private'] &&
+              request.resource.data.minAge in [12, 18, 25];
       
-      // Редактирование события (только организатор)
-      allow update: if isUser(eventData.organizerId);
+      allow update: if isUser(resource.data.organizerId);
+      allow delete: if isUser(resource.data.organizerId) || isAdmin();
       
-      // Удаление события (только организатор)
-      allow delete: if isUser(eventData.organizerId);
-      
-      // Подколлекция participants (участники)
-      match /participants/{participantId} {
-        allow read: if isAuthenticated() &&
-                       (eventData.organizerId == request.auth.uid ||
-                        request.auth.uid in eventData.participants);
-        allow write: if isAuthenticated() && isUser(participantId);
+      match /participants/{userId} {
+        allow read: if resource.data.eventId == eventId;
+        allow write: if isUser(userId) && 
+                      isOldEnough(get(/databases/$(database)/documents/events/$(eventId)).data.minAge);
       }
       
-      // Подколлекция reviews (отзывы)
       match /reviews/{reviewId} {
-        let reviewData = resource.data;
-        
-        allow read: if isAuthenticated();
-        allow create: if isAuthenticated() && 
-                         isUser(reviewData.reviewerId) &&
-                         request.auth.uid in eventData.participants;
-        allow update, delete: if isUser(reviewData.reviewerId);
+        allow read: if true;
+        allow create: if isUser(request.resource.data.authorId) &&
+                      exists(/databases/$(database)/documents/events/$(eventId)/participants/$(request.auth.uid));
+        allow update: if isUser(resource.data.authorId);
+        allow delete: if isUser(resource.data.authorId) || isAdmin();
       }
     }
     
-    // Коллекция communities
+    // === COMMUNITIES COLLECTION ===
     match /communities/{communityId} {
-      let communityData = getCommunityData(communityId);
+      allow read: if resource.data.privacy == 'public' ||
+                     (isAuthenticated() && (
+                       resource.data.creatorId == request.auth.uid ||
+                       request.auth.uid in resource.data.members
+                     ));
       
-      // Чтение сообществ с учетом приватности
-      allow read: if isAuthenticated() && (
-        communityData.privacyLevel == 'public' ||
-        communityData.creatorId == request.auth.uid ||
-        request.auth.uid in communityData.members ||
-        request.auth.uid in communityData.moderators
-      );
+      allow create: if isAuthenticated() &&
+              isOldEnough(25) &&
+              request.resource.data.creatorId == request.auth.uid &&
+              request.resource.data.privacy in ['public', 'private'] &&
+              request.resource.data.minAge in [12, 18, 25];
       
-      // Создание сообщества (проверка возраста 25+)
-      allow create: if isAuthenticated() && 
-                       isUser(communityData.creatorId) &&
-                       isOldEnough(25);
+      allow update: if isUser(resource.data.creatorId);
+      allow delete: if isUser(resource.data.creatorId) || isAdmin();
       
-      // Редактирование (только создатель)
-      allow update: if isUser(communityData.creatorId);
-      
-      // Удаление (только создатель)
-      allow delete: if isUser(communityData.creatorId);
-      
-      // Подколлекция members (члены сообщества)
-      match /members/{memberId} {
-        allow read: if isAuthenticated() &&
-                       (communityData.privacyLevel == 'public' ||
-                        request.auth.uid in communityData.members);
-        allow write: if isAuthenticated() && isUser(memberId);
+      match /members/{userId} {
+        allow read: if true;
+        allow write: if isUser(userId) || isUser(resource.data.communityId);
       }
       
-      // Подколлекция moderators (модераторы)
-      match /moderators/{modId} {
-        allow read: if isAuthenticated();
-        allow write: if isUser(communityData.creatorId);
-      }
-      
-      // Подколлекция pendingRequests (запросы на вступление)
-      match /pendingRequests/{requestId} {
-        allow read: if isAuthenticated() &&
-                       (isUser(communityData.creatorId) ||
-                        request.auth.uid in communityData.moderators);
-        allow write: if isAuthenticated();
+      match /events/{eventId} {
+        allow read: if true;
+        allow write: if isUser(get(/databases/$(database)/documents/communities/$(communityId)).data.creatorId);
       }
     }
     
-    // Коллекция interests
+    // === INTERESTS COLLECTION ===
     match /interests/{interestId} {
-      allow read: if isAuthenticated();
-      allow write: if false; // Только админ может создавать интересы
+      allow read: if true;
+      allow write: if isAdmin();
     }
     
-    // Коллекция messages (сообщения в чатах)
+    // === MESSAGES COLLECTION ===
     match /messages/{messageId} {
-      let messageData = resource.data;
+      allow read: if isUser(resource.data.senderId) ||
+                     isUser(resource.data.recipientId);
       
-      allow read: if isAuthenticated() &&
-                     (messageData.senderId == request.auth.uid ||
-                      messageData.recipientId == request.auth.uid);
+      allow create: if isUser(request.resource.data.senderId) &&
+                      isAuthenticated();
       
-      allow create: if isAuthenticated() && 
-                       isUser(messageData.senderId) &&
-                       messageData.recipientId != null;
-      
-      allow update: if isUser(messageData.senderId);
-      allow delete: if isUser(messageData.senderId);
+      allow update: if isUser(resource.data.senderId);
+      allow delete: if isUser(resource.data.senderId) || isAdmin();
     }
     
-    // Коллекция notifications (уведомления)
+    // === NOTIFICATIONS COLLECTION ===
     match /notifications/{notificationId} {
-      let notificationData = resource.data;
-      
-      allow read: if isAuthenticated() && 
-                     isUser(notificationData.userId);
-      
-      allow write: if isAuthenticated() && 
-                      isUser(notificationData.userId);
+      allow read: if isUser(resource.data.userId);
+      allow create: if isAuthenticated();
+      allow update: if isUser(resource.data.userId);
+      allow delete: if isUser(resource.data.userId) || isAdmin();
     }
     
-    // Коллекция reports (жалобы)
+    // === REPORTS COLLECTION ===
     match /reports/{reportId} {
-      let reportData = resource.data;
+      allow create: if isAuthenticated() &&
+              request.resource.data.reporterUid == request.auth.uid;
       
-      // Создание жалобы
-      allow create: if isAuthenticated() && 
-                       isUser(reportData.reporterId);
-      
-      // Чтение жалоб (только автор и админ)
-      allow read: if isAuthenticated() && 
-                     (isUser(reportData.reporterId) ||
-                      isAdmin());
-      
-      // Обновление (модерация)
+      allow read: if isUser(resource.data.reporterUid) || isAdmin();
       allow update: if isAdmin();
-      
-      allow delete: if false;
+      allow delete: if isAdmin();
     }
     
-    // Функция для проверки администратора
-    function isAdmin() {
-      return getUserData(request.auth.uid).isAdmin == true;
+    // === ACTIVITY HISTORY COLLECTION ===
+    match /activityHistory/{historyId} {
+      allow read: if isUser(resource.data.userId);
+      allow create: if isAuthenticated();
+      allow update: if isUser(resource.data.userId);
+      allow delete: if isUser(resource.data.userId) || isAdmin();
     }
     
-    // Коллекция activityHistory (история активности)
-    match /activityHistory/{userId}/events/{eventId} {
-      allow read: if isAuthenticated() && 
-                     (isUser(userId) || isAdmin());
-      
-      allow write: if isUser(userId);
-    }
-    
-    // Коллекция userSettings (настройки пользователя)
+    // === USER SETTINGS COLLECTION ===
     match /userSettings/{userId} {
-      allow read: if isUser(userId);
-      
-      allow write: if isUser(userId);
+      allow read, write: if isUser(userId);
     }
   }
 }

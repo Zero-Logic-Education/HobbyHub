@@ -1,6 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:firebase_auth/firebase_auth.dart' as fb;
 import '../../models/user.dart';
 import '../../services/firebase/firestore_service.dart';
+import '../../core/constants/app_constants.dart';
 import 'auth_provider.dart';
 
 /// Провайдер для Firestore Service
@@ -31,6 +33,15 @@ final currentUserStreamProvider = StreamProvider<User?>((ref) {
     if (!docSnapshot.exists) return null;
     return User.fromJson(docSnapshot.data() as Map<String, dynamic>);
   });
+});
+
+/// Провайдер для проверки верификации возраста
+final isAgeVerifiedProvider = Provider<bool>((ref) {
+  final userAsync = ref.watch(currentUserStreamProvider);
+  return userAsync.maybeWhen(
+    data: (user) => user != null && user.isVerified && user.age >= AppConstants.minAge,
+    orElse: () => false,
+  );
 });
 
 /// State notifier для управления профилем пользователя
@@ -122,4 +133,88 @@ final currentUserProfileNotifierProvider =
 
   final firestoreService = ref.watch(firestoreServiceProvider);
   return UserProfileNotifier(firestoreService, userId);
+});
+
+/// State notifier для верификации возраста пользователя
+class AgeVerificationNotifier extends StateNotifier<AsyncValue<void>> {
+  final FirestoreService _firestoreService;
+  final String _userId;
+
+  AgeVerificationNotifier(this._firestoreService, this._userId)
+      : super(const AsyncValue.data(null));
+
+  Future<void> verifyAge({required int age}) async {
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(() async {
+      if (age < AppConstants.minAge) {
+        throw Exception('Возраст меньше минимального');
+      }
+
+      final authUser = fb.FirebaseAuth.instance.currentUser;
+      if (authUser == null) {
+        throw Exception('Пользователь не авторизован');
+      }
+
+      final userDoc = await _firestoreService.getUser(_userId);
+      final now = DateTime.now().toIso8601String();
+
+      if (!userDoc.exists) {
+        final email = authUser.email ?? '';
+        final username = _deriveUsername(authUser);
+
+        await _firestoreService.createUser(_userId, {
+          'id': _userId,
+          'email': email,
+          'username': username,
+          'displayName': authUser.displayName,
+          'photoUrl': authUser.photoURL,
+          'bio': null,
+          'age': age,
+          'interests': <String>[],
+          'privacyLevel': AppConstants.privacyPublic,
+          'latitude': null,
+          'longitude': null,
+          'isVerified': true,
+          'createdAt': now,
+          'updatedAt': now,
+          'friends': <String>[],
+          'eventsAttended': 0,
+          'organizerRating': 0.0,
+          'eventsCreated': 0,
+        });
+      } else {
+        await _firestoreService.updateUser(_userId, {
+          'age': age,
+          'isVerified': true,
+          'updatedAt': now,
+        });
+      }
+    });
+  }
+
+  String _deriveUsername(fb.User authUser) {
+    final displayName = authUser.displayName;
+    if (displayName != null && displayName.trim().isNotEmpty) {
+      return displayName.trim();
+    }
+
+    final email = authUser.email ?? '';
+    if (email.contains('@')) {
+      return email.split('@').first;
+    }
+
+    return 'user_${_userId.substring(0, 6)}';
+  }
+}
+
+/// Провайдер для верификации возраста текущего пользователя
+final ageVerificationNotifierProvider =
+    StateNotifierProvider<AgeVerificationNotifier, AsyncValue<void>>((ref) {
+  final userId = ref.watch(currentUserIdProvider);
+  if (userId == null) {
+    throw Exception('User not logged in');
+  }
+
+  final firestoreService = ref.watch(firestoreServiceProvider);
+  return AgeVerificationNotifier(firestoreService, userId);
 });

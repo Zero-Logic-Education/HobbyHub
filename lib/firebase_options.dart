@@ -44,38 +44,38 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'YOUR_WEB_API_KEY',
-    appId: 'YOUR_WEB_APP_ID',
-    messagingSenderId: 'YOUR_MESSAGING_SENDER_ID',
-    projectId: 'YOUR_PROJECT_ID',
-    authDomain: 'YOUR_PROJECT_ID.firebaseapp.com',
-    storageBucket: 'YOUR_PROJECT_ID.appspot.com',
-    measurementId: 'YOUR_MEASUREMENT_ID',
+    apiKey: 'AIzaSyCOE_8rqbCRALBgsQFzHfjyZpUFNA1qF3A',
+    appId: '1:924214570624:web:6f34b00c3b89a74ff6c065',
+    messagingSenderId: '924214570624',
+    projectId: 'hobbyhub-dev',
+    authDomain: 'hobbyhub-dev.firebaseapp.com',
+    storageBucket: 'hobbyhub-dev.firebasestorage.app',
+    measurementId: 'G-GZ1CGJNEJB',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'YOUR_ANDROID_API_KEY',
-    appId: 'YOUR_ANDROID_APP_ID',
-    messagingSenderId: 'YOUR_MESSAGING_SENDER_ID',
-    projectId: 'YOUR_PROJECT_ID',
-    storageBucket: 'YOUR_PROJECT_ID.appspot.com',
+    apiKey: 'AIzaSyDL_MUbgacEvig9TQh8v5NxIccnV1F_5YU',
+    appId: '1:924214570624:android:8bc3efe8c3476650f6c065',
+    messagingSenderId: '924214570624',
+    projectId: 'hobbyhub-dev',
+    storageBucket: 'hobbyhub-dev.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'YOUR_IOS_API_KEY',
-    appId: 'YOUR_IOS_APP_ID',
-    messagingSenderId: 'YOUR_MESSAGING_SENDER_ID',
-    projectId: 'YOUR_PROJECT_ID',
-    storageBucket: 'YOUR_PROJECT_ID.appspot.com',
+    apiKey: 'AIzaSyB-9AZbuJhfY6QEJ2dhXdrApBL9_V4b7O4',
+    appId: '1:924214570624:ios:9dd53d48b0e54416f6c065',
+    messagingSenderId: '924214570624',
+    projectId: 'hobbyhub-dev',
+    storageBucket: 'hobbyhub-dev.firebasestorage.app',
     iosBundleId: 'com.example.hobbyHub',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'YOUR_MACOS_API_KEY',
-    appId: 'YOUR_MACOS_APP_ID',
-    messagingSenderId: 'YOUR_MESSAGING_SENDER_ID',
-    projectId: 'YOUR_PROJECT_ID',
-    storageBucket: 'YOUR_PROJECT_ID.appspot.com',
+    apiKey: 'AIzaSyB-9AZbuJhfY6QEJ2dhXdrApBL9_V4b7O4',
+    appId: '1:924214570624:ios:9dd53d48b0e54416f6c065',
+    messagingSenderId: '924214570624',
+    projectId: 'hobbyhub-dev',
+    storageBucket: 'hobbyhub-dev.firebasestorage.app',
     iosBundleId: 'com.example.hobbyHub',
   );
 }

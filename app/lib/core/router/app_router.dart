@@ -7,6 +7,7 @@ import '../../ui/auth/age_verification_screen.dart';
 import '../../ui/auth/login_screen.dart';
 import '../../ui/auth/register_screen.dart';
 import '../../ui/auth/interests_screen.dart';
+import '../../ui/main_shell/main_shell.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/user_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

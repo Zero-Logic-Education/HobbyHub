@@ -6,6 +6,7 @@ import '../../ui/home/home_screen.dart';
 import '../../ui/auth/age_verification_screen.dart';
 import '../../ui/auth/login_screen.dart';
 import '../../ui/auth/register_screen.dart';
+import '../../ui/auth/interests_screen.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/user_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -120,10 +121,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: 'interests-selection',
             name: 'interests-selection',
-            builder: (context, state) => Scaffold(
-              appBar: AppBar(title: const Text('Выбор интересов')),
-              body: const Center(child: Text('Interests Selection Screen')),
-            ),
+            builder: (context, state) => const InterestsScreen(),
           ),
         ],
       ),

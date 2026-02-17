@@ -1,0 +1,1 @@
+ /Users/stanislavmamaev/Documents/Development/hobby_hub/app/build/7d5fa364fd133f66982c62001f47674e/dart_build_result.json:  /Users/stanislavmamaev/Development/flutter/bin/cache/dart-sdk/version /Users/stanislavmamaev/Documents/Development/hobby_hub/app/.dart_tool/package_config.json /Users/stanislavmamaev/Documents/Development/hobby_hub/app/pubspec.yaml

@@ -128,8 +128,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   hint: '••••••••',
                   obscureText: true,
                   validator: (value) {
-                    if (value != _passwordController.text)
+                    if (value != _passwordController.text) {
                       return 'Пароли не совпадают';
+                    }
                     return null;
                   },
                 ),

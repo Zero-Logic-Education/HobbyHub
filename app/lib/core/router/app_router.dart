@@ -7,6 +7,9 @@ import '../../ui/auth/age_verification_screen.dart';
 import '../../ui/auth/login_screen.dart';
 import '../../ui/auth/register_screen.dart';
 import '../../ui/auth/interests_screen.dart';
+import '../../ui/onboarding/location_screen.dart';
+import '../../ui/onboarding/parental_consent_screen.dart';
+import '../../ui/profile/profile_screen.dart';
 import '../../ui/main_shell/main_shell.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/user_provider.dart';
@@ -24,6 +27,8 @@ abstract class AppRoutes {
   static const String register = '/auth/register';
   static const String interestsSelection = '/auth/interests-selection';
   static const String ageVerification = '/auth/age-verification';
+  static const String locationPermission = '/auth/location';
+  static const String parentalConsent = '/auth/parental-consent';
 
   // Основные экраны
   static const String home = '/home';
@@ -123,6 +128,16 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: 'interests-selection',
             name: 'interests-selection',
             builder: (context, state) => const InterestsScreen(),
+          ),
+          GoRoute(
+            path: 'location',
+            name: 'location',
+            builder: (context, state) => const LocationPermissionScreen(),
+          ),
+          GoRoute(
+            path: 'parental-consent',
+            name: 'parental-consent',
+            builder: (context, state) => const ParentalConsentScreen(),
           ),
         ],
       ),

@@ -5,6 +5,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_typography.dart';
 import '../../core/router/app_router.dart';
+import '../../providers/user_provider.dart';
 import '../shared/app_button.dart';
 
 class InterestsScreen extends ConsumerStatefulWidget {
@@ -40,9 +41,13 @@ class _InterestsScreenState extends ConsumerState<InterestsScreen> {
     });
   }
 
-  void _submit() {
-    // TODO: Сохранить интересы в профиль через Firestore
-    context.push(AppRoutes.home); // Временно на главную, пока нет геолокации
+  Future<void> _submit() async {
+    final notifier = ref.read(currentUserProfileNotifierProvider.notifier);
+    await notifier.updateProfile(interests: _selectedInterests.toList());
+
+    if (mounted) {
+      context.push(AppRoutes.locationPermission);
+    }
   }
 
   @override

@@ -5,6 +5,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_typography.dart';
 import '../../core/router/app_router.dart';
+import '../../providers/user_provider.dart';
 import '../shared/app_button.dart';
 
 class AgeVerificationScreen extends ConsumerStatefulWidget {
@@ -45,10 +46,19 @@ class _AgeVerificationScreenState extends ConsumerState<AgeVerificationScreen> {
     },
   ];
 
-  void _submit() {
+  Future<void> _submit() async {
     if (_selectedAgeGroup == null) return;
-    // TODO: Сохранить возраст в профиль пользователя
-    context.push(AppRoutes.interestsSelection);
+
+    final notifier = ref.read(ageVerificationNotifierProvider.notifier);
+    await notifier.verifyAge(age: _selectedAgeGroup!);
+
+    if (mounted) {
+      if (_selectedAgeGroup! < 18) {
+        context.push(AppRoutes.parentalConsent);
+      } else {
+        context.push(AppRoutes.interestsSelection);
+      }
+    }
   }
 
   @override

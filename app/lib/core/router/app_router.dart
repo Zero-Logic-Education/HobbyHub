@@ -4,6 +4,8 @@ import '../../ui/welcome/splash_screen.dart';
 import '../../ui/welcome/welcome_screen.dart';
 import '../../ui/home/home_screen.dart';
 import '../../ui/auth/age_verification_screen.dart';
+import '../../ui/auth/login_screen.dart';
+import '../../ui/auth/register_screen.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/user_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -103,18 +105,12 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: 'login',
             name: 'login',
-            builder: (context, state) => Scaffold(
-              appBar: AppBar(title: const Text('Вход')),
-              body: const Center(child: Text('Login Screen')),
-            ),
+            builder: (context, state) => const LoginScreen(),
           ),
           GoRoute(
             path: 'register',
             name: 'register',
-            builder: (context, state) => Scaffold(
-              appBar: AppBar(title: const Text('Регистрация')),
-              body: const Center(child: Text('Register Screen')),
-            ),
+            builder: (context, state) => const RegisterScreen(),
           ),
           GoRoute(
             path: 'age-verification',

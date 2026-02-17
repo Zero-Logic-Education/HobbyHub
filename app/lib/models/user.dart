@@ -42,6 +42,9 @@ class User {
   /// Верифицирован ли пользователь
   final bool isVerified;
 
+  /// Email родителя (для пользователей < 18 лет)
+  final String? parentEmail;
+
   /// Дата создания аккаунта
   @JsonKey(fromJson: _timestampFromJson, toJson: _timestampToJson)
   final DateTime createdAt;
@@ -75,6 +78,7 @@ class User {
     this.latitude,
     this.longitude,
     this.isVerified = false,
+    this.parentEmail,
     required this.createdAt,
     this.updatedAt,
     this.friends = const [],
@@ -99,6 +103,7 @@ class User {
     double? latitude,
     double? longitude,
     bool? isVerified,
+    String? parentEmail,
     DateTime? createdAt,
     DateTime? updatedAt,
     List<String>? friends,
@@ -119,6 +124,7 @@ class User {
       latitude: latitude ?? this.latitude,
       longitude: longitude ?? this.longitude,
       isVerified: isVerified ?? this.isVerified,
+      parentEmail: parentEmail ?? this.parentEmail,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       friends: friends ?? this.friends,

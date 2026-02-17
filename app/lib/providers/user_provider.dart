@@ -39,7 +39,8 @@ final currentUserStreamProvider = StreamProvider<User?>((ref) {
 final isAgeVerifiedProvider = Provider<bool>((ref) {
   final userAsync = ref.watch(currentUserStreamProvider);
   return userAsync.maybeWhen(
-    data: (user) => user != null && user.isVerified && user.age >= AppConstants.minAge,
+    data: (user) =>
+        user != null && user.isVerified && user.age >= AppConstants.minAge,
     orElse: () => false,
   );
 });
@@ -50,7 +51,7 @@ class UserProfileNotifier extends StateNotifier<AsyncValue<void>> {
   final String userId;
 
   UserProfileNotifier(this._firestoreService, this.userId)
-      : super(const AsyncValue.data(null));
+    : super(const AsyncValue.data(null));
 
   /// Обновить профиль пользователя
   Future<void> updateProfile({
@@ -58,6 +59,7 @@ class UserProfileNotifier extends StateNotifier<AsyncValue<void>> {
     String? photoUrl,
     String? bio,
     List<String>? interests,
+    String? parentEmail,
   }) async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
@@ -67,6 +69,7 @@ class UserProfileNotifier extends StateNotifier<AsyncValue<void>> {
       if (photoUrl != null) updateData['photoUrl'] = photoUrl;
       if (bio != null) updateData['bio'] = bio;
       if (interests != null) updateData['interests'] = interests;
+      if (parentEmail != null) updateData['parentEmail'] = parentEmail;
 
       updateData['updatedAt'] = DateTime.now().toIso8601String();
 
@@ -117,23 +120,23 @@ class UserProfileNotifier extends StateNotifier<AsyncValue<void>> {
 /// Провайдер для управления профилем пользователя
 final userProfileNotifierProvider =
     StateNotifierProvider.family<UserProfileNotifier, AsyncValue<void>, String>(
-  (ref, userId) {
-    final firestoreService = ref.watch(firestoreServiceProvider);
-    return UserProfileNotifier(firestoreService, userId);
-  },
-);
+      (ref, userId) {
+        final firestoreService = ref.watch(firestoreServiceProvider);
+        return UserProfileNotifier(firestoreService, userId);
+      },
+    );
 
 /// Провайдер для профиля текущего пользователя
 final currentUserProfileNotifierProvider =
     StateNotifierProvider<UserProfileNotifier, AsyncValue<void>>((ref) {
-  final userId = ref.watch(currentUserIdProvider);
-  if (userId == null) {
-    throw Exception('User not logged in');
-  }
+      final userId = ref.watch(currentUserIdProvider);
+      if (userId == null) {
+        throw Exception('User not logged in');
+      }
 
-  final firestoreService = ref.watch(firestoreServiceProvider);
-  return UserProfileNotifier(firestoreService, userId);
-});
+      final firestoreService = ref.watch(firestoreServiceProvider);
+      return UserProfileNotifier(firestoreService, userId);
+    });
 
 /// State notifier для верификации возраста пользователя
 class AgeVerificationNotifier extends StateNotifier<AsyncValue<void>> {
@@ -141,7 +144,7 @@ class AgeVerificationNotifier extends StateNotifier<AsyncValue<void>> {
   final String _userId;
 
   AgeVerificationNotifier(this._firestoreService, this._userId)
-      : super(const AsyncValue.data(null));
+    : super(const AsyncValue.data(null));
 
   Future<void> verifyAge({required int age}) async {
     state = const AsyncValue.loading();
@@ -210,11 +213,11 @@ class AgeVerificationNotifier extends StateNotifier<AsyncValue<void>> {
 /// Провайдер для верификации возраста текущего пользователя
 final ageVerificationNotifierProvider =
     StateNotifierProvider<AgeVerificationNotifier, AsyncValue<void>>((ref) {
-  final userId = ref.watch(currentUserIdProvider);
-  if (userId == null) {
-    throw Exception('User not logged in');
-  }
+      final userId = ref.watch(currentUserIdProvider);
+      if (userId == null) {
+        throw Exception('User not logged in');
+      }
 
-  final firestoreService = ref.watch(firestoreServiceProvider);
-  return AgeVerificationNotifier(firestoreService, userId);
-});
+      final firestoreService = ref.watch(firestoreServiceProvider);
+      return AgeVerificationNotifier(firestoreService, userId);
+    });

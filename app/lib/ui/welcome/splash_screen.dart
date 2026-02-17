@@ -49,7 +49,11 @@ class _SplashScreenState extends State<SplashScreen> {
                 )
                 .animate()
                 .fade(duration: 800.ms)
-                .scale(delay: 200.ms, duration: 600.ms, curve: Curves.backOut),
+                .scale(
+                  delay: 200.ms,
+                  duration: 600.ms,
+                  curve: Curves.easeOutBack,
+                ),
             const SizedBox(height: 24),
             Text(
                   'HobbyHub',

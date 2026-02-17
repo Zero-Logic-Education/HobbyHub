@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../ui/welcome/splash_screen.dart';
+import '../../ui/welcome/welcome_screen.dart';
 import '../../ui/home/home_screen.dart';
 import '../../ui/auth/age_verification_screen.dart';
 import '../../providers/auth_provider.dart';
@@ -8,6 +10,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Определение именованных маршрутов
 abstract class AppRoutes {
+  // Приветственные экраны
+  static const String splash = '/';
+  static const String welcome = '/welcome';
+
   // Аутентификация
   static const String auth = '/auth';
   static const String login = '/auth/login';
@@ -41,10 +47,12 @@ final routerProvider = Provider<GoRouter>((ref) {
   final isAgeVerified = ref.watch(isAgeVerifiedProvider);
 
   return GoRouter(
-    initialLocation: AppRoutes.auth,
+    initialLocation: AppRoutes.splash,
     redirect: (BuildContext context, GoRouterState state) {
       final isLoggingIn = state.uri.toString().startsWith('/auth');
-      final isAgeVerification = state.uri.toString().startsWith(AppRoutes.ageVerification);
+      final isAgeVerification = state.uri.toString().startsWith(
+        AppRoutes.ageVerification,
+      );
 
       return authState.when(
         data: (user) {
@@ -71,6 +79,18 @@ final routerProvider = Provider<GoRouter>((ref) {
       );
     },
     routes: [
+      // Приветственные экраны
+      GoRoute(
+        path: AppRoutes.splash,
+        name: 'splash',
+        builder: (context, state) => const SplashScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.welcome,
+        name: 'welcome',
+        builder: (context, state) => const WelcomeScreen(),
+      ),
+
       // Маршруты аутентификации
       GoRoute(
         path: AppRoutes.auth,

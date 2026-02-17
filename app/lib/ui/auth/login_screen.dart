@@ -41,7 +41,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authNotifierProvider);
-    final error = ref.watch(authErrorProvider);
 
     ref.listen(authNotifierProvider, (previous, next) {
       next.when(
@@ -100,7 +99,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 AppTextField(
                   label: 'Email',
                   controller: _emailController,
-                  hintText: 'alex@example.com',
+                  hint: 'alex@example.com',
                   keyboardType: TextInputType.emailAddress,
                   validator: (value) {
                     if (value == null || value.isEmpty) return 'Введите email';
@@ -112,7 +111,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 AppTextField(
                   label: 'Пароль',
                   controller: _passwordController,
-                  hintText: '••••••••',
+                  hint: '••••••••',
                   obscureText: true,
                   validator: (value) {
                     if (value == null || value.isEmpty) return 'Введите пароль';

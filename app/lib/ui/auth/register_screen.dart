@@ -101,7 +101,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 AppTextField(
                   label: 'Email',
                   controller: _emailController,
-                  hintText: 'alex@example.com',
+                  hint: 'alex@example.com',
                   keyboardType: TextInputType.emailAddress,
                   validator: (value) {
                     if (value == null || value.isEmpty) return 'Введите email';
@@ -113,7 +113,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 AppTextField(
                   label: 'Пароль',
                   controller: _passwordController,
-                  hintText: '••••••••',
+                  hint: '••••••••',
                   obscureText: true,
                   validator: (value) {
                     if (value == null || value.isEmpty) return 'Введите пароль';
@@ -125,7 +125,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 AppTextField(
                   label: 'Подтвердите пароль',
                   controller: _confirmPasswordController,
-                  hintText: '••••••••',
+                  hint: '••••••••',
                   obscureText: true,
                   validator: (value) {
                     if (value != _passwordController.text)

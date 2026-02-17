@@ -1,326 +1,62 @@
-<div align="center">
+# HobbyHub
 
-## HobbyHub
-
-### Твое хобби — твои правила. Находи единомышленников и создавай встречи.
-
-**Интуитивный интерфейс · Flutter & Firebase · Простота общения**
-
-</div>
-
----
-
-## Содержание
-
-- [Быстрый запуск для новых разработчиков](#быстрый-запуск-для-новых-разработчиков)
-- [Как запустить проект](#как-запустить-проект)
-- [Системные требования](#системные-требования)
-- [Технологический стек](#технологический-стек)
-- [Основные возможности](#основные-возможности)
-- [Структура проекта](#структура-проекта)
-- [Команды разработки](#команды-разработки)
-- [ROADMAP: План разработки](#roadmap-план-разработки-hobbyhub)
-
----
-
-## Быстрый запуск для новых разработчиков
-
-> **Работаешь над проектом впервые? Начни здесь!**
-
-### 1. Клонируйте репозиторий
-
-```bash
-git clone <repository-url> hobby_hub
-cd hobby_hub
-```
-
-### 2. Проверьте установку Flutter
-
-```bash
-flutter doctor
-```
-
-**Если Flutter не установлен:**
-- **macOS/Linux:** Следуйте [официальной документации](https://docs.flutter.dev/get-started/install)
-- **Windows:** Загрузите с [flutter.dev](https://flutter.dev)
-
-### 3. Установите зависимости
-
-```bash
-flutter pub get
-```
-
-### 4. Запуск проекта
-
-**Для iOS (macOS):**
-```bash
-cd ios
-pod install
-cd ..
-flutter run
-```
-
-**Для Android:**
-```bash
-flutter run
-```
-
-**Для Web:**
-```bash
-flutter run -d chrome
-```
-
-**Для macOS:**
-```bash
-flutter run -d macos
-```
-
-### 5. Выберите устройство
-
-Flutter автоматически обнаружит доступные устройства. Выберите нужное из списка.
-
-**Готово!** Приложение запущено и готово к работе.
-
----
-
-## Быстрый запуск (обычный)
-
-> **Стандартный процесс запуска приложения**
-
-### Способ 1: Режим разработки (Рекомендуется)
-
-```bash
-flutter run
-```
-
-Hot Reload: нажмите `r` в терминале для быстрой перезагрузки.  
-Hot Restart: нажмите `R` для полного перезапуска.
-
-### Способ 2: Режим отладки с конкретным устройством
-
-```bash
-# Просмотр доступных устройств
-flutter devices
-
-# Запуск на конкретном устройстве
-flutter run -d <device_id>
-```
-
-### Способ 3: Release режим
-
-```bash
-# Android
-flutter build apk --release
-
-# iOS
-flutter build ipa --release
-
-# Web
-flutter build web --release
-
-# macOS
-flutter build macos --release
-```
-
-<div align="center">
-
-# Документация проекта
-
----
-
-## Системные требования
-
-| Компонент | Минимум | Рекомендуется | Проверка |
-|:---------:|:-------:|:-------------:|:--------:|
-| **Flutter SDK** | 3.10+ | 3.24+ | `flutter --version` |
-| **Dart SDK** | 3.10+ | 3.5+ | `dart --version` |
-| **Xcode** (macOS/iOS) | 14.0+ | 15.0+ | `xcodebuild -version` |
-| **Android Studio** | 2022.3+ | 2023.1+ | В настройках IDE |
-| **CocoaPods** (iOS) | 1.11+ | 1.15+ | `pod --version` |
-| **Git** | 2.0+ | 2.40+ | `git --version` |
-| **RAM** | 4 GB | 8 GB+ | — |
-| **Диск** | 5 GB | 10 GB+ | Включая SDK и эмуляторы |
-
----
-
-## Технологический стек
-
-<table align="center">
-<tr>
-<td width="50%" align="center" valign="top">
-
-### Frontend
-
-Flutter — UI фреймворк  
-Dart — язык программирования  
-Material Design / Cupertino  
-Provider / Riverpod  
-Go Router  
-Animations
-
-</td>
-<td width="50%" align="center" valign="top">
-
-### Backend & Tools
-
-Firebase (опционально)  
-Dio / HTTP  
-Shared Preferences  
-Hive / SQLite  
-GetIt (DI)  
-Flutter Lints  
-Build Runner
-
-</td>
-</tr>
-</table>
-
----
-
-## Основные возможности
-
-<table align="center">
-<tr>
-<td width="50%" align="center" valign="top">
-
-### Главный экран (Home)
-
-**Интуитивная навигация**  
-Bottom Navigation Bar
-
-**Адаптивный дизайн**  
-Все платформы и экраны
-
-**Быстрый доступ**  
-К основным функциям
-
-**Плавные анимации**  
-Встроенные возможности
-
-**Темы**  
-Темная и светлая
-
-**Производительность**  
-60 FPS стабильно
-
-</td>
-<td width="50%" align="center" valign="top">
-
-### Аутентификация (Auth)
-
-**Вход и регистрация**  
-Формы с валидацией
-
-**Безопасность**  
-Шифрование данных
-
-**Social Login**  
-Google, Apple ID
-
-**Восстановление**  
-Email-подтверждение
-
-**Сессии**  
-Автоматический вход
-
-**Биометрия**  
-Face ID / Touch ID
-
-</td>
-</tr>
-<tr>
-<td width="50%" align="center" valign="top">
-
-### Карта (Map)
-
-**Интерактивность**  
-Отображение локаций
-
-**Геолокация**  
-Текущее местоположение
-
-**Кластеризация**  
-Удобные маркеры
-
-**Поиск**  
-Фильтрация категорий
-
-**Маршруты**  
-Навигация к событию
-
-**Офлайн**  
-Кеширование карт
-
-</td>
-<td width="50%" align="center" valign="top">
-
-### Профиль (Profile)
-
-**Данные**  
-Управление профилем
-
-**Избранное**  
-Сохраненное контент
-
-**История**  
-Активность пользователя
-
-**Настройки**  
-Кастомизация
-
-**Уведомления**  
-Push-сообщения
-
-**Поддержка**  
-Обратная связь
-
-</td>
-</tr>
-</table>
-
----
-
-## Архитектурные особенности
-
-| Функция | Описание |
-|:---:|:---:|
-| **Clean Architecture** | Разделение на слои: UI, Domain, Data |
-| **State Management** | Provider/Riverpod для управления состоянием |
-| **Dependency Injection** | GetIt для инверсии зависимостей |
-| **Responsive Design** | Адаптация под любые размеры экрана |
-| **Локализация** | Поддержка множественных языков |
-| **Тестирование** | Unit, Widget и Integration тесты |
-| **CI/CD** | Автоматизация сборки и деплоя |
-
-</div>
+Интеллектуальная платформа для поиска и организации хобби-мероприятий.
 
 ---
 
 ## Структура проекта
 
+Проект разделен на независимые модули по стандарту StackScout:
+
+- [app/](./app): Клиентское мобильное приложение на Flutter. Основной код, ассеты и конфигурации приложения.
+- [backend/](./backend): Серверная часть (в разработке). Планируется использование Java Spring Boot.
+- [docs/](./docs): Техническая документация, спецификации дизайна и Changelog.
+- [infrastructure/](./infrastructure): Конфигурации для развертывания (Docker, Compose) и CI/CD.
+
+## Технологический стек
+
+- **App**: Flutter, Dart.
+- **Backend**: (Планируется Java Spring Boot).
+- **Infrastructure**: Docker, Docker Compose.
+- **Docs**: Markdown.
+
+---
+
+## Как запустить проект (App)
+
+### 1. Перейдите в директорию приложения
+
+```bash
+cd app
+```
+
+### 2. Установите зависимости
+
+```bash
+flutter pub get
+```
+
+### 3. Запуск
+
+```bash
+flutter run
+```
+
+---
+
+## Подробная структура HobbyHub
+
 ```
 hobby_hub/
-├── lib/
-│   ├── core/              # Общие штуки: цвета, шрифты, константы API
-│   ├── models/            # Все модели данных (Hobby, User, Meeting)
-│   ├── services/          # Работа с внешним миром (Firebase, работа с картой)
-│   ├── ui/                # Всё, что касается внешнего вида
-│   │   ├── auth/          # Экран входа/регистрации
-│   │   ├── home/          # Главный экран (лента хобби)
-│   │   ├── map/           # Экран с местами встреч
-│   │   ├── profile/       # Профиль пользователя
-│   │   └── shared/        # Общие виджеты (кнопки, текстовые поля)
-│   └── providers/         # Логика управления состоянием (твои ViewModel)
-├── test/                         # Тесты
-│   └── widget_test/
-├── android/                      # Android конфигурация
-├── ios/                          # iOS конфигурация
-├── macos/                        # macOS конфигурация
-├── web/                          # Web конфигурация
-├── windows/                      # Windows конфигурация
-├── linux/                        # Linux конфигурация
-├── pubspec.yaml                  # Зависимости проекта
-└── README.md                     # Этот файл
+├── app/                   # Основное Flutter приложение
+│   ├── lib/               # Исходный код Dart
+│   ├── test/              # Тесты приложения
+│   ├── android/           # Платформ-специфичный код
+│   ├── ios/
+│   └── pubspec.yaml
+├── backend/               # Серверная часть
+├── docs/                  # Документация и дизайн
+└── infrastructure/        # Docker и CI/CD
 ```
 
 ## Firebase конфигурация
@@ -331,20 +67,20 @@ hobby_hub/
 
 ### Компоненты Firebase
 
-| Компонент | Статус | Файлы конфигурации |
-|:----------|:------:|:------------------|
-| **Firestore Database** | ✓ Инициализирована | firestore.rules, firestore.indexes.json |
-| **Firestore Rules** | ✓ Развёрнуты | firestore.rules (155 строк) |
-| **Authentication** | ✓ Готова | lib/firebase_options.dart |
-| **Storage** | ⚠ Требует инициализации* | storage.rules |
-| **Cloud Messaging** | ✓ Готова | firebase_messaging пакет |
-| **Analytics** | ✓ Готова | firebase_analytics пакет |
-| **Android** | ✓ Настроен | android/app/google-services.json |
-| **iOS** | ✓ Настроен | ios/Runner/GoogleService-Info.plist |
-| **Web** | ✓ Готов | lib/firebase_options.dart |
-| **macOS** | ✓ Готов | lib/firebase_options.dart |
+| Компонент              |          Статус           | Файлы конфигурации                      |
+| :--------------------- | :-----------------------: | :-------------------------------------- |
+| **Firestore Database** |    ✓ Инициализирована     | firestore.rules, firestore.indexes.json |
+| **Firestore Rules**    |       ✓ Развёрнуты        | firestore.rules (155 строк)             |
+| **Authentication**     |         ✓ Готова          | lib/firebase_options.dart               |
+| **Storage**            | ⚠ Требует инициализации\* | storage.rules                           |
+| **Cloud Messaging**    |         ✓ Готова          | firebase_messaging пакет                |
+| **Analytics**          |         ✓ Готова          | firebase_analytics пакет                |
+| **Android**            |        ✓ Настроен         | android/app/google-services.json        |
+| **iOS**                |        ✓ Настроен         | ios/Runner/GoogleService-Info.plist     |
+| **Web**                |          ✓ Готов          | lib/firebase_options.dart               |
+| **macOS**              |          ✓ Готов          | lib/firebase_options.dart               |
 
-*Storage требует инициализации в Firebase Console → Storage → Get Started
+\*Storage требует инициализации в Firebase Console → Storage → Get Started
 
 ### Безопасность
 
@@ -407,25 +143,25 @@ flutter run  # Использует конфигурацию из lib/firebase_o
 
 <div align="center">
 
-| Задача | Команда |
-|:-------|:--------|
-| **Запустить dev сервер** | `flutter run` |
-| **Hot Reload** | Нажмите `r` в терминале |
-| **Hot Restart** | Нажмите `R` в терминале |
-| **Установить зависимости** | `flutter pub get` |
-| **Обновить зависимости** | `flutter pub upgrade` |
-| **Проверить линтером** | `flutter analyze` |
-| **Форматировать код** | `flutter format .` |
-| **Запустить тесты** | `flutter test` |
-| **Собрать APK (Android)** | `flutter build apk` |
-| **Собрать IPA (iOS)** | `flutter build ipa` |
-| **Собрать Web** | `flutter build web` |
-| **Собрать macOS** | `flutter build macos` |
-| **Очистить проект** | `flutter clean` |
-| **Проверка системы** | `flutter doctor -v` |
-| **Список устройств** | `flutter devices` |
-| **Генерация кода** | `flutter pub run build_runner build` |
-| **Создать иконку** | `flutter pub run flutter_launcher_icons` |
+| Задача                     | Команда                                  |
+| :------------------------- | :--------------------------------------- |
+| **Запустить dev сервер**   | `flutter run`                            |
+| **Hot Reload**             | Нажмите `r` в терминале                  |
+| **Hot Restart**            | Нажмите `R` в терминале                  |
+| **Установить зависимости** | `flutter pub get`                        |
+| **Обновить зависимости**   | `flutter pub upgrade`                    |
+| **Проверить линтером**     | `flutter analyze`                        |
+| **Форматировать код**      | `flutter format .`                       |
+| **Запустить тесты**        | `flutter test`                           |
+| **Собрать APK (Android)**  | `flutter build apk`                      |
+| **Собрать IPA (iOS)**      | `flutter build ipa`                      |
+| **Собрать Web**            | `flutter build web`                      |
+| **Собрать macOS**          | `flutter build macos`                    |
+| **Очистить проект**        | `flutter clean`                          |
+| **Проверка системы**       | `flutter doctor -v`                      |
+| **Список устройств**       | `flutter devices`                        |
+| **Генерация кода**         | `flutter pub run build_runner build`     |
+| **Создать иконку**         | `flutter pub run flutter_launcher_icons` |
 
 </div>
 
@@ -681,6 +417,7 @@ flutter run  # Использует конфигурацию из lib/firebase_o
 - [ ] Performance Monitoring Firebase
 
 **Пакеты:**
+
 ```yaml
 dependencies:
   stream_chat_flutter: ^7.0.0
@@ -697,12 +434,12 @@ dependencies:
   - Принятие/отклонение запросов
   - Список друзей
   - Подписки/подписчики
-  
+
 [ ] Группы друзей
   - Создание групп (Близкие друзья, Коллеги, etc.)
   - Управление группами
   - События только для групп
-  
+
 [ ] Рекомендации
   - Люди со схожими интересами
   - Взаимные друзья
@@ -720,7 +457,7 @@ dependencies:
   - Прошедшие события
   - Фото и видео Stories (24 часа)
   - Воспоминания
-  
+
 [ ] Статистика
   - Количество событий
   - Новые знакомства

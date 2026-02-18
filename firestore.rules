@@ -1,0 +1,186 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth.uid != null;
+    }
+    
+    function isUser(userId) {
+      return request.auth.uid == userId;
+    }
+    
+    function isOldEnough(minAge) {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.age >= minAge;
+    }
+    
+    function canViewUserProfile(userId, profilePrivacy) {
+          return profilePrivacy == 0 ||
+            profilePrivacy == 'public' ||
+            isUser(userId) ||
+            ((profilePrivacy == 1 || profilePrivacy == 'friends') && isFriend(userId)) ||
+            isAdmin();
+    }
+    
+    function isFriend(userId) {
+      return exists(/databases/$(database)/documents/users/$(request.auth.uid)/friends/$(userId));
+    }
+    
+    function isAdmin() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+    
+    // === USERS COLLECTION ===
+    match /users/{userId} {
+      allow read: if canViewUserProfile(userId, resource.data.privacyLevel);
+      
+            allow create: if isUser(userId) && 
+              request.resource.data.age >= 12 &&
+              request.resource.data.privacyLevel in [0, 1, 2, 3, 'public', 'friends', 'private', 'custom', 'hidden'];
+      
+      allow update: if isUser(userId);
+      allow delete: if isUser(userId) || isAdmin();
+      
+      match /friends/{friendId} {
+        allow read: if isUser(userId);
+        allow write: if isUser(userId);
+      }
+      
+      match /followers/{followerId} {
+        allow read: if isUser(userId) || isUser(followerId);
+        allow write: if isUser(followerId);
+      }
+      
+      match /following/{followingId} {
+        allow read: if isUser(userId);
+        allow write: if isUser(userId);
+      }
+      
+      match /interests/{interestId} {
+        allow read: if isUser(userId) || resource.data.isPublic == true;
+        allow write: if isUser(userId);
+      }
+      
+      match /sentRequests/{recipientId} {
+        allow read: if isUser(userId);
+        allow write: if isUser(userId);
+      }
+      
+      match /receivedRequests/{senderId} {
+        allow read: if isUser(userId);
+        allow write: if isUser(userId);
+      }
+    }
+    
+    // === EVENTS COLLECTION ===
+    match /events/{eventId} {
+      allow read: if resource.data.visibility == 'public' ||
+                     (isAuthenticated() && (
+                       resource.data.organizerId == request.auth.uid ||
+                       request.auth.uid in resource.data.participants
+                     ));
+      
+      allow create: if isAuthenticated() && 
+              isOldEnough(25) &&
+              request.resource.data.organizerId == request.auth.uid &&
+              request.resource.data.visibility in ['public', 'private'] &&
+              request.resource.data.minAge in [12, 18, 25];
+      
+      allow update: if isUser(resource.data.organizerId);
+      allow delete: if isUser(resource.data.organizerId) || isAdmin();
+      
+      match /participants/{userId} {
+        allow read: if resource.data.eventId == eventId;
+        allow write: if isUser(userId) && 
+                      isOldEnough(get(/databases/$(database)/documents/events/$(eventId)).data.minAge);
+      }
+      
+      match /reviews/{reviewId} {
+        allow read: if true;
+        allow create: if isUser(request.resource.data.authorId) &&
+                      exists(/databases/$(database)/documents/events/$(eventId)/participants/$(request.auth.uid));
+        allow update: if isUser(resource.data.authorId);
+        allow delete: if isUser(resource.data.authorId) || isAdmin();
+      }
+    }
+    
+    // === COMMUNITIES COLLECTION ===
+    match /communities/{communityId} {
+      allow read: if resource.data.privacy == 'public' ||
+                     (isAuthenticated() && (
+                       resource.data.creatorId == request.auth.uid ||
+                       request.auth.uid in resource.data.members
+                     ));
+      
+      allow create: if isAuthenticated() &&
+              isOldEnough(25) &&
+              request.resource.data.creatorId == request.auth.uid &&
+              request.resource.data.privacy in ['public', 'private'] &&
+              request.resource.data.minAge in [12, 18, 25];
+      
+      allow update: if isUser(resource.data.creatorId);
+      allow delete: if isUser(resource.data.creatorId) || isAdmin();
+      
+      match /members/{userId} {
+        allow read: if true;
+        allow write: if isUser(userId) || isUser(resource.data.communityId);
+      }
+      
+      match /events/{eventId} {
+        allow read: if true;
+        allow write: if isUser(get(/databases/$(database)/documents/communities/$(communityId)).data.creatorId);
+      }
+    }
+    
+    // === INTERESTS COLLECTION ===
+    match /interests/{interestId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    // === MESSAGES COLLECTION ===
+    match /messages/{messageId} {
+      allow read: if isUser(resource.data.senderId) ||
+                     isUser(resource.data.recipientId);
+      
+      allow create: if isUser(request.resource.data.senderId) &&
+                      isAuthenticated();
+      
+      allow update: if isUser(resource.data.senderId);
+      allow delete: if isUser(resource.data.senderId) || isAdmin();
+    }
+    
+    // === NOTIFICATIONS COLLECTION ===
+    match /notifications/{notificationId} {
+      allow read: if isUser(resource.data.userId);
+      allow create: if isAuthenticated();
+      allow update: if isUser(resource.data.userId);
+      allow delete: if isUser(resource.data.userId) || isAdmin();
+    }
+    
+    // === REPORTS COLLECTION ===
+    match /reports/{reportId} {
+      allow create: if isAuthenticated() &&
+              request.resource.data.reporterUid == request.auth.uid;
+      
+      allow read: if isUser(resource.data.reporterUid) || isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+    
+    // === ACTIVITY HISTORY COLLECTION ===
+    match /activityHistory/{historyId} {
+      allow read: if isUser(resource.data.userId);
+      allow create: if isAuthenticated();
+      allow update: if isUser(resource.data.userId);
+      allow delete: if isUser(resource.data.userId) || isAdmin();
+    }
+    
+    // === USER SETTINGS COLLECTION ===
+    match /userSettings/{userId} {
+      allow read, write: if isUser(userId);
+    }
+  }
+}

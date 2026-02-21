@@ -95,208 +95,215 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: SingleChildScrollView(
-          physics: const ClampingScrollPhysics(), // Предотвращает сплющивание
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Back Button
-                Padding(
-                  padding: const EdgeInsets.only(top: 16),
-                  child: InkWell(
-                    onTap: () => context.pop(),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              physics: const NeverScrollableScrollPhysics(),
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                child: IntrinsicHeight(
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Icon(
-                          Icons.arrow_back_ios_new_rounded,
-                          size: 18,
-                          color: AppColors.textSecondary,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          'Back',
-                          style: AppTypography.bodyMedium.copyWith(
-                            color: AppColors.textSecondary,
-                            fontWeight: FontWeight.w500,
+                        // Back Button
+                        Padding(
+                          padding: const EdgeInsets.only(top: 16),
+                          child: InkWell(
+                            onTap: () => context.pop(),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(
+                                  Icons.arrow_back_ios_new_rounded,
+                                  size: 18,
+                                  color: AppColors.textSecondary,
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  'Back',
+                                  style: AppTypography.bodyMedium.copyWith(
+                                    color: AppColors.textSecondary,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
+
+                        const SizedBox(height: 32),
+
+                        // Header
+                        Text(
+                          'Welcome back',
+                          style: AppTypography.headingLarge.copyWith(
+                            fontSize: 32,
+                            color: AppColors.textPrimary,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Sign in to continue to HobbyHub',
+                          style: AppTypography.bodyLarge.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+
+                        const SizedBox(height: 48),
+
+                        // Email Field
+                        AppTextField(
+                          label: 'Email',
+                          controller: _emailController,
+                          hint: 'your@email.com',
+                          keyboardType: TextInputType.emailAddress,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter email';
+                            }
+                            if (!value.contains('@')) {
+                              return 'Invalid email format';
+                            }
+                            return null;
+                          },
+                        ),
+
+                        const SizedBox(height: 24),
+
+                        // Password Field
+                        AppTextField(
+                          label: 'Password',
+                          controller: _passwordController,
+                          hint: 'Enter your password',
+                          obscureText: true,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter password';
+                            }
+                            if (value.length < 6) {
+                              return 'Password too short';
+                            }
+                            return null;
+                          },
+                        ),
+
+                        const SizedBox(height: 16),
+
+                        // Forgot Password
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: TextButton(
+                            onPressed: _forgotPassword,
+                            style: TextButton.styleFrom(
+                              padding: EdgeInsets.zero,
+                              minimumSize: Size.zero,
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            ),
+                            child: Text(
+                              'Forgot password?',
+                              style: AppTypography.labelLarge.copyWith(
+                                color: AppColors.primary,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 32),
+
+                        // Or continue with divider
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Container(
+                                height: 1,
+                                color: const Color(0xFFF1F1FB),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                              ),
+                              child: Text(
+                                'or continue with',
+                                style: AppTypography.bodySmall.copyWith(
+                                  color: const Color(0xFFADB3C6),
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              child: Container(
+                                height: 1,
+                                color: const Color(0xFFF1F1FB),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 32),
+
+                        // Social Buttons
+                        _SocialButton(
+                          icon: Icons.g_mobiledata_rounded,
+                          label: 'Continue with Google',
+                          isGoogle: true,
+                          onPressed: () => ref
+                              .read(authNotifierProvider.notifier)
+                              .signInWithGoogle(),
+                        ),
+                        const SizedBox(height: 16),
+                        _SocialButton(
+                          icon: Icons.facebook_rounded,
+                          label: 'Continue with Facebook',
+                          onPressed: () => ref
+                              .read(authNotifierProvider.notifier)
+                              .signInWithFacebook(),
+                        ),
+
+                        const Spacer(),
+                        // Submit Button
+                        PrimaryButton(
+                          label: 'Sign In',
+                          onPressed: _login,
+                          isLoading: authState is AsyncLoading,
+                        ),
+
+                        const SizedBox(height: 24),
+
+                        // Footer
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              "Don't have an account? ",
+                              style: AppTypography.bodyMedium.copyWith(
+                                color: AppColors.textSecondary,
+                              ),
+                            ),
+                            InkWell(
+                              onTap: () => context.push(AppRoutes.register),
+                              child: Text(
+                                'Sign Up',
+                                style: AppTypography.subheadingMedium.copyWith(
+                                  color: AppColors.primary,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 24),
                       ],
                     ),
                   ),
                 ),
-
-                const SizedBox(height: 32),
-
-                // Header
-                Text(
-                  'Welcome back',
-                  style: AppTypography.headingLarge.copyWith(
-                    fontSize: 32,
-                    color: AppColors.textPrimary,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Sign in to continue to HobbyHub',
-                  style: AppTypography.bodyLarge.copyWith(
-                    color: AppColors.textSecondary,
-                  ),
-                ),
-
-                const SizedBox(height: 48),
-
-                // Email Field
-                AppTextField(
-                  label: 'Email',
-                  controller: _emailController,
-                  hint: 'your@email.com',
-                  keyboardType: TextInputType.emailAddress,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter email';
-                    }
-                    if (!value.contains('@')) {
-                      return 'Invalid email format';
-                    }
-                    return null;
-                  },
-                ),
-
-                const SizedBox(height: 24),
-
-                // Password Field
-                AppTextField(
-                  label: 'Password',
-                  controller: _passwordController,
-                  hint: 'Enter your password',
-                  obscureText: true,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter password';
-                    }
-                    if (value.length < 6) {
-                      return 'Password too short';
-                    }
-                    return null;
-                  },
-                ),
-
-                const SizedBox(height: 16),
-
-                // Forgot Password
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton(
-                    onPressed: _forgotPassword,
-                    style: TextButton.styleFrom(
-                      padding: EdgeInsets.zero,
-                      minimumSize: Size.zero,
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    ),
-                    child: Text(
-                      'Forgot password?',
-                      style: AppTypography.labelLarge.copyWith(
-                        color: AppColors.primary,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: 32),
-
-                // Or continue with divider
-                Row(
-                  children: [
-                    Expanded(
-                      child: Divider(
-                        color: Colors.grey.withValues(alpha: 0.2),
-                        thickness: 0.5,
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Text(
-                        'or continue with',
-                        style: AppTypography.bodySmall.copyWith(
-                          color: AppColors.textTertiary,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: Divider(
-                        color: Colors.grey.withValues(alpha: 0.2),
-                        thickness: 0.5,
-                      ),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 32),
-
-                const SizedBox(height: 32),
-
-                // Social Buttons
-                _SocialButton(
-                  icon: Icons.g_mobiledata_rounded,
-                  label: 'Continue with Google',
-                  isGoogle: true,
-                  onPressed: () => ref
-                      .read(authNotifierProvider.notifier)
-                      .signInWithGoogle(),
-                ),
-                const SizedBox(height: 16),
-                _SocialButton(
-                  icon: Icons.facebook_rounded,
-                  label: 'Continue with Facebook',
-                  onPressed: () => ref
-                      .read(authNotifierProvider.notifier)
-                      .signInWithFacebook(),
-                ),
-
-                const SizedBox(height: 48),
-                const SizedBox(height: 32), // Замена Spacer
-                // Submit Button
-                PrimaryButton(
-                  label: 'Sign In',
-                  onPressed: _login,
-                  isLoading: authState is AsyncLoading,
-                ),
-
-                const SizedBox(height: 24),
-
-                // Footer
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "Don't have an account? ",
-                      style: AppTypography.bodyMedium.copyWith(
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                    InkWell(
-                      onTap: () => context.push(AppRoutes.register),
-                      child: Text(
-                        'Sign Up',
-                        style: AppTypography.subheadingMedium.copyWith(
-                          color: AppColors.primary,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 24),
-              ],
-            ),
-          ),
+              ),
+            );
+          },
         ),
       ),
     );
@@ -334,25 +341,19 @@ class _SocialButton extends StatelessWidget {
           elevation: 0,
           padding: EdgeInsets.zero,
         ),
-        child: Stack(
-          alignment: Alignment.center,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Positioned(
-              left: 16,
-              child: isGoogle
-                  ? Image.network(
-                      'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_G_logo.svg/1200px-Google_G_logo.svg.png',
-                      height: 24,
-                      width: 24,
-                      fit: BoxFit.contain,
-                      errorBuilder: (context, error, stackTrace) => const Icon(
-                        Icons.g_mobiledata_rounded,
-                        color: Colors.red,
-                        size: 28,
-                      ),
-                    )
-                  : Icon(icon, color: Colors.white, size: 24),
-            ),
+            if (isGoogle)
+              Image.network(
+                'https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png',
+                height: 24,
+                width: 24,
+                fit: BoxFit.contain,
+              )
+            else
+              const Icon(Icons.facebook, color: Colors.white, size: 24),
+            const SizedBox(width: 12),
             Text(
               label,
               style: AppTypography.subheadingMedium.copyWith(

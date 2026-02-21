@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../core/theme/app_colors.dart';
-import '../../core/theme/app_spacing.dart';
+import '../../core/constants/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../core/router/app_router.dart';
 import '../../providers/user_provider.dart';
@@ -17,43 +16,23 @@ class AgeVerificationScreen extends ConsumerStatefulWidget {
 }
 
 class _AgeVerificationScreenState extends ConsumerState<AgeVerificationScreen> {
-  int? _selectedAgeGroup;
+  int _selectedAge = 20;
+  final FixedExtentScrollController _scrollController =
+      FixedExtentScrollController(
+        initialItem: 8,
+      ); // Изначально 20 (индекс 8 для диапазона 12-99)
 
-  final List<Map<String, dynamic>> _ageGroups = [
-    {
-      'age': 12,
-      'title': 'Junior',
-      'description': 'Для подростков. Доступ к школьным событиям и кружкам.',
-      'icon': Icons.school_outlined,
-    },
-    {
-      'age': 18,
-      'title': 'Standard',
-      'description': 'Полный доступ ко всем событиям и сообществам.',
-      'icon': Icons.person_outline,
-    },
-    {
-      'age': 25,
-      'title': 'Organizer',
-      'description': 'Возможность создавать свои события и группы.',
-      'icon': Icons.groups_outlined,
-    },
-    {
-      'age': 35,
-      'title': 'Pro',
-      'description': 'Расширенные возможности для профессиональных встреч.',
-      'icon': Icons.star_outline,
-    },
-  ];
+  final List<int> _ages = List.generate(
+    88,
+    (index) => index + 12,
+  ); // От 12 до 99
 
   Future<void> _submit() async {
-    if (_selectedAgeGroup == null) return;
-
     final notifier = ref.read(ageVerificationNotifierProvider.notifier);
-    await notifier.verifyAge(age: _selectedAgeGroup!);
+    await notifier.verifyAge(age: _selectedAge);
 
     if (mounted) {
-      if (_selectedAgeGroup! < 18) {
+      if (_selectedAge < 18) {
         context.push(AppRoutes.parentalConsent);
       } else {
         context.push(AppRoutes.interestsSelection);
@@ -62,169 +41,237 @@ class _AgeVerificationScreenState extends ConsumerState<AgeVerificationScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: const Text('Ваш возраст'),
-        backgroundColor: Colors.white,
-        elevation: 0,
-        foregroundColor: AppColors.textPrimary,
-      ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.screenPaddingHorizontal,
-            vertical: AppSpacing.screenPaddingVertical,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Выберите возрастную группу',
-                style: AppTypography.headingLarge,
-              ),
-              const SizedBox(height: AppSpacing.sm),
-              Text(
-                'Это поможет нам подобрать наиболее подходящие события для вас.',
-                style: AppTypography.bodyMedium.copyWith(
-                  color: AppColors.textSecondary,
-                ),
-              ),
-              const SizedBox(height: AppSpacing.xl),
-              Expanded(
-                child: ListView.separated(
-                  itemCount: _ageGroups.length,
-                  separatorBuilder: (context, index) =>
-                      const SizedBox(height: AppSpacing.md),
-                  itemBuilder: (context, index) {
-                    final group = _ageGroups[index];
-                    final isSelected = _selectedAgeGroup == group['age'];
-                    return _AgeGroupCard(
-                      title: group['title'],
-                      age: group['age'],
-                      description: group['description'],
-                      icon: group['icon'],
-                      isSelected: isSelected,
-                      onTap: () =>
-                          setState(() => _selectedAgeGroup = group['age']),
-                    );
-                  },
-                ),
-              ),
-              const SizedBox(height: AppSpacing.lg),
-              PrimaryButton(
-                label: 'Продолжить',
-                onPressed: _selectedAgeGroup != null ? _submit : () {},
-                isEnabled: _selectedAgeGroup != null,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
-}
-
-class _AgeGroupCard extends StatelessWidget {
-  final String title;
-  final int age;
-  final String description;
-  final IconData icon;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  const _AgeGroupCard({
-    required this.title,
-    required this.age,
-    required this.description,
-    required this.icon,
-    required this.isSelected,
-    required this.onTap,
-  });
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.all(AppSpacing.lg),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? AppColors.primary.withValues(alpha: 0.05)
-              : Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: isSelected ? AppColors.primary : AppColors.divider,
-            width: isSelected ? 2 : 1,
-          ),
-          boxShadow: isSelected
-              ? [
-                  BoxShadow(
-                    color: AppColors.primary.withValues(alpha: 0.1),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  ),
-                ]
-              : [],
-        ),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: isSelected
-                    ? AppColors.primary
-                    : AppColors.divider.withValues(alpha: 0.3),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                icon,
-                color: isSelected ? Colors.white : AppColors.textSecondary,
-                size: 24,
-              ),
-            ),
-            const SizedBox(width: AppSpacing.lg),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Top Back Button
+              Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: InkWell(
+                  onTap: () => context.pop(),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(
-                        title,
-                        style: AppTypography.subheadingLarge.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: isSelected
-                              ? AppColors.primary
-                              : AppColors.textPrimary,
-                        ),
+                      const Icon(
+                        Icons.arrow_back_ios_new_rounded,
+                        size: 18,
+                        color: AppColors.textSecondary,
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        '$age+',
-                        style: AppTypography.labelMedium.copyWith(
-                          color: isSelected
-                              ? AppColors.primary
-                              : AppColors.textSecondary,
+                        'Back',
+                        style: AppTypography.bodyMedium.copyWith(
+                          color: AppColors.textSecondary,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    description,
-                    style: AppTypography.bodySmall.copyWith(
-                      color: AppColors.textSecondary,
+                ),
+              ),
+
+              const SizedBox(height: 32),
+
+              // Progress Bar (3 steps, 2 active)
+              Row(
+                children: [
+                  Expanded(
+                    child: Container(
+                      height: 6,
+                      decoration: BoxDecoration(
+                        color: AppColors.primary,
+                        borderRadius: BorderRadius.circular(3),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Container(
+                      height: 6,
+                      decoration: BoxDecoration(
+                        color: AppColors.primary,
+                        borderRadius: BorderRadius.circular(3),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Container(
+                      height: 6,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF1F1FB),
+                        borderRadius: BorderRadius.circular(3),
+                      ),
                     ),
                   ),
                 ],
               ),
-            ),
-            if (isSelected)
-              const Icon(Icons.check_circle, color: AppColors.primary),
-          ],
+
+              const SizedBox(height: 48),
+
+              // Header
+              Text(
+                'How old are you?',
+                style: AppTypography.headingLarge.copyWith(
+                  fontSize: 32,
+                  color: AppColors.textPrimary,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'We use your age to show safe and relevant events.',
+                style: AppTypography.bodyLarge.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+              ),
+
+              const SizedBox(height: 48),
+
+              // Picker Section
+              Text(
+                'Select your age',
+                style: AppTypography.subheadingLarge.copyWith(
+                  color: AppColors.textPrimary,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // Box for "Choose your age" text style
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 20,
+                ),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF8F8F8),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Text(
+                  'Choose your age',
+                  style: AppTypography.bodyLarge.copyWith(
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 24),
+
+              // Real Picker Card
+              Container(
+                height: 160,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFFFAFA), // Очень легкий коралловый
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(
+                    color: AppColors.primary.withValues(alpha: 0.1),
+                  ),
+                ),
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    // Highlight bar in the middle
+                    Container(
+                      height: 40,
+                      width: 80,
+                      decoration: BoxDecoration(
+                        color: AppColors.primary,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+
+                    // The Picker
+                    ListWheelScrollView.useDelegate(
+                      controller: _scrollController,
+                      itemExtent: 50,
+                      perspective: 0.005,
+                      diameterRatio: 1.2,
+                      physics: const FixedExtentScrollPhysics(),
+                      onSelectedItemChanged: (index) {
+                        setState(() {
+                          _selectedAge = _ages[index];
+                        });
+                      },
+                      childDelegate: ListWheelChildBuilderDelegate(
+                        childCount: _ages.length,
+                        builder: (context, index) {
+                          final age = _ages[index];
+                          final isSelected = _selectedAge == age;
+                          return Center(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  isSelected ? '$age' : '$age',
+                                  style: AppTypography.headingLarge.copyWith(
+                                    fontSize: isSelected ? 28 : 20,
+                                    color: isSelected
+                                        ? Colors.white
+                                        : AppColors.textTertiary,
+                                    fontWeight: isSelected
+                                        ? FontWeight.w800
+                                        : FontWeight.w500,
+                                  ),
+                                ),
+                                if (isSelected)
+                                  Text(
+                                    'years old',
+                                    style: AppTypography.labelSmall.copyWith(
+                                      color: Colors.white.withValues(
+                                        alpha: 0.7,
+                                      ),
+                                      fontSize: 10,
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              const Spacer(),
+
+              // Continue Button
+              PrimaryButton(label: 'Continue', onPressed: _submit),
+
+              const SizedBox(height: 16),
+
+              // Bottom Back Button
+              Center(
+                child: TextButton(
+                  onPressed: () => context.pop(),
+                  child: Text(
+                    'Back',
+                    style: AppTypography.bodyLarge.copyWith(
+                      color: AppColors.textSecondary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+            ],
+          ),
         ),
       ),
     );

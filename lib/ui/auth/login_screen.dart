@@ -238,6 +238,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
                 const SizedBox(height: 32),
 
+                const SizedBox(height: 32),
+
                 // Social Buttons
                 _SocialButton(
                   icon: Icons.g_mobiledata_rounded,
@@ -257,8 +259,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 ),
 
                 const SizedBox(height: 48),
-                const Spacer(),
-
+                const SizedBox(height: 32), // Замена Spacer
                 // Submit Button
                 PrimaryButton(
                   label: 'Sign In',
@@ -322,25 +323,37 @@ class _SocialButton extends StatelessWidget {
         onPressed: onPressed,
         style: OutlinedButton.styleFrom(
           side: BorderSide(
-            color: isGoogle
-                ? Colors.grey.withValues(alpha: 0.2)
-                : AppColors.primary.withValues(alpha: 0.8),
+            color: isGoogle ? const Color(0xFFE0E0E0) : Colors.transparent,
           ),
           backgroundColor: isGoogle ? Colors.white : const Color(0xFF1877F2),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
+          elevation: 0,
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, color: isGoogle ? Colors.red : Colors.white, size: 28),
+            if (isGoogle)
+              Image.network(
+                'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_G_logo.svg/1200px-Google_G_logo.svg.png',
+                height: 24,
+                width: 24,
+                errorBuilder: (context, error, stackTrace) => const Icon(
+                  Icons.g_mobiledata_rounded,
+                  color: Colors.red,
+                  size: 28,
+                ),
+              )
+            else
+              Icon(icon, color: Colors.white, size: 24),
             const SizedBox(width: 12),
             Text(
               label,
               style: AppTypography.subheadingMedium.copyWith(
-                color: isGoogle ? Colors.black87 : Colors.white,
-                fontWeight: FontWeight.w700,
+                color: isGoogle ? AppColors.textPrimary : Colors.white,
+                fontWeight: FontWeight.w600,
+                fontSize: 16,
               ),
             ),
           ],

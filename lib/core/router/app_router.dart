@@ -8,6 +8,7 @@ import '../../ui/home/home_screen.dart';
 import '../../ui/auth/age_verification_screen.dart';
 import '../../ui/auth/login_screen.dart';
 import '../../ui/auth/register_screen.dart';
+import '../../ui/auth/register_password_screen.dart';
 import '../../ui/auth/interests_screen.dart';
 import '../../ui/onboarding/location_screen.dart';
 import '../../ui/onboarding/parental_consent_screen.dart';
@@ -95,6 +96,16 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: 'register',
             name: 'register',
             builder: (context, state) => const RegisterScreen(),
+            routes: [
+              GoRoute(
+                path: 'password',
+                name: 'register-password',
+                builder: (context, state) {
+                  final data = state.extra as Map<String, String>;
+                  return RegisterPasswordScreen(userData: data);
+                },
+              ),
+            ],
           ),
           GoRoute(
             path: 'age-verification',

@@ -65,6 +65,9 @@ class User {
   /// Количество созданных событий
   final int eventsCreated;
 
+  /// Номер телефона пользователя
+  final String? phoneNumber;
+
   User({
     required this.id,
     required this.email,
@@ -85,6 +88,7 @@ class User {
     this.eventsAttended = 0,
     this.organizerRating = 0.0,
     this.eventsCreated = 0,
+    this.phoneNumber,
   });
 
   factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
@@ -110,6 +114,7 @@ class User {
     int? eventsAttended,
     double? organizerRating,
     int? eventsCreated,
+    String? phoneNumber,
   }) {
     return User(
       id: id ?? this.id,
@@ -131,6 +136,7 @@ class User {
       eventsAttended: eventsAttended ?? this.eventsAttended,
       organizerRating: organizerRating ?? this.organizerRating,
       eventsCreated: eventsCreated ?? this.eventsCreated,
+      phoneNumber: phoneNumber ?? this.phoneNumber,
     );
   }
 

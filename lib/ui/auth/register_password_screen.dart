@@ -4,54 +4,81 @@ import 'package:go_router/go_router.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../core/router/app_router.dart';
-import '../../providers/user_provider.dart';
+import '../../providers/auth_provider.dart';
 import '../shared/app_button.dart';
 import '../shared/app_text_field.dart';
 
-class ParentalConsentScreen extends ConsumerStatefulWidget {
-  const ParentalConsentScreen({super.key});
+class RegisterPasswordScreen extends ConsumerStatefulWidget {
+  final Map<String, String> userData;
+
+  const RegisterPasswordScreen({super.key, required this.userData});
 
   @override
-  ConsumerState<ParentalConsentScreen> createState() =>
-      _ParentalConsentScreenState();
+  ConsumerState<RegisterPasswordScreen> createState() =>
+      _RegisterPasswordScreenState();
 }
 
-class _ParentalConsentScreenState extends ConsumerState<ParentalConsentScreen> {
-  final _emailController = TextEditingController();
+class _RegisterPasswordScreenState
+    extends ConsumerState<RegisterPasswordScreen> {
+  final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
   @override
   void dispose() {
-    _emailController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 
-  Future<void> _submit() async {
+  Future<void> _onFinish() async {
     if (!_formKey.currentState!.validate()) return;
 
-    final parentEmail = _emailController.text.trim();
-    final notifier = ref.read(currentUserProfileNotifierProvider.notifier);
+    final notifier = ref.read(authNotifierProvider.notifier);
 
-    await notifier.updateProfile(parentEmail: parentEmail);
-
-    if (mounted) {
-      context.push(AppRoutes.interestsSelection);
-    }
+    // В реальном приложении мы бы также обновляли displayName и phone в Firestore
+    // после успешной регистрации через signUpWithEmail.
+    // Для демо - просто регистрируем.
+    await notifier.signUpWithEmail(
+      widget.userData['email']!,
+      _passwordController.text.trim(),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    final authState = ref.watch(authNotifierProvider);
+
+    ref.listen(authNotifierProvider, (previous, next) {
+      next.when(
+        data: (_) {
+          if (previous is AsyncLoading) {
+            context.go(AppRoutes.ageVerification);
+          }
+        },
+        error: (e, _) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(e.toString()),
+              backgroundColor: AppColors.error,
+            ),
+          );
+        },
+        loading: () {},
+      );
+    });
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: Padding(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Form(
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Top Back Button
+                // Back Button
                 Padding(
                   padding: const EdgeInsets.only(top: 8),
                   child: InkWell(
@@ -79,19 +106,9 @@ class _ParentalConsentScreenState extends ConsumerState<ParentalConsentScreen> {
 
                 const SizedBox(height: 32),
 
-                // Progress Bar (3 steps, 2 active as it is intermediate)
+                // Progress Bar (3 steps, 1 active)
                 Row(
                   children: [
-                    Expanded(
-                      child: Container(
-                        height: 6,
-                        decoration: BoxDecoration(
-                          color: AppColors.primary,
-                          borderRadius: BorderRadius.circular(3),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
                     Expanded(
                       child: Container(
                         height: 6,
@@ -111,25 +128,24 @@ class _ParentalConsentScreenState extends ConsumerState<ParentalConsentScreen> {
                         ),
                       ),
                     ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Container(
+                        height: 6,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF1F1FB),
+                          borderRadius: BorderRadius.circular(3),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
 
-                const SizedBox(height: 48),
-
-                // Illustration or Icon
-                const Center(
-                  child: Icon(
-                    Icons.family_restroom_rounded,
-                    size: 80,
-                    color: AppColors.primary,
-                  ),
-                ),
-
-                const SizedBox(height: 40),
+                const SizedBox(height: 32),
 
                 // Header
                 Text(
-                  'Parental Consent',
+                  'Set password',
                   style: AppTypography.headingLarge.copyWith(
                     fontSize: 32,
                     color: AppColors.textPrimary,
@@ -138,7 +154,7 @@ class _ParentalConsentScreenState extends ConsumerState<ParentalConsentScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  "Since you're under 18, we need your parent or guardian to approve your account.",
+                  "One last step to secure your account",
                   style: AppTypography.bodyLarge.copyWith(
                     color: AppColors.textSecondary,
                   ),
@@ -146,27 +162,47 @@ class _ParentalConsentScreenState extends ConsumerState<ParentalConsentScreen> {
 
                 const SizedBox(height: 48),
 
-                // Email Field
+                // Password Field
                 AppTextField(
-                  label: "Parent's Email",
-                  controller: _emailController,
-                  hint: 'parent@example.com',
-                  keyboardType: TextInputType.emailAddress,
+                  label: 'Password',
+                  controller: _passwordController,
+                  hint: '••••••••',
+                  obscureText: true,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter parent email';
+                      return 'Please enter password';
                     }
-                    if (!value.contains('@')) {
-                      return 'Invalid email format';
+                    if (value.length < 6) {
+                      return 'Password too short';
                     }
                     return null;
                   },
                 ),
 
-                const Spacer(),
+                const SizedBox(height: 24),
 
-                // Submit Button
-                PrimaryButton(label: 'Send Request', onPressed: _submit),
+                // Confirm Password Field
+                AppTextField(
+                  label: 'Confirm password',
+                  controller: _confirmPasswordController,
+                  hint: '••••••••',
+                  obscureText: true,
+                  validator: (value) {
+                    if (value != _passwordController.text) {
+                      return 'Passwords do not match';
+                    }
+                    return null;
+                  },
+                ),
+
+                const SizedBox(height: 100),
+
+                // Finish Button
+                PrimaryButton(
+                  label: 'Create Account',
+                  onPressed: _onFinish,
+                  isLoading: authState is AsyncLoading,
+                ),
 
                 const SizedBox(height: 24),
               ],

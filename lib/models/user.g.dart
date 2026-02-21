@@ -30,6 +30,7 @@ User _$UserFromJson(Map<String, dynamic> json) => User(
   eventsAttended: (json['eventsAttended'] as num?)?.toInt() ?? 0,
   organizerRating: (json['organizerRating'] as num?)?.toDouble() ?? 0.0,
   eventsCreated: (json['eventsCreated'] as num?)?.toInt() ?? 0,
+  phoneNumber: json['phoneNumber'] as String?,
 );
 
 Map<String, dynamic> _$UserToJson(User instance) => <String, dynamic>{
@@ -52,4 +53,5 @@ Map<String, dynamic> _$UserToJson(User instance) => <String, dynamic>{
   'eventsAttended': instance.eventsAttended,
   'organizerRating': instance.organizerRating,
   'eventsCreated': instance.eventsCreated,
+  'phoneNumber': instance.phoneNumber,
 };

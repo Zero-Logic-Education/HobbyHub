@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../core/router/app_router.dart';
@@ -14,125 +13,115 @@ class WelcomeScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
-            child: Column(
-              children: [
-                const SizedBox(height: 16),
-                // Logo section
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: const BoxDecoration(
-                        color: AppColors.primary,
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.star_rounded,
-                        color: Colors.white,
-                        size: 32,
-                      ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
+          child: Column(
+            children: [
+              // Logo section
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: const BoxDecoration(
+                      color: AppColors.primary,
+                      shape: BoxShape.circle,
                     ),
-                    const SizedBox(width: 12),
-                    Text(
-                      'HOBBYHUB',
-                      style: AppTypography.headingLarge.copyWith(
-                        color: AppColors.textPrimary,
-                        letterSpacing: 1.2,
-                        fontWeight: FontWeight.w900,
-                      ),
+                    child: const Icon(
+                      Icons.star_rounded,
+                      color: Colors.white,
+                      size: 32,
                     ),
-                  ],
-                ).animate().fade(duration: 600.ms).slideY(begin: -0.2),
+                  ),
+                  const SizedBox(width: 12),
+                  Text(
+                    'HOBBYHUB',
+                    style: AppTypography.headingLarge.copyWith(
+                      color: AppColors.textPrimary,
+                      letterSpacing: 1.2,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ],
+              ),
 
-                const SizedBox(height: 48),
+              const Spacer(flex: 2),
 
-                // Illustration
-                Container(
-                      height: 340,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(40),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.1),
-                            blurRadius: 20,
-                            offset: const Offset(0, 10),
-                          ),
-                        ],
-                        image: const DecorationImage(
-                          image: NetworkImage(
-                            'https://images.unsplash.com/photo-1529156069898-49953e39b300?q=80&w=2000&auto=format&fit=crop',
-                          ),
-                          fit: BoxFit.cover,
-                        ),
+              // Illustration section - Flexible to fit screen
+              Flexible(
+                flex: 8,
+                child: Container(
+                  width: double.infinity,
+                  constraints: const BoxConstraints(maxHeight: 400),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(40),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.1),
+                        blurRadius: 20,
+                        offset: const Offset(0, 10),
                       ),
-                    )
-                    .animate()
-                    .fade(duration: 800.ms, delay: 200.ms)
-                    .scale(begin: const Offset(0.9, 0.9)),
-
-                const SizedBox(height: 64),
-
-                // Title
-                Text(
-                      'Find Your Tribe',
-                      style: AppTypography.headingLarge.copyWith(
-                        fontSize: 32,
-                        color: AppColors.textPrimary,
-                        fontWeight: FontWeight.w800,
+                    ],
+                    image: const DecorationImage(
+                      image: NetworkImage(
+                        'https://firebasestorage.googleapis.com/v0/b/hobbyhub-demo/o/welcome_illustration.png?alt=media', // Имитация Firebase Storage
                       ),
-                    )
-                    .animate()
-                    .fade(duration: 600.ms, delay: 400.ms)
-                    .slideY(begin: 0.2),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+              ),
 
-                const SizedBox(height: 16),
+              const Spacer(flex: 2),
 
-                // Subtitle
-                Text(
-                      'Discover events, connect with communities, and explore new hobbies near you',
-                      textAlign: TextAlign.center,
-                      style: AppTypography.bodyLarge.copyWith(
-                        color: AppColors.textSecondary,
-                        height: 1.5,
-                      ),
-                    )
-                    .animate()
-                    .fade(duration: 600.ms, delay: 500.ms)
-                    .slideY(begin: 0.2),
+              // Title & Subtitle section
+              Column(
+                children: [
+                  Text(
+                    'Find Your Tribe',
+                    textAlign: TextAlign.center,
+                    style: AppTypography.headingLarge.copyWith(
+                      fontSize: 28,
+                      color: AppColors.textPrimary,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    'Discover events, connect with communities, and explore new hobbies near you',
+                    textAlign: TextAlign.center,
+                    style: AppTypography.bodyLarge.copyWith(
+                      color: AppColors.textSecondary,
+                      height: 1.4,
+                    ),
+                  ),
+                ],
+              ),
 
-                const SizedBox(height: 48),
+              const Spacer(flex: 3),
 
-                // Buttons
-                PrimaryButton(
-                      label: 'Get Started',
-                      onPressed: () => context.push(AppRoutes.register),
-                    )
-                    .animate()
-                    .fade(duration: 600.ms, delay: 600.ms)
-                    .slideX(begin: -0.1),
+              // Buttons section
+              Column(
+                children: [
+                  PrimaryButton(
+                    label: 'Get Started',
+                    onPressed: () => context.push(AppRoutes.register),
+                  ),
+                  const SizedBox(height: 12),
+                  SecondaryButton(
+                    label: 'Sign In',
+                    onPressed: () => context.push(AppRoutes.login),
+                    padding: EdgeInsets.zero,
+                  ),
+                ],
+              ),
 
-                const SizedBox(height: 16),
+              const SizedBox(height: 24),
 
-                SecondaryButton(
-                      label: 'Sign In',
-                      onPressed: () => context.push(AppRoutes.login),
-                      padding: EdgeInsets.zero,
-                    )
-                    .animate()
-                    .fade(duration: 600.ms, delay: 700.ms)
-                    .slideX(begin: 0.1),
-
-                const SizedBox(height: 32),
-
-                // Footer
-                _buildFooter().animate().fade(duration: 800.ms, delay: 900.ms),
-              ],
-            ),
+              // Footer section
+              _buildFooter(),
+            ],
           ),
         ),
       ),

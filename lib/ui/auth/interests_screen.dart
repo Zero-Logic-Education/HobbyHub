@@ -82,165 +82,167 @@ class _InterestsScreenState extends ConsumerState<InterestsScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Top Back Button
-              Padding(
-                padding: const EdgeInsets.only(top: 8),
-                child: InkWell(
-                  onTap: () => context.pop(),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(
-                        Icons.arrow_back_ios_new_rounded,
-                        size: 18,
-                        color: AppColors.textSecondary,
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        'Back',
-                        style: AppTypography.bodyMedium.copyWith(
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: InkWell(
+                    onTap: () => context.pop(),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Icons.arrow_back_ios_new_rounded,
+                          size: 18,
                           color: AppColors.textSecondary,
-                          fontWeight: FontWeight.w500,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Back',
+                          style: AppTypography.bodyMedium.copyWith(
+                            color: AppColors.textSecondary,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 32),
+
+                // Progress Bar (3 steps, all active)
+                Row(
+                  children: [
+                    Expanded(
+                      child: Container(
+                        height: 6,
+                        decoration: BoxDecoration(
+                          color: AppColors.primary,
+                          borderRadius: BorderRadius.circular(3),
                         ),
                       ),
-                    ],
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 32),
-
-              // Progress Bar (3 steps, all active)
-              Row(
-                children: [
-                  Expanded(
-                    child: Container(
-                      height: 6,
-                      decoration: BoxDecoration(
-                        color: AppColors.primary,
-                        borderRadius: BorderRadius.circular(3),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Container(
+                        height: 6,
+                        decoration: BoxDecoration(
+                          color: AppColors.primary,
+                          borderRadius: BorderRadius.circular(3),
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Container(
-                      height: 6,
-                      decoration: BoxDecoration(
-                        color: AppColors.primary,
-                        borderRadius: BorderRadius.circular(3),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Container(
+                        height: 6,
+                        decoration: BoxDecoration(
+                          color: AppColors.primary,
+                          borderRadius: BorderRadius.circular(3),
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Container(
-                      height: 6,
-                      decoration: BoxDecoration(
-                        color: AppColors.primary,
-                        borderRadius: BorderRadius.circular(3),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 48),
-
-              // Header
-              Text(
-                'Choose your interests',
-                style: AppTypography.headingLarge.copyWith(
-                  fontSize: 32,
-                  color: AppColors.textPrimary,
-                  fontWeight: FontWeight.w800,
+                  ],
                 ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Select at least 3 to personalize your experience',
-                style: AppTypography.bodyLarge.copyWith(
-                  color: AppColors.textSecondary,
-                ),
-              ),
 
-              const SizedBox(height: 32),
+                const SizedBox(height: 48),
 
-              // Selection Counter
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    '$selectedCount selected',
-                    style: AppTypography.bodyLarge.copyWith(
-                      color: AppColors.textPrimary,
-                      fontWeight: FontWeight.w700,
-                    ),
+                // Header
+                Text(
+                  'Choose your interests',
+                  style: AppTypography.headingLarge.copyWith(
+                    fontSize: 32,
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.w800,
                   ),
-                  if (neededCount > 0)
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Select at least 3 to personalize your experience',
+                  style: AppTypography.bodyLarge.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+
+                const SizedBox(height: 32),
+
+                // Selection Counter
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
                     Text(
-                      '$neededCount more needed',
-                      style: AppTypography.bodyMedium.copyWith(
-                        color: AppColors.textTertiary,
+                      '$selectedCount selected',
+                      style: AppTypography.bodyLarge.copyWith(
+                        color: AppColors.textPrimary,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              const Divider(height: 1, color: Color(0xFFE0E0E0)),
-              const SizedBox(height: 24),
-
-              // Categories Grid
-              Expanded(
-                child: GridView.builder(
-                  padding: const EdgeInsets.only(bottom: 24),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    childAspectRatio: 1.35,
-                    crossAxisSpacing: 16,
-                    mainAxisSpacing: 16,
-                  ),
-                  itemCount: _categories.length,
-                  itemBuilder: (context, index) {
-                    final category = _categories[index];
-                    final isSelected = _selectedInterests.contains(
-                      category['id'],
-                    );
-                    return _InterestCard(
-                      label: category['label'],
-                      icon: category['icon'],
-                      isSelected: isSelected,
-                      onTap: () => _toggleInterest(category['id']),
-                    );
-                  },
+                    if (neededCount > 0)
+                      Text(
+                        '$neededCount more needed',
+                        style: AppTypography.bodyMedium.copyWith(
+                          color: AppColors.textTertiary,
+                        ),
+                      ),
+                  ],
                 ),
-              ),
+                const SizedBox(height: 12),
+                const Divider(height: 1, color: Color(0xFFE0E0E0)),
+                const SizedBox(height: 24),
 
-              const SizedBox(height: 16),
+                // Categories Grid
+                Expanded(
+                  child: GridView.builder(
+                    padding: const EdgeInsets.only(bottom: 24),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          childAspectRatio: 1.35,
+                          crossAxisSpacing: 16,
+                          mainAxisSpacing: 16,
+                        ),
+                    itemCount: _categories.length,
+                    itemBuilder: (context, index) {
+                      final category = _categories[index];
+                      final isSelected = _selectedInterests.contains(
+                        category['id'],
+                      );
+                      return _InterestCard(
+                        label: category['label'],
+                        icon: category['icon'],
+                        isSelected: isSelected,
+                        onTap: () => _toggleInterest(category['id']),
+                      );
+                    },
+                  ),
+                ),
 
-              // Finish Button
-              PrimaryButton(
-                label: 'Continue to HobbyHub',
-                onPressed: selectedCount >= 3 ? _submit : () {},
-                isEnabled: selectedCount >= 3,
-              ),
+                const SizedBox(height: 16),
 
-              const SizedBox(height: 16),
+                // Finish Button
+                PrimaryButton(
+                  label: 'Continue to HobbyHub',
+                  onPressed: selectedCount >= 3 ? _submit : () {},
+                  isEnabled: selectedCount >= 3,
+                ),
 
-              // Skip Button
-              Center(
-                child: TextButton(
-                  onPressed: () => context.go(AppRoutes.home),
-                  child: Text(
-                    'Skip for now',
-                    style: AppTypography.bodyLarge.copyWith(
-                      color: AppColors.textTertiary,
-                      fontWeight: FontWeight.w600,
+                const SizedBox(height: 16),
+
+                // Skip Button
+                Center(
+                  child: TextButton(
+                    onPressed: () => context.go(AppRoutes.home),
+                    child: Text(
+                      'Skip for now',
+                      style: AppTypography.bodyLarge.copyWith(
+                        color: AppColors.textTertiary,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 16),
-            ],
+                const SizedBox(height: 16),
+              ],
+            ),
           ),
         ),
       ),

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../core/theme/app_colors.dart';
-import '../../core/theme/app_spacing.dart';
+import '../../core/constants/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../core/router/app_router.dart';
 import '../../providers/auth_provider.dart';
@@ -95,87 +94,186 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
-          onPressed: () => context.pop(),
-        ),
-      ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.screenPaddingHorizontal,
-            vertical: AppSpacing.screenPaddingVertical,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Form(
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'С возвращением!',
-                  style: AppTypography.headingLarge.copyWith(
-                    color: AppColors.textPrimary,
+                // Back Button
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: InkWell(
+                    onTap: () => context.pop(),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Icons.arrow_back_ios_new_rounded,
+                          size: 18,
+                          color: AppColors.textSecondary,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Back',
+                          style: AppTypography.bodyMedium.copyWith(
+                            color: AppColors.textSecondary,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-                const SizedBox(height: AppSpacing.xs),
+
+                const SizedBox(height: 32),
+
+                // Header
                 Text(
-                  'Войдите в свой аккаунт, чтобы продолжить.',
-                  style: AppTypography.bodyMedium.copyWith(
+                  'Welcome back',
+                  style: AppTypography.headingLarge.copyWith(
+                    fontSize: 32,
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Sign in to continue to HobbyHub',
+                  style: AppTypography.bodyLarge.copyWith(
                     color: AppColors.textSecondary,
                   ),
                 ),
-                const SizedBox(height: AppSpacing.xl),
+
+                const SizedBox(height: 48),
+
+                // Email Field
                 AppTextField(
                   label: 'Email',
                   controller: _emailController,
-                  hint: 'alex@example.com',
+                  hint: 'your@email.com',
                   keyboardType: TextInputType.emailAddress,
                   validator: (value) {
-                    if (value == null || value.isEmpty) return 'Введите email';
-                    if (!value.contains('@')) return 'Некорректный email';
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter email';
+                    }
+                    if (!value.contains('@')) {
+                      return 'Invalid email format';
+                    }
                     return null;
                   },
                 ),
-                const SizedBox(height: AppSpacing.lg),
+
+                const SizedBox(height: 24),
+
+                // Password Field
                 AppTextField(
-                  label: 'Пароль',
+                  label: 'Password',
                   controller: _passwordController,
-                  hint: '••••••••',
+                  hint: 'Enter your password',
                   obscureText: true,
                   validator: (value) {
-                    if (value == null || value.isEmpty) return 'Введите пароль';
-                    if (value.length < 6) return 'Пароль слишком короткий';
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter password';
+                    }
+                    if (value.length < 6) {
+                      return 'Password too short';
+                    }
                     return null;
                   },
                 ),
-                const SizedBox(height: AppSpacing.sm),
+
+                const SizedBox(height: 16),
+
+                // Forgot Password
                 Align(
                   alignment: Alignment.centerRight,
                   child: TextButton(
                     onPressed: _forgotPassword,
+                    style: TextButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      minimumSize: Size.zero,
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
                     child: Text(
-                      'Забыли пароль?',
-                      style: AppTypography.labelMedium.copyWith(
+                      'Forgot password?',
+                      style: AppTypography.labelLarge.copyWith(
                         color: AppColors.primary,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
                   ),
                 ),
-                const SizedBox(height: AppSpacing.xl),
+
+                const SizedBox(height: 32),
+
+                // Or continue with divider
+                Row(
+                  children: [
+                    Expanded(
+                      child: Divider(
+                        color: Colors.grey.withValues(alpha: 0.3),
+                        thickness: 1,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Text(
+                        'or continue with',
+                        style: AppTypography.bodySmall.copyWith(
+                          color: AppColors.textTertiary,
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Divider(
+                        color: Colors.grey.withValues(alpha: 0.3),
+                        thickness: 1,
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 32),
+
+                // Social Buttons
+                _SocialButton(
+                  icon: Icons.g_mobiledata_rounded,
+                  label: 'Continue with Google',
+                  isGoogle: true,
+                  onPressed: () => ref
+                      .read(authNotifierProvider.notifier)
+                      .signInWithGoogle(),
+                ),
+                const SizedBox(height: 16),
+                _SocialButton(
+                  icon: Icons.facebook_rounded,
+                  label: 'Continue with Facebook',
+                  onPressed: () => ref
+                      .read(authNotifierProvider.notifier)
+                      .signInWithFacebook(),
+                ),
+
+                const SizedBox(height: 48),
+                const Spacer(),
+
+                // Submit Button
                 PrimaryButton(
-                  label: 'Войти',
+                  label: 'Sign In',
                   onPressed: _login,
                   isLoading: authState is AsyncLoading,
                 ),
-                const SizedBox(height: AppSpacing.xl),
+
+                const SizedBox(height: 24),
+
+                // Footer
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      'Еще нет аккаунта? ',
+                      "Don't have an account? ",
                       style: AppTypography.bodyMedium.copyWith(
                         color: AppColors.textSecondary,
                       ),
@@ -183,17 +281,69 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     InkWell(
                       onTap: () => context.push(AppRoutes.register),
                       child: Text(
-                        'Создать аккаунт',
+                        'Sign Up',
                         style: AppTypography.subheadingMedium.copyWith(
                           color: AppColors.primary,
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
                     ),
                   ],
                 ),
+                const SizedBox(height: 24),
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _SocialButton extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onPressed;
+  final bool isGoogle;
+
+  const _SocialButton({
+    required this.icon,
+    required this.label,
+    required this.onPressed,
+    this.isGoogle = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      height: 56,
+      child: OutlinedButton(
+        onPressed: onPressed,
+        style: OutlinedButton.styleFrom(
+          side: BorderSide(
+            color: isGoogle
+                ? Colors.grey.withValues(alpha: 0.2)
+                : AppColors.primary.withValues(alpha: 0.8),
+          ),
+          backgroundColor: isGoogle ? Colors.white : const Color(0xFF1877F2),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, color: isGoogle ? Colors.red : Colors.white, size: 28),
+            const SizedBox(width: 12),
+            Text(
+              label,
+              style: AppTypography.subheadingMedium.copyWith(
+                color: isGoogle ? Colors.black87 : Colors.white,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
         ),
       ),
     );

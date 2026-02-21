@@ -96,6 +96,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       backgroundColor: Colors.white,
       body: SafeArea(
         child: SingleChildScrollView(
+          physics: const ClampingScrollPhysics(), // Предотвращает сплющивание
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Form(
             key: _formKey,
@@ -332,23 +333,25 @@ class _SocialButton extends StatelessWidget {
           elevation: 0,
           padding: EdgeInsets.zero,
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+        child: Stack(
+          alignment: Alignment.center,
           children: [
-            if (isGoogle)
-              Image.network(
-                'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_G_logo.svg/1200px-Google_G_logo.svg.png',
-                height: 24,
-                width: 24,
-                errorBuilder: (context, error, stackTrace) => const Icon(
-                  Icons.g_mobiledata_rounded,
-                  color: Colors.red,
-                  size: 28,
-                ),
-              )
-            else
-              Icon(icon, color: Colors.white, size: 24),
-            const SizedBox(width: 12),
+            Positioned(
+              left: 16,
+              child: isGoogle
+                  ? Image.network(
+                      'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_G_logo.svg/1200px-Google_G_logo.svg.png',
+                      height: 24,
+                      width: 24,
+                      fit: BoxFit.contain,
+                      errorBuilder: (context, error, stackTrace) => const Icon(
+                        Icons.g_mobiledata_rounded,
+                        color: Colors.red,
+                        size: 28,
+                      ),
+                    )
+                  : Icon(icon, color: Colors.white, size: 24),
+            ),
             Text(
               label,
               style: AppTypography.subheadingMedium.copyWith(

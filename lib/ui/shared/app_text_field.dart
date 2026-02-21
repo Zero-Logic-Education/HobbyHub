@@ -95,12 +95,12 @@ class _AppTextFieldState extends State<AppTextField> {
                   ? AppColors.error
                   : _isFocused
                   ? AppColors.primary
-                  : AppColors.border,
-              width: _isFocused ? 2 : 1,
+                  : const Color(0xFFF1F1F1),
+              width: _isFocused ? 1.5 : 1,
             ),
             color: hasError
                 ? AppColors.error.withValues(alpha: 0.05)
-                : AppColors.surfaceSecondary,
+                : const Color(0xFFF8F9FA),
           ),
           alignment: Alignment.center, // Центрирование контента
           child: TextFormField(

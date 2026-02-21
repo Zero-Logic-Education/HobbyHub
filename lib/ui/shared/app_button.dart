@@ -35,16 +35,21 @@ class _PrimaryButtonState extends State<PrimaryButton> {
       width: widget.width ?? double.infinity,
       height: AppSpacing.buttonHeightLarge,
       child: ElevatedButton(
-        onPressed: widget.isEnabled && !widget.isLoading ? widget.onPressed : null,
+        onPressed: widget.isEnabled && !widget.isLoading
+            ? widget.onPressed
+            : null,
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primary,
           foregroundColor: Colors.white,
           disabledBackgroundColor: AppColors.textHint.withValues(alpha: 0.3),
           disabledForegroundColor: AppColors.textHint,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+            borderRadius: BorderRadius.circular(16),
           ),
-          padding: widget.padding ?? EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+          elevation: 4,
+          shadowColor: AppColors.primary.withValues(alpha: 0.4),
+          padding:
+              widget.padding ?? EdgeInsets.symmetric(horizontal: AppSpacing.lg),
         ),
         child: _buildContent(),
       ),
@@ -58,9 +63,7 @@ class _PrimaryButtonState extends State<PrimaryButton> {
         width: 20,
         child: CircularProgressIndicator(
           strokeWidth: 2,
-          valueColor: AlwaysStoppedAnimation<Color>(
-            Colors.white,
-          ),
+          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
         ),
       );
     }

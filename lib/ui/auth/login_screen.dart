@@ -215,8 +215,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   children: [
                     Expanded(
                       child: Divider(
-                        color: Colors.grey.withValues(alpha: 0.3),
-                        thickness: 1,
+                        color: Colors.grey.withValues(alpha: 0.2),
+                        thickness: 0.5,
                       ),
                     ),
                     Padding(
@@ -225,13 +225,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         'or continue with',
                         style: AppTypography.bodySmall.copyWith(
                           color: AppColors.textTertiary,
+                          fontSize: 14,
                         ),
                       ),
                     ),
                     Expanded(
                       child: Divider(
-                        color: Colors.grey.withValues(alpha: 0.3),
-                        thickness: 1,
+                        color: Colors.grey.withValues(alpha: 0.2),
+                        thickness: 0.5,
                       ),
                     ),
                   ],

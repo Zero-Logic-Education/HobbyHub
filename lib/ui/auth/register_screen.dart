@@ -47,195 +47,181 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: TweenAnimationBuilder<double>(
-          tween: Tween(begin: 0.0, end: 1.0),
-          duration: const Duration(milliseconds: 600),
-          curve: Curves.easeOutCubic,
-          builder: (context, value, child) {
-            return Opacity(
-              opacity: value,
-              child: Transform.translate(
-                offset: Offset(0, 30 * (1 - value)),
-                child: child,
-              ),
-            );
-          },
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Back Button
-                  Padding(
-                    padding: const EdgeInsets.only(top: 8),
-                    child: InkWell(
-                      onTap: () => context.pop(),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(
-                            Icons.arrow_back_ios_new_rounded,
-                            size: 18,
-                            color: AppColors.textSecondary,
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            'Back',
-                            style: AppTypography.bodyMedium.copyWith(
-                              color: AppColors.textSecondary,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 32),
-
-                  // Progress Bar (3 steps, 1 active)
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Container(
-                          height: 6,
-                          decoration: BoxDecoration(
-                            color: AppColors.primary,
-                            borderRadius: BorderRadius.circular(3),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Container(
-                          height: 6,
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFF1F1FB),
-                            borderRadius: BorderRadius.circular(3),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Container(
-                          height: 6,
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFF1F1FB),
-                            borderRadius: BorderRadius.circular(3),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 32),
-
-                  // Header
-                  Text(
-                    'Create account',
-                    style: AppTypography.headingLarge.copyWith(
-                      fontSize: 32,
-                      color: AppColors.textPrimary,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    "Let's get you started on HobbyHub",
-                    style: AppTypography.bodyLarge.copyWith(
-                      color: AppColors.textSecondary,
-                    ),
-                  ),
-
-                  const SizedBox(height: 48),
-
-                  // Name Field
-                  AppTextField(
-                    label: 'Your name',
-                    controller: _nameController,
-                    hint: 'Enter your name',
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your name';
-                      }
-                      return null;
-                    },
-                  ),
-
-                  const SizedBox(height: 24),
-
-                  // Email Field
-                  AppTextField(
-                    label: 'Email',
-                    controller: _emailController,
-                    hint: 'your@email.com',
-                    keyboardType: TextInputType.emailAddress,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter email';
-                      }
-                      if (!value.contains('@')) {
-                        return 'Invalid email format';
-                      }
-                      return null;
-                    },
-                  ),
-
-                  const SizedBox(height: 24),
-
-                  // Phone Field
-                  AppTextField(
-                    label: 'Phone number',
-                    controller: _phoneController,
-                    hint: '+1 (555) 000-0000',
-                    keyboardType: TextInputType.phone,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter phone number';
-                      }
-                      return null;
-                    },
-                  ),
-
-                  const SizedBox(height: 48),
-
-                  // На макете здесь пустота до кнопки
-                  // Но нам нужно вытолкнуть кнопку вниз или просто сделать Spacer
-                  // В SingleChildScrollView Spacer не работает напрямую без ConstrainedBox
-                  const SizedBox(height: 100),
-
-                  // Continue Button
-                  PrimaryButton(label: 'Continue', onPressed: _onContinue),
-
-                  const SizedBox(height: 24),
-
-                  // Footer
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "Already have an account? ",
-                        style: AppTypography.bodyMedium.copyWith(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Back Button
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: InkWell(
+                    onTap: () => context.pop(),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Icons.arrow_back_ios_new_rounded,
+                          size: 18,
                           color: AppColors.textSecondary,
                         ),
-                      ),
-                      InkWell(
-                        onTap: () => context.push(AppRoutes.login),
-                        child: Text(
-                          'Sign In',
-                          style: AppTypography.subheadingMedium.copyWith(
-                            color: AppColors.primary,
-                            fontWeight: FontWeight.w700,
+                        const SizedBox(width: 8),
+                        Text(
+                          'Back',
+                          style: AppTypography.bodyMedium.copyWith(
+                            color: AppColors.textSecondary,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                  const SizedBox(height: 24),
-                ],
-              ),
+                ),
+
+                const SizedBox(height: 32),
+
+                // Progress Bar (3 steps, 1 active)
+                Row(
+                  children: [
+                    Expanded(
+                      child: Container(
+                        height: 6,
+                        decoration: BoxDecoration(
+                          color: AppColors.primary,
+                          borderRadius: BorderRadius.circular(3),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Container(
+                        height: 6,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF1F1FB),
+                          borderRadius: BorderRadius.circular(3),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Container(
+                        height: 6,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF1F1FB),
+                          borderRadius: BorderRadius.circular(3),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 32),
+
+                // Header
+                Text(
+                  'Create account',
+                  style: AppTypography.headingLarge.copyWith(
+                    fontSize: 32,
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  "Let's get you started on HobbyHub",
+                  style: AppTypography.bodyLarge.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+
+                const SizedBox(height: 48),
+
+                // Name Field
+                AppTextField(
+                  label: 'Your name',
+                  controller: _nameController,
+                  hint: 'Enter your name',
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your name';
+                    }
+                    return null;
+                  },
+                ),
+
+                const SizedBox(height: 24),
+
+                // Email Field
+                AppTextField(
+                  label: 'Email',
+                  controller: _emailController,
+                  hint: 'your@email.com',
+                  keyboardType: TextInputType.emailAddress,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter email';
+                    }
+                    if (!value.contains('@')) {
+                      return 'Invalid email format';
+                    }
+                    return null;
+                  },
+                ),
+
+                const SizedBox(height: 24),
+
+                // Phone Field
+                AppTextField(
+                  label: 'Phone number',
+                  controller: _phoneController,
+                  hint: '+1 (555) 000-0000',
+                  keyboardType: TextInputType.phone,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter phone number';
+                    }
+                    return null;
+                  },
+                ),
+
+                const SizedBox(height: 48),
+
+                // На макете здесь пустота до кнопки
+                // Но нам нужно вытолкнуть кнопку вниз или просто сделать Spacer
+                // В SingleChildScrollView Spacer не работает напрямую без ConstrainedBox
+                const SizedBox(height: 100),
+
+                // Continue Button
+                PrimaryButton(label: 'Continue', onPressed: _onContinue),
+
+                const SizedBox(height: 24),
+
+                // Footer
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Already have an account? ",
+                      style: AppTypography.bodyMedium.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                    InkWell(
+                      onTap: () => context.push(AppRoutes.login),
+                      child: Text(
+                        'Sign In',
+                        style: AppTypography.subheadingMedium.copyWith(
+                          color: AppColors.primary,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+              ],
             ),
           ),
         ),

@@ -104,7 +104,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               children: [
                 // Back Button
                 Padding(
-                  padding: const EdgeInsets.only(top: 8),
+                  padding: const EdgeInsets.only(top: 16),
                   child: InkWell(
                     onTap: () => context.pop(),
                     child: Row(
@@ -330,6 +330,7 @@ class _SocialButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(16),
           ),
           elevation: 0,
+          padding: EdgeInsets.zero,
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,

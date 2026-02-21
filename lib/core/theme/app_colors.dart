@@ -11,7 +11,9 @@ abstract class AppColors {
   static const Color background = Color(0xFFFAFAFA); // Светло-серый фон
   static const Color surface = Color(0xFFFFFFFF); // Белая поверхность
   static const Color surfaceSecondary = Color(0xFFF5F5F5); // Серая поверхность
-  static const Color surfaceVariant = Color(0xFFFAE8ED); // Светло-розовый (для формы)
+  static const Color surfaceVariant = Color(
+    0xFFF5F5F5,
+  ); // Исправлено с розового на серый
 
   // Текст
   static const Color textPrimary = Color(0xFF1A1A1A); // Темный текст

@@ -21,6 +21,7 @@ User _$UserFromJson(Map<String, dynamic> json) => User(
   latitude: (json['latitude'] as num?)?.toDouble(),
   longitude: (json['longitude'] as num?)?.toDouble(),
   isVerified: json['isVerified'] as bool? ?? false,
+  parentEmail: json['parentEmail'] as String?,
   createdAt: User._timestampFromJson(json['createdAt']),
   updatedAt: User._timestampFromJsonNullable(json['updatedAt']),
   friends:
@@ -44,6 +45,7 @@ Map<String, dynamic> _$UserToJson(User instance) => <String, dynamic>{
   'latitude': instance.latitude,
   'longitude': instance.longitude,
   'isVerified': instance.isVerified,
+  'parentEmail': instance.parentEmail,
   'createdAt': User._timestampToJson(instance.createdAt),
   'updatedAt': User._timestampToJson(instance.updatedAt),
   'friends': instance.friends,

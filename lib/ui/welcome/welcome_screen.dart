@@ -14,48 +14,50 @@ class WelcomeScreen extends StatelessWidget {
       backgroundColor: Colors.white,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               // Logo section
-              const SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+              Column(
                 children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: const BoxDecoration(
-                      color: AppColors.primary,
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.star_rounded,
-                      color: Colors.white,
-                      size: 32,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Text(
-                    'HOBBYHUB',
-                    style: AppTypography.headingLarge.copyWith(
-                      color: AppColors.textPrimary,
-                      letterSpacing: 1.2,
-                      fontWeight: FontWeight.w900,
-                    ),
+                  const SizedBox(height: 8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: const BoxDecoration(
+                          color: AppColors.primary,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.star_rounded,
+                          color: Colors.white,
+                          size: 32,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Text(
+                        'HOBBYHUB',
+                        style: AppTypography.headingLarge.copyWith(
+                          color: AppColors.textPrimary,
+                          letterSpacing: 1.2,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
 
-              const Spacer(flex: 2),
-
-              // Illustration section - Flexible to fit screen
-              Flexible(
-                flex: 8,
+              // Illustration section
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16),
                 child: Container(
                   width: double.infinity,
-                  constraints: const BoxConstraints(maxHeight: 400),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(40),
+                    borderRadius: BorderRadius.circular(32),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withValues(alpha: 0.1),
@@ -63,17 +65,19 @@ class WelcomeScreen extends StatelessWidget {
                         offset: const Offset(0, 10),
                       ),
                     ],
-                    image: const DecorationImage(
-                      image: NetworkImage(
-                        'https://firebasestorage.googleapis.com/v0/b/hobbyhub-demo/o/welcome_illustration.png?alt=media', // Имитация Firebase Storage
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(32),
+                    child: AspectRatio(
+                      aspectRatio: 1.3,
+                      child: Image.asset(
+                        'assets/onbording.png',
+                        fit: BoxFit.cover,
                       ),
-                      fit: BoxFit.cover,
                     ),
                   ),
                 ),
               ),
-
-              const Spacer(flex: 2),
 
               // Title & Subtitle section
               Column(
@@ -82,24 +86,25 @@ class WelcomeScreen extends StatelessWidget {
                     'Find Your Tribe',
                     textAlign: TextAlign.center,
                     style: AppTypography.headingLarge.copyWith(
-                      fontSize: 28,
+                      fontSize: 32,
                       color: AppColors.textPrimary,
                       fontWeight: FontWeight.w800,
                     ),
                   ),
                   const SizedBox(height: 12),
-                  Text(
-                    'Discover events, connect with communities, and explore new hobbies near you',
-                    textAlign: TextAlign.center,
-                    style: AppTypography.bodyLarge.copyWith(
-                      color: AppColors.textSecondary,
-                      height: 1.4,
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Text(
+                      'Discover events, connect with communities, and explore new hobbies near you',
+                      textAlign: TextAlign.center,
+                      style: AppTypography.bodyLarge.copyWith(
+                        color: AppColors.textSecondary,
+                        height: 1.5,
+                      ),
                     ),
                   ),
                 ],
               ),
-
-              const Spacer(flex: 3),
 
               // Buttons section
               Column(
@@ -117,10 +122,11 @@ class WelcomeScreen extends StatelessWidget {
                 ],
               ),
 
-              const SizedBox(height: 24),
-
               // Footer section
-              _buildFooter(),
+              Padding(
+                padding: const EdgeInsets.only(top: 8, bottom: 8),
+                child: _buildFooter(),
+              ),
             ],
           ),
         ),

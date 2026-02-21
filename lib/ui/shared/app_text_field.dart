@@ -87,6 +87,7 @@ class _AppTextFieldState extends State<AppTextField> {
 
         // Input field
         Container(
+          height: AppSpacing.inputHeight, // Фиксированная высота 48.0
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
             border: Border.all(
@@ -101,6 +102,7 @@ class _AppTextFieldState extends State<AppTextField> {
                 ? AppColors.error.withValues(alpha: 0.05)
                 : AppColors.surfaceSecondary,
           ),
+          alignment: Alignment.center, // Центрирование контента
           child: TextFormField(
             controller: widget.controller,
             focusNode: _focusNode,
@@ -118,25 +120,46 @@ class _AppTextFieldState extends State<AppTextField> {
                 color: AppColors.textHint,
               ),
               border: InputBorder.none,
+              isDense: true, // Более компактное поле
               contentPadding: EdgeInsets.symmetric(
                 horizontal: AppSpacing.md,
-                vertical: AppSpacing.md,
+                vertical:
+                    0, // Убираем вертикальные отступы внутри, так как высота фиксирована
               ),
               prefixIcon: widget.prefixIcon != null
                   ? Padding(
-                      padding: EdgeInsets.only(left: AppSpacing.md),
-                      child: widget.prefixIcon,
+                      padding: EdgeInsets.symmetric(horizontal: AppSpacing.sm),
+                      child: IconTheme(
+                        data: IconThemeData(
+                          size: 20,
+                          color: AppColors.textSecondary,
+                        ),
+                        child: widget.prefixIcon!,
+                      ),
                     )
                   : null,
               suffixIcon: widget.suffixIcon != null
                   ? Padding(
-                      padding: EdgeInsets.only(right: AppSpacing.md),
-                      child: widget.suffixIcon,
+                      padding: EdgeInsets.symmetric(horizontal: AppSpacing.sm),
+                      child: IconTheme(
+                        data: IconThemeData(
+                          size: 20,
+                          color: AppColors.textSecondary,
+                        ),
+                        child: widget.suffixIcon!,
+                      ),
                     )
                   : null,
-              prefixIconConstraints: BoxConstraints(minWidth: 0, minHeight: 0),
-              suffixIconConstraints: BoxConstraints(minWidth: 0, minHeight: 0),
+              prefixIconConstraints: const BoxConstraints(
+                minWidth: 40,
+                minHeight: 0,
+              ),
+              suffixIconConstraints: const BoxConstraints(
+                minWidth: 40,
+                minHeight: 0,
+              ),
             ),
+            textAlignVertical: TextAlignVertical.center, // Центрирование текста
             style: AppTypography.bodyMedium.copyWith(
               color: AppColors.textPrimary,
             ),

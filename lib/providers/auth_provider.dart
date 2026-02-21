@@ -14,19 +14,11 @@ final authStateProvider = StreamProvider<fb.User?>((ref) {
 /// Провайдер для текущего пользователя (если авторизован)
 final currentUserIdProvider = Provider<String?>((ref) {
   final user = ref.watch(authStateProvider);
-  return user.maybeWhen(
-    data: (user) => user?.uid,
-    orElse: () => null,
-  );
+  return user.maybeWhen(data: (user) => user?.uid, orElse: () => null);
 });
 
 /// Enum для результатов авторизации
-enum AuthResult {
-  idle,
-  loading,
-  success,
-  failure,
-}
+enum AuthResult { idle, loading, success, failure }
 
 /// Класс для результата авторизации с ошибкой
 class AuthException implements Exception {
@@ -47,10 +39,7 @@ class AuthNotifier extends StateNotifier<AsyncValue<void>> {
   Future<void> signInWithEmail(String email, String password) async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(
-      () => _authService.signInWithEmail(
-        email: email,
-        password: password,
-      ),
+      () => _authService.signInWithEmail(email: email, password: password),
     );
   }
 
@@ -58,11 +47,20 @@ class AuthNotifier extends StateNotifier<AsyncValue<void>> {
   Future<void> signUpWithEmail(String email, String password) async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(
-      () => _authService.signUpWithEmail(
-        email: email,
-        password: password,
-      ),
+      () => _authService.signUpWithEmail(email: email, password: password),
     );
+  }
+
+  /// Вход через Google
+  Future<void> signInWithGoogle() async {
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(() => _authService.signInWithGoogle());
+  }
+
+  /// Вход через Facebook
+  Future<void> signInWithFacebook() async {
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(() => _authService.signInWithFacebook());
   }
 
   /// Выход из аккаунта
@@ -83,9 +81,9 @@ class AuthNotifier extends StateNotifier<AsyncValue<void>> {
 /// Провайдер для управления авторизацией
 final authNotifierProvider =
     StateNotifierProvider<AuthNotifier, AsyncValue<void>>((ref) {
-  final authService = ref.watch(authServiceProvider);
-  return AuthNotifier(authService);
-});
+      final authService = ref.watch(authServiceProvider);
+      return AuthNotifier(authService);
+    });
 
 /// Провайдер для проверки авторизации пользователя
 final isLoggedInProvider = Provider<bool>((ref) {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:hobby_hub/core/theme/app_colors.dart';
-import 'package:hobby_hub/core/theme/app_spacing.dart';
-import 'package:hobby_hub/core/theme/app_typography.dart';
+import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_spacing.dart';
+import '../../core/theme/app_typography.dart';
 
 /// Кастомное текстовое поле с поддержкой валидации
 class AppTextField extends StatefulWidget {
@@ -93,13 +93,13 @@ class _AppTextFieldState extends State<AppTextField> {
               color: hasError
                   ? AppColors.error
                   : _isFocused
-                      ? AppColors.primary
-                      : AppColors.lightPink,
+                  ? AppColors.primary
+                  : AppColors.border,
               width: _isFocused ? 2 : 1,
             ),
             color: hasError
                 ? AppColors.error.withValues(alpha: 0.05)
-                : AppColors.lightPink,
+                : AppColors.surfaceSecondary,
           ),
           child: TextFormField(
             controller: widget.controller,
@@ -134,14 +134,8 @@ class _AppTextFieldState extends State<AppTextField> {
                       child: widget.suffixIcon,
                     )
                   : null,
-              prefixIconConstraints: BoxConstraints(
-                minWidth: 0,
-                minHeight: 0,
-              ),
-              suffixIconConstraints: BoxConstraints(
-                minWidth: 0,
-                minHeight: 0,
-              ),
+              prefixIconConstraints: BoxConstraints(minWidth: 0, minHeight: 0),
+              suffixIconConstraints: BoxConstraints(minWidth: 0, minHeight: 0),
             ),
             style: AppTypography.bodyMedium.copyWith(
               color: AppColors.textPrimary,
@@ -155,9 +149,7 @@ class _AppTextFieldState extends State<AppTextField> {
             padding: EdgeInsets.only(top: AppSpacing.xs),
             child: Text(
               widget.errorText!,
-              style: AppTypography.labelSmall.copyWith(
-                color: AppColors.error,
-              ),
+              style: AppTypography.labelSmall.copyWith(color: AppColors.error),
             ),
           ),
       ],

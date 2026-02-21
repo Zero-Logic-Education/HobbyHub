@@ -42,14 +42,16 @@ class AuthService {
 
   /// Вход с Google
   Future<UserCredential?> signInWithGoogle() async {
-    // Requires google_sign_in package
-    throw UnimplementedError('Google Sign-In not implemented yet');
+    // Requires google_sign_in package. For now, simulating for UI demo.
+    await Future.delayed(const Duration(seconds: 1));
+    return null;
   }
 
-  /// Вход с Apple
-  Future<UserCredential?> signInWithApple() async {
-    // Requires sign_in_with_apple package
-    throw UnimplementedError('Apple Sign-In not implemented yet');
+  /// Вход с Facebook
+  Future<UserCredential?> signInWithFacebook() async {
+    // Requires flutter_facebook_auth package. For now, simulating for UI demo.
+    await Future.delayed(const Duration(seconds: 1));
+    return null;
   }
 
   /// Отправить email для сброса пароля
@@ -85,10 +87,7 @@ class AuthService {
   }
 
   /// Обновить профиль пользователя
-  Future<void> updateProfile({
-    String? displayName,
-    String? photoURL,
-  }) async {
+  Future<void> updateProfile({String? displayName, String? photoURL}) async {
     try {
       await currentUser?.updateDisplayName(displayName);
       await currentUser?.updatePhotoURL(photoURL);

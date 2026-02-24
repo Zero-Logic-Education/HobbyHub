@@ -11,39 +11,47 @@ class WelcomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               // Logo section
               Column(
                 children: [
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 12),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: const BoxDecoration(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
                           color: AppColors.primary,
                           shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.primary.withOpacity(0.3),
+                              blurRadius: 15,
+                              offset: const Offset(0, 5),
+                            ),
+                          ],
                         ),
                         child: const Icon(
-                          Icons.star_rounded,
+                          Icons.auto_awesome_rounded,
                           color: Colors.white,
-                          size: 32,
+                          size: 28,
                         ),
                       ),
-                      const SizedBox(width: 12),
+                      const SizedBox(width: 14),
                       Text(
-                        'HOBBYHUB',
+                        'HobbyHub',
                         style: AppTypography.headingLarge.copyWith(
                           color: AppColors.textPrimary,
-                          letterSpacing: 1.2,
-                          fontWeight: FontWeight.w900,
+                          letterSpacing: -0.5,
+                          fontWeight: FontWeight.w800,
+                          fontSize: 28,
                         ),
                       ),
                     ],
@@ -53,23 +61,23 @@ class WelcomeScreen extends StatelessWidget {
 
               // Illustration section
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16),
+                padding: const EdgeInsets.symmetric(vertical: 32),
                 child: Container(
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(32),
+                    borderRadius: BorderRadius.circular(36),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.1),
-                        blurRadius: 20,
-                        offset: const Offset(0, 10),
+                        color: AppColors.shadow.withOpacity(0.08),
+                        blurRadius: 30,
+                        offset: const Offset(0, 15),
                       ),
                     ],
                   ),
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(32),
+                    borderRadius: BorderRadius.circular(36),
                     child: AspectRatio(
-                      aspectRatio: 1.3,
+                      aspectRatio: 1.1,
                       child: Image.asset(
                         'assets/onbording.png',
                         fit: BoxFit.cover,
@@ -83,50 +91,51 @@ class WelcomeScreen extends StatelessWidget {
               Column(
                 children: [
                   Text(
-                    'Find Your Tribe',
+                    'Discover your next\npassionate hobby',
                     textAlign: TextAlign.center,
                     style: AppTypography.headingLarge.copyWith(
                       fontSize: 32,
                       color: AppColors.textPrimary,
                       fontWeight: FontWeight.w800,
+                      height: 1.2,
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 16),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Text(
-                      'Discover events, connect with communities, and explore new hobbies near you',
+                      'Connect with like-minded people and explore exciting communities near you.',
                       textAlign: TextAlign.center,
                       style: AppTypography.bodyLarge.copyWith(
                         color: AppColors.textSecondary,
-                        height: 1.5,
+                        height: 1.6,
+                        fontSize: 16,
                       ),
                     ),
                   ),
                 ],
               ),
 
+              const SizedBox(height: 32),
+
               // Buttons section
               Column(
                 children: [
                   PrimaryButton(
-                    label: 'Get Started',
+                    label: 'Create Account',
                     onPressed: () => context.push(AppRoutes.register),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 16),
                   SecondaryButton(
                     label: 'Sign In',
                     onPressed: () => context.push(AppRoutes.login),
-                    padding: EdgeInsets.zero,
                   ),
                 ],
               ),
 
               // Footer section
-              Padding(
-                padding: const EdgeInsets.only(top: 8, bottom: 8),
-                child: _buildFooter(),
-              ),
+              const SizedBox(height: 16),
+              _buildFooter(),
             ],
           ),
         ),

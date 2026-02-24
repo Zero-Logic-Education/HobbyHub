@@ -3,8 +3,8 @@ import 'package:hobby_hub/core/theme/app_colors.dart';
 import 'package:hobby_hub/core/theme/app_spacing.dart';
 import 'package:hobby_hub/core/theme/app_typography.dart';
 
-/// Основная кнопка с коралловым фоном
-class PrimaryButton extends StatefulWidget {
+/// Основная кнопка с градиентом или заливкой
+class PrimaryButton extends StatelessWidget {
   final String label;
   final VoidCallback onPressed;
   final bool isLoading;
@@ -25,31 +25,34 @@ class PrimaryButton extends StatefulWidget {
   });
 
   @override
-  State<PrimaryButton> createState() => _PrimaryButtonState();
-}
-
-class _PrimaryButtonState extends State<PrimaryButton> {
-  @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: widget.width ?? double.infinity,
+    return Container(
+      width: width ?? double.infinity,
       height: AppSpacing.buttonHeightLarge,
-      child: ElevatedButton(
-        onPressed: widget.isEnabled && !widget.isLoading
-            ? widget.onPressed
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: isEnabled && !isLoading
+            ? [
+                BoxShadow(
+                  color: AppColors.primary.withOpacity(0.3),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+              ]
             : null,
+      ),
+      child: ElevatedButton(
+        onPressed: isEnabled && !isLoading ? onPressed : null,
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primary,
           foregroundColor: Colors.white,
-          disabledBackgroundColor: AppColors.textHint.withValues(alpha: 0.3),
+          disabledBackgroundColor: AppColors.textHint.withOpacity(0.3),
           disabledForegroundColor: AppColors.textHint,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
-          elevation: 4,
-          shadowColor: AppColors.primary.withValues(alpha: 0.4),
-          padding:
-              widget.padding ?? EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+          elevation: 0, // Тень реализована через Container для большей мягкости
+          padding: padding ?? EdgeInsets.symmetric(horizontal: AppSpacing.lg),
         ),
         child: _buildContent(),
       ),
@@ -57,8 +60,8 @@ class _PrimaryButtonState extends State<PrimaryButton> {
   }
 
   Widget _buildContent() {
-    if (widget.isLoading) {
-      return SizedBox(
+    if (isLoading) {
+      return const SizedBox(
         height: 20,
         width: 20,
         child: CircularProgressIndicator(
@@ -68,28 +71,24 @@ class _PrimaryButtonState extends State<PrimaryButton> {
       );
     }
 
-    if (widget.leftIcon != null) {
-      return Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          widget.leftIcon!,
-          SizedBox(width: AppSpacing.sm),
-          Text(
-            widget.label,
-            style: AppTypography.buttonLarge.copyWith(color: Colors.white),
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        if (leftIcon != null) ...[leftIcon!, SizedBox(width: AppSpacing.sm)],
+        Text(
+          label,
+          style: AppTypography.buttonLarge.copyWith(
+            color: Colors.white,
+            fontWeight: FontWeight.w700,
+            letterSpacing: 0.5,
           ),
-        ],
-      );
-    }
-
-    return Text(
-      widget.label,
-      style: AppTypography.buttonLarge.copyWith(color: Colors.white),
+        ),
+      ],
     );
   }
 }
 
-/// Вторичная кнопка с контуром
+/// Вторичная кнопка с контуром (Outline)
 class SecondaryButton extends StatelessWidget {
   final String label;
   final VoidCallback onPressed;
@@ -116,39 +115,102 @@ class SecondaryButton extends StatelessWidget {
       child: OutlinedButton(
         onPressed: isEnabled ? onPressed : null,
         style: OutlinedButton.styleFrom(
-          foregroundColor: AppColors.primary,
+          foregroundColor: AppColors.textPrimary,
           side: BorderSide(
-            color: isEnabled ? AppColors.primary : AppColors.textHint,
+            color: isEnabled ? AppColors.border : AppColors.textHint,
             width: 1.5,
           ),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+            borderRadius: BorderRadius.circular(16),
           ),
           padding: padding ?? EdgeInsets.symmetric(horizontal: AppSpacing.lg),
         ),
-        child: _buildContent(),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (leftIcon != null) ...[
+              leftIcon!,
+              SizedBox(width: AppSpacing.sm),
+            ],
+            Text(
+              label,
+              style: AppTypography.buttonLarge.copyWith(
+                color: isEnabled ? AppColors.textPrimary : AppColors.textHint,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
+}
 
-  Widget _buildContent() {
-    if (leftIcon != null) {
-      return Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          leftIcon!,
-          SizedBox(width: AppSpacing.sm),
-          Text(
-            label,
-            style: AppTypography.buttonLarge.copyWith(color: AppColors.primary),
+/// Кнопка для входа через социальные сети
+class SocialAuthButton extends StatelessWidget {
+  final String label;
+  final String iconAsset; // Или использование Image.network если нет ассетов
+  final VoidCallback onPressed;
+  final bool isGoogle;
+  final bool isFacebook;
+
+  const SocialAuthButton({
+    required this.label,
+    required this.onPressed,
+    this.iconAsset = '',
+    this.isGoogle = false,
+    this.isFacebook = false,
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final backgroundColor = isFacebook ? AppColors.facebookBlue : Colors.white;
+    final textColor = isFacebook ? Colors.white : AppColors.textPrimary;
+    final borderColor = isGoogle ? AppColors.border : Colors.transparent;
+
+    return SizedBox(
+      width: double.infinity,
+      height: 56,
+      child: OutlinedButton(
+        onPressed: onPressed,
+        style: OutlinedButton.styleFrom(
+          backgroundColor: backgroundColor,
+          foregroundColor: textColor,
+          side: BorderSide(color: borderColor, width: 1),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
           ),
-        ],
-      );
-    }
-
-    return Text(
-      label,
-      style: AppTypography.buttonLarge.copyWith(color: AppColors.primary),
+          elevation: isGoogle ? 1 : 0,
+          shadowColor: Colors.black.withOpacity(0.05),
+          padding: EdgeInsets.zero,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (isGoogle)
+              Image.network(
+                'https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png',
+                height: 24,
+                width: 24,
+              )
+            else if (isFacebook)
+              const Icon(Icons.facebook, color: Colors.white, size: 24)
+            else if (iconAsset.isNotEmpty)
+              Image.asset(iconAsset, height: 24),
+            const SizedBox(width: 12),
+            Text(
+              label,
+              style: AppTypography.subheadingMedium.copyWith(
+                color: textColor,
+                fontWeight: FontWeight.w600,
+                fontSize: 16,
+                letterSpacing: 0.2,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

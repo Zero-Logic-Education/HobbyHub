@@ -34,7 +34,7 @@ class PrimaryButton extends StatelessWidget {
         boxShadow: isEnabled && !isLoading
             ? [
                 BoxShadow(
-                  color: AppColors.primary.withOpacity(0.3),
+                  color: AppColors.primary.withValues(alpha: 0.3),
                   blurRadius: 12,
                   offset: const Offset(0, 4),
                 ),
@@ -182,7 +182,7 @@ class SocialAuthButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(16),
           ),
           elevation: isGoogle ? 1 : 0,
-          shadowColor: Colors.black.withOpacity(0.05),
+          shadowColor: Colors.black.withValues(alpha: 0.05),
           padding: EdgeInsets.zero,
         ),
         child: Row(

@@ -99,7 +99,7 @@ class _AppTextFieldState extends State<AppTextField> {
               width: _isFocused ? 1.5 : 1,
             ),
             color: hasError
-                ? AppColors.error.withOpacity(0.05)
+                ? AppColors.primary.withValues(alpha: 0.1)
                 : AppColors.surfaceVariant,
           ),
           alignment: Alignment.center, // Центрирование контента

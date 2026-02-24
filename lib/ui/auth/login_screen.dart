@@ -247,8 +247,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         const SizedBox(height: 32),
 
                         // Social Buttons
-                        _SocialButton(
-                          icon: Icons.g_mobiledata_rounded,
+                        SocialAuthButton(
                           label: 'Continue with Google',
                           isGoogle: true,
                           onPressed: () => ref
@@ -256,15 +255,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               .signInWithGoogle(),
                         ),
                         const SizedBox(height: 16),
-                        _SocialButton(
-                          icon: Icons.facebook_rounded,
+                        SocialAuthButton(
                           label: 'Continue with Facebook',
+                          isFacebook: true,
                           onPressed: () => ref
                               .read(authNotifierProvider.notifier)
                               .signInWithFacebook(),
                         ),
 
                         const Spacer(),
+                        const SizedBox(height: 24),
                         // Submit Button
                         PrimaryButton(
                           label: 'Sign In',
@@ -304,65 +304,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               ),
             );
           },
-        ),
-      ),
-    );
-  }
-}
-
-class _SocialButton extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final VoidCallback onPressed;
-  final bool isGoogle;
-
-  const _SocialButton({
-    required this.icon,
-    required this.label,
-    required this.onPressed,
-    this.isGoogle = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      height: 56,
-      child: OutlinedButton(
-        onPressed: onPressed,
-        style: OutlinedButton.styleFrom(
-          side: BorderSide(
-            color: isGoogle ? const Color(0xFFE0E0E0) : Colors.transparent,
-          ),
-          backgroundColor: isGoogle ? Colors.white : const Color(0xFF1877F2),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          elevation: 0,
-          padding: EdgeInsets.zero,
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            if (isGoogle)
-              Image.network(
-                'https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png',
-                height: 24,
-                width: 24,
-                fit: BoxFit.contain,
-              )
-            else
-              const Icon(Icons.facebook, color: Colors.white, size: 24),
-            const SizedBox(width: 12),
-            Text(
-              label,
-              style: AppTypography.subheadingMedium.copyWith(
-                color: isGoogle ? AppColors.textPrimary : Colors.white,
-                fontWeight: FontWeight.w600,
-                fontSize: 16,
-              ),
-            ),
-          ],
         ),
       ),
     );

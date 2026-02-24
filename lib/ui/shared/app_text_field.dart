@@ -89,18 +89,18 @@ class _AppTextFieldState extends State<AppTextField> {
         Container(
           height: AppSpacing.inputHeight, // Фиксированная высота 48.0
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+            borderRadius: BorderRadius.circular(16),
             border: Border.all(
               color: hasError
                   ? AppColors.error
                   : _isFocused
                   ? AppColors.primary
-                  : const Color(0xFFF1F1F1),
+                  : AppColors.border,
               width: _isFocused ? 1.5 : 1,
             ),
             color: hasError
-                ? AppColors.error.withValues(alpha: 0.05)
-                : const Color(0xFFF8F9FA),
+                ? AppColors.error.withOpacity(0.05)
+                : AppColors.surfaceVariant,
           ),
           alignment: Alignment.center, // Центрирование контента
           child: TextFormField(

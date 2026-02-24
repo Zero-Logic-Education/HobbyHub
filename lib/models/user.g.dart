@@ -21,6 +21,7 @@ User _$UserFromJson(Map<String, dynamic> json) => User(
   latitude: (json['latitude'] as num?)?.toDouble(),
   longitude: (json['longitude'] as num?)?.toDouble(),
   isVerified: json['isVerified'] as bool? ?? false,
+  parentEmail: json['parentEmail'] as String?,
   createdAt: User._timestampFromJson(json['createdAt']),
   updatedAt: User._timestampFromJsonNullable(json['updatedAt']),
   friends:
@@ -29,6 +30,7 @@ User _$UserFromJson(Map<String, dynamic> json) => User(
   eventsAttended: (json['eventsAttended'] as num?)?.toInt() ?? 0,
   organizerRating: (json['organizerRating'] as num?)?.toDouble() ?? 0.0,
   eventsCreated: (json['eventsCreated'] as num?)?.toInt() ?? 0,
+  phoneNumber: json['phoneNumber'] as String?,
 );
 
 Map<String, dynamic> _$UserToJson(User instance) => <String, dynamic>{
@@ -44,10 +46,12 @@ Map<String, dynamic> _$UserToJson(User instance) => <String, dynamic>{
   'latitude': instance.latitude,
   'longitude': instance.longitude,
   'isVerified': instance.isVerified,
+  'parentEmail': instance.parentEmail,
   'createdAt': User._timestampToJson(instance.createdAt),
   'updatedAt': User._timestampToJson(instance.updatedAt),
   'friends': instance.friends,
   'eventsAttended': instance.eventsAttended,
   'organizerRating': instance.organizerRating,
   'eventsCreated': instance.eventsCreated,
+  'phoneNumber': instance.phoneNumber,
 };

@@ -210,7 +210,7 @@ class _RegisterPasswordScreenState
                           },
                         ),
 
-                        const Spacer(),
+                        const SizedBox(height: 32),
 
                         // Finish Button
                         PrimaryButton(

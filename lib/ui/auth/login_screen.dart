@@ -264,8 +264,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               .signInWithFacebook(),
                         ),
 
-                        const Spacer(),
-                        const SizedBox(height: 24),
+                        const SizedBox(height: 32),
                         // Submit Button
                         PrimaryButton(
                           label: 'Sign In',

@@ -203,7 +203,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
                         const SizedBox(height: 48),
 
-                        const Spacer(),
+                        const SizedBox(height: 32),
 
                         // Continue Button
                         PrimaryButton(

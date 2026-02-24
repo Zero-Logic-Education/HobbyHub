@@ -269,7 +269,7 @@ class _AgeVerificationScreenState extends ConsumerState<AgeVerificationScreen> {
                   ),
                 ),
 
-                const Spacer(),
+                const SizedBox(height: 32),
 
                 // Continue Button
                 PrimaryButton(label: 'Continue', onPressed: _submit),

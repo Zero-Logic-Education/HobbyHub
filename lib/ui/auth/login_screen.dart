@@ -93,7 +93,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     });
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
@@ -220,8 +220,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           children: [
                             Expanded(
                               child: Container(
-                                height: 1,
-                                color: const Color(0xFFF1F1FB),
+                                height: 1.5,
+                                color: AppColors.divider,
                               ),
                             ),
                             Padding(
@@ -231,15 +231,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               child: Text(
                                 'or continue with',
                                 style: AppTypography.bodySmall.copyWith(
-                                  color: const Color(0xFFADB3C6),
+                                  color: AppColors.textTertiary,
                                   fontSize: 14,
+                                  fontWeight: FontWeight.w500,
                                 ),
                               ),
                             ),
                             Expanded(
                               child: Container(
-                                height: 1,
-                                color: const Color(0xFFF1F1FB),
+                                height: 1.5,
+                                color: AppColors.divider,
                               ),
                             ),
                           ],

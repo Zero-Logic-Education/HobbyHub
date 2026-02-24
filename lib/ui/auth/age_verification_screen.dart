@@ -49,7 +49,7 @@ class _AgeVerificationScreenState extends ConsumerState<AgeVerificationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: TweenAnimationBuilder<double>(
           tween: Tween(begin: 0.0, end: 1.0),
@@ -71,7 +71,7 @@ class _AgeVerificationScreenState extends ConsumerState<AgeVerificationScreen> {
               children: [
                 // Top Back Button
                 Padding(
-                  padding: const EdgeInsets.only(top: 8),
+                  padding: const EdgeInsets.only(top: 16),
                   child: InkWell(
                     onTap: () => context.pop(),
                     child: Row(
@@ -105,27 +105,34 @@ class _AgeVerificationScreenState extends ConsumerState<AgeVerificationScreen> {
                         height: 6,
                         decoration: BoxDecoration(
                           color: AppColors.primary,
-                          borderRadius: BorderRadius.circular(3),
+                          borderRadius: BorderRadius.circular(10),
                         ),
                       ),
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: 12),
                     Expanded(
                       child: Container(
                         height: 6,
                         decoration: BoxDecoration(
                           color: AppColors.primary,
-                          borderRadius: BorderRadius.circular(3),
+                          borderRadius: BorderRadius.circular(10),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.primary.withOpacity(0.2),
+                              blurRadius: 4,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
                         ),
                       ),
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: 12),
                     Expanded(
                       child: Container(
                         height: 6,
                         decoration: BoxDecoration(
-                          color: const Color(0xFFF1F1FB),
-                          borderRadius: BorderRadius.circular(3),
+                          color: AppColors.border,
+                          borderRadius: BorderRadius.circular(10),
                         ),
                       ),
                     ),

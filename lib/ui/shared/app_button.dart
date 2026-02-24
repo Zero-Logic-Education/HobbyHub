@@ -189,13 +189,9 @@ class SocialAuthButton extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             if (isGoogle)
-              Image.network(
-                'https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png',
-                height: 24,
-                width: 24,
-              )
+              Image.asset('assets/google_logo.png', height: 24, width: 24)
             else if (isFacebook)
-              const Icon(Icons.facebook, color: Colors.white, size: 24)
+              Image.asset('assets/facebook_logo.png', height: 24, width: 24)
             else if (iconAsset.isNotEmpty)
               Image.asset(iconAsset, height: 24),
             const SizedBox(width: 12),

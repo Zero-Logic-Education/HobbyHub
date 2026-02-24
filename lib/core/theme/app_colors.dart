@@ -57,7 +57,17 @@ abstract class AppColors {
   static const Color darkTextSecondary = Color(0xFFBBBBBB);
   static const Color darkBorder = Color(0xFF333333);
 
-  // Градиенты для специальных элементов
+  // Цвета категорий
+  static const Color sports = Color(0xFFFF7B6D);
+  static const Color art = Color(0xFFFBD38D);
+  static const Color music = Color(0xFF9F7AEA);
+  static const Color education = Color(0xFF4299E1);
+  static const Color technology = Color(0xFF4FD1C5);
+  static const Color food = Color(0xFFF687B3);
+  static const Color travel = Color(0xFF48BB78);
+  static const Color gaming = Color(0xFF667EEA);
+
+  // Градиенты
   static const List<Color> primaryGradient = [
     Color(0xFFF17A5D),
     Color(0xFFFF8B66),

@@ -18,22 +18,22 @@ class _InterestsScreenState extends ConsumerState<InterestsScreen> {
   final Set<String> _selectedInterests = {};
 
   final List<Map<String, dynamic>> _categories = [
-    {'id': 'sports', 'label': 'Sports', 'icon': Icons.sports_soccer_rounded},
-    {'id': 'tech', 'label': 'Technology', 'icon': Icons.laptop_mac_rounded},
-    {'id': 'art', 'label': 'Art & Craft', 'icon': Icons.palette_rounded},
-    {'id': 'music', 'label': 'Music', 'icon': Icons.music_note_rounded},
-    {'id': 'food', 'label': 'Food & Drink', 'icon': Icons.restaurant_rounded},
+    {'id': 'sports', 'label': 'Спорт', 'icon': Icons.sports_soccer_rounded},
+    {'id': 'tech', 'label': 'Технологии', 'icon': Icons.laptop_mac_rounded},
+    {'id': 'art', 'label': 'Искусство', 'icon': Icons.palette_rounded},
+    {'id': 'music', 'label': 'Музыка', 'icon': Icons.music_note_rounded},
+    {'id': 'food', 'label': 'Еда и напитки', 'icon': Icons.restaurant_rounded},
     {
       'id': 'wellness',
-      'label': 'Wellness',
+      'label': 'Здоровье',
       'icon': Icons.self_improvement_rounded,
     },
-    {'id': 'photo', 'label': 'Photography', 'icon': Icons.camera_alt_rounded},
-    {'id': 'books', 'label': 'Books', 'icon': Icons.auto_stories_rounded},
-    {'id': 'travel', 'label': 'Travel', 'icon': Icons.flight_takeoff_rounded},
-    {'id': 'gaming', 'label': 'Gaming', 'icon': Icons.sports_esports_rounded},
-    {'id': 'fitness', 'label': 'Fitness', 'icon': Icons.fitness_center_rounded},
-    {'id': 'movies', 'label': 'Movies', 'icon': Icons.movie_rounded},
+    {'id': 'photo', 'label': 'Фотография', 'icon': Icons.camera_alt_rounded},
+    {'id': 'books', 'label': 'Книги', 'icon': Icons.auto_stories_rounded},
+    {'id': 'travel', 'label': 'Путешествия', 'icon': Icons.flight_takeoff_rounded},
+    {'id': 'gaming', 'label': 'Игры', 'icon': Icons.sports_esports_rounded},
+    {'id': 'fitness', 'label': 'Фитнес', 'icon': Icons.fitness_center_rounded},
+    {'id': 'movies', 'label': 'Кино', 'icon': Icons.movie_rounded},
   ];
 
   void _toggleInterest(String id) {
@@ -155,7 +155,7 @@ class _InterestsScreenState extends ConsumerState<InterestsScreen> {
 
                 // Header
                 Text(
-                  'Choose your interests',
+                  'Выберите ваши интересы',
                   style: AppTypography.headingLarge.copyWith(
                     fontSize: 32,
                     color: AppColors.textPrimary,
@@ -164,7 +164,7 @@ class _InterestsScreenState extends ConsumerState<InterestsScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Select at least 3 to personalize your experience',
+                  'Выберите минимум 3, чтобы персонализировать ленту',
                   style: AppTypography.bodyLarge.copyWith(
                     color: AppColors.textSecondary,
                   ),
@@ -177,7 +177,7 @@ class _InterestsScreenState extends ConsumerState<InterestsScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      '$selectedCount selected',
+                      'Выбрано: $selectedCount',
                       style: AppTypography.bodyLarge.copyWith(
                         color: AppColors.textPrimary,
                         fontWeight: FontWeight.w700,
@@ -185,7 +185,7 @@ class _InterestsScreenState extends ConsumerState<InterestsScreen> {
                     ),
                     if (neededCount > 0)
                       Text(
-                        '$neededCount more needed',
+                        'Нужно еще: $neededCount',
                         style: AppTypography.bodyMedium.copyWith(
                           color: AppColors.textTertiary,
                         ),
@@ -227,7 +227,7 @@ class _InterestsScreenState extends ConsumerState<InterestsScreen> {
 
                 // Finish Button
                 PrimaryButton(
-                  label: 'Continue to HobbyHub',
+                  label: 'Продолжить в HobbyHub',
                   onPressed: selectedCount >= 3 ? _submit : () {},
                   isEnabled: selectedCount >= 3,
                 ),
@@ -239,7 +239,7 @@ class _InterestsScreenState extends ConsumerState<InterestsScreen> {
                   child: TextButton(
                     onPressed: () => context.go(AppRoutes.home),
                     child: Text(
-                      'Skip for now',
+                      'Пропустить пока что',
                       style: AppTypography.bodyLarge.copyWith(
                         color: AppColors.textTertiary,
                         fontWeight: FontWeight.w600,

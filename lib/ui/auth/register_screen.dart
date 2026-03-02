@@ -75,7 +75,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                                 ),
                                 const SizedBox(width: 8),
                                 Text(
-                                  'Back',
+                                  'Назад',
                                   style: AppTypography.bodyMedium.copyWith(
                                     color: AppColors.textSecondary,
                                     fontWeight: FontWeight.w500,
@@ -136,7 +136,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
                         // Header
                         Text(
-                          'Create account',
+                          'Создать аккаунт',
                           style: AppTypography.headingLarge.copyWith(
                             fontSize: 32,
                             color: AppColors.textPrimary,
@@ -145,7 +145,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          "Let's get you started on HobbyHub",
+                          "Давайте начнем ваше приключение в HobbyHub",
                           style: AppTypography.bodyLarge.copyWith(
                             color: AppColors.textSecondary,
                           ),
@@ -155,12 +155,12 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
                         // Name Field
                         AppTextField(
-                          label: 'Your name',
+                          label: 'Ваше имя',
                           controller: _nameController,
-                          hint: 'Enter your name',
+                          hint: 'Введите ваше имя',
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Please enter your name';
+                              return 'Пожалуйста, введите ваше имя';
                             }
                             return null;
                           },
@@ -176,10 +176,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           keyboardType: TextInputType.emailAddress,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Please enter email';
+                              return 'Пожалуйста, введите email';
                             }
                             if (!value.contains('@')) {
-                              return 'Invalid email format';
+                              return 'Некорректный формат email';
                             }
                             return null;
                           },
@@ -189,13 +189,13 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
                         // Phone Field
                         AppTextField(
-                          label: 'Phone number',
+                          label: 'Номер телефона',
                           controller: _phoneController,
-                          hint: '+1 (555) 000-0000',
+                          hint: '+7 (XXX) XXX-XXXX',
                           keyboardType: TextInputType.phone,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Please enter phone number';
+                              return 'Пожалуйста, введите номер телефона';
                             }
                             return null;
                           },
@@ -207,7 +207,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
                         // Continue Button
                         PrimaryButton(
-                          label: 'Continue',
+                          label: 'Продолжить',
                           onPressed: _onContinue,
                         ),
 
@@ -218,7 +218,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              "Already have an account? ",
+                              "Уже есть аккаунт? ",
                               style: AppTypography.bodyMedium.copyWith(
                                 color: AppColors.textSecondary,
                               ),
@@ -226,7 +226,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                             InkWell(
                               onTap: () => context.push(AppRoutes.login),
                               child: Text(
-                                'Sign In',
+                                'Войти',
                                 style: AppTypography.subheadingMedium.copyWith(
                                   color: AppColors.primary,
                                   fontWeight: FontWeight.w700,

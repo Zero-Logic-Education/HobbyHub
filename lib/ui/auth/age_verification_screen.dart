@@ -84,7 +84,7 @@ class _AgeVerificationScreenState extends ConsumerState<AgeVerificationScreen> {
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          'Back',
+                          'Назад',
                           style: AppTypography.bodyMedium.copyWith(
                             color: AppColors.textSecondary,
                             fontWeight: FontWeight.w500,
@@ -143,7 +143,7 @@ class _AgeVerificationScreenState extends ConsumerState<AgeVerificationScreen> {
 
                 // Header
                 Text(
-                  'How old are you?',
+                  'Сколько вам лет?',
                   style: AppTypography.headingLarge.copyWith(
                     fontSize: 32,
                     color: AppColors.textPrimary,
@@ -152,7 +152,7 @@ class _AgeVerificationScreenState extends ConsumerState<AgeVerificationScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'We use your age to show safe and relevant events.',
+                  'Мы используем ваш возраст, чтобы показывать подходящие события.',
                   style: AppTypography.bodyLarge.copyWith(
                     color: AppColors.textSecondary,
                   ),
@@ -162,7 +162,7 @@ class _AgeVerificationScreenState extends ConsumerState<AgeVerificationScreen> {
 
                 // Picker Section
                 Text(
-                  'Select your age',
+                  'Выберите ваш возраст',
                   style: AppTypography.subheadingLarge.copyWith(
                     color: AppColors.textPrimary,
                     fontWeight: FontWeight.w600,
@@ -182,7 +182,7 @@ class _AgeVerificationScreenState extends ConsumerState<AgeVerificationScreen> {
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: Text(
-                    'Choose your age',
+                    'Укажите возраст',
                     style: AppTypography.bodyLarge.copyWith(
                       color: AppColors.textPrimary,
                       fontWeight: FontWeight.w500,
@@ -272,7 +272,7 @@ class _AgeVerificationScreenState extends ConsumerState<AgeVerificationScreen> {
                 const SizedBox(height: 32),
 
                 // Continue Button
-                PrimaryButton(label: 'Continue', onPressed: _submit),
+                PrimaryButton(label: 'Продолжить', onPressed: _submit),
 
                 const SizedBox(height: 16),
 

@@ -96,7 +96,7 @@ class WelcomeScreen extends StatelessWidget {
                         // Title & Subtitle section
                         const SizedBox(height: 48),
                         Text(
-                          'Discover your next\npassionate hobby',
+                          'Открой для себя\nновое хобби',
                           textAlign: TextAlign.center,
                           style: AppTypography.headingLarge.copyWith(
                             fontSize: 32,
@@ -109,7 +109,7 @@ class WelcomeScreen extends StatelessWidget {
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 20),
                           child: Text(
-                            'Connect with like-minded people and explore exciting communities near you.',
+                            'Общайтесь с единомышленниками и исследуйте захватывающие сообщества рядом с вами.',
                             textAlign: TextAlign.center,
                             style: AppTypography.bodyLarge.copyWith(
                               color: AppColors.textSecondary,
@@ -124,12 +124,12 @@ class WelcomeScreen extends StatelessWidget {
 
                         // Buttons section
                         PrimaryButton(
-                          label: 'Create Account',
+                          label: 'Создать аккаунт',
                           onPressed: () => context.push(AppRoutes.register),
                         ),
                         const SizedBox(height: 16),
                         SecondaryButton(
-                          label: 'Sign In',
+                          label: 'Войти',
                           onPressed: () => context.push(AppRoutes.login),
                         ),
 

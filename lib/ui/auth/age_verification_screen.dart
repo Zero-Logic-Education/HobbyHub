@@ -4,11 +4,15 @@ import 'package:go_router/go_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../core/router/app_router.dart';
-import '../../providers/user_provider.dart';
 import '../shared/app_button.dart';
 
 class AgeVerificationScreen extends ConsumerStatefulWidget {
-  const AgeVerificationScreen({super.key});
+  final Map<String, dynamic> userData;
+
+  const AgeVerificationScreen({
+    super.key,
+    this.userData = const {},
+  });
 
   @override
   ConsumerState<AgeVerificationScreen> createState() =>
@@ -28,15 +32,16 @@ class _AgeVerificationScreenState extends ConsumerState<AgeVerificationScreen> {
   ); // От 12 до 99
 
   Future<void> _submit() async {
-    final notifier = ref.read(ageVerificationNotifierProvider.notifier);
-    await notifier.verifyAge(age: _selectedAge);
+    final updatedData = <String, dynamic>{
+      ...widget.userData,
+      'age': _selectedAge,
+    };
 
-    if (mounted) {
-      if (_selectedAge < 18) {
-        context.push(AppRoutes.parentalConsent);
-      } else {
-        context.push(AppRoutes.interestsSelection);
-      }
+    if (!mounted) return;
+    if (_selectedAge < 18) {
+      context.push(AppRoutes.parentalConsent, extra: updatedData);
+    } else {
+      context.push(AppRoutes.interestsSelection, extra: updatedData);
     }
   }
 
@@ -249,16 +254,6 @@ class _AgeVerificationScreenState extends ConsumerState<AgeVerificationScreen> {
                                           : FontWeight.w500,
                                     ),
                                   ),
-                                  if (isSelected)
-                                    Text(
-                                      'years old',
-                                      style: AppTypography.labelSmall.copyWith(
-                                        color: Colors.white.withValues(
-                                          alpha: 0.7,
-                                        ),
-                                        fontSize: 10,
-                                      ),
-                                    ),
                                 ],
                               ),
                             );
@@ -281,7 +276,7 @@ class _AgeVerificationScreenState extends ConsumerState<AgeVerificationScreen> {
                   child: TextButton(
                     onPressed: () => context.pop(),
                     child: Text(
-                      'Back',
+                      'Назад',
                       style: AppTypography.bodyLarge.copyWith(
                         color: AppColors.textSecondary,
                         fontWeight: FontWeight.w600,

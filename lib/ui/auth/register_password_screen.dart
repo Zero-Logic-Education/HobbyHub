@@ -5,11 +5,12 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../core/router/app_router.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/user_provider.dart';
 import '../shared/app_button.dart';
 import '../shared/app_text_field.dart';
 
 class RegisterPasswordScreen extends ConsumerStatefulWidget {
-  final Map<String, String> userData;
+  final Map<String, dynamic> userData;
 
   const RegisterPasswordScreen({super.key, required this.userData});
 
@@ -34,15 +35,26 @@ class _RegisterPasswordScreenState
   Future<void> _onFinish() async {
     if (!_formKey.currentState!.validate()) return;
 
-    final notifier = ref.read(authNotifierProvider.notifier);
-
-    // В реальном приложении мы бы также обновляли displayName и phone в Firestore
-    // после успешной регистрации через signUpWithEmail.
-    // Для демо - просто регистрируем.
-    await notifier.signUpWithEmail(
-      widget.userData['email']!,
+    final authNotifier = ref.read(authNotifierProvider.notifier);
+    await authNotifier.signUpWithEmail(
+      widget.userData['email'] as String,
       _passwordController.text.trim(),
     );
+
+    if (!mounted) return;
+    final result = ref.read(authNotifierProvider);
+    if (!result.hasError) {
+      // Сохраняем профиль: имя, возраст, интересы
+      final profileNotifier = ref.read(
+        currentUserProfileNotifierProvider.notifier,
+      );
+      await profileNotifier.updateProfile(
+        displayName: widget.userData['name'] as String?,
+        interests: (widget.userData['interests'] as List?)?.cast<String>(),
+      );
+      if (!mounted) return;
+      context.go(AppRoutes.home);
+    }
   }
 
   @override
@@ -50,11 +62,7 @@ class _RegisterPasswordScreenState
     final authState = ref.watch(authNotifierProvider);
 
     ref.listen(authNotifierProvider, (previous, next) {
-      if (previous?.isLoading == true && next.hasValue) {
-        // Успешная регистрация
-        context.go(AppRoutes.ageVerification);
-      } else if (next.hasError) {
-        // Ошибка регистрации
+      if (next.hasError) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(next.error.toString()),
@@ -95,7 +103,7 @@ class _RegisterPasswordScreenState
                                 ),
                                 const SizedBox(width: 8),
                                 Text(
-                                  'Back',
+                                  'Назад',
                                   style: AppTypography.bodyMedium.copyWith(
                                     color: AppColors.textSecondary,
                                     fontWeight: FontWeight.w500,
@@ -156,7 +164,7 @@ class _RegisterPasswordScreenState
 
                         // Header
                         Text(
-                          'Set password',
+                          'Установите пароль',
                           style: AppTypography.headingLarge.copyWith(
                             fontSize: 32,
                             color: AppColors.textPrimary,
@@ -165,7 +173,7 @@ class _RegisterPasswordScreenState
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          "One last step to secure your account",
+                          'Последний шаг, чтобы защитить ваш аккаунт',
                           style: AppTypography.bodyLarge.copyWith(
                             color: AppColors.textSecondary,
                           ),
@@ -175,16 +183,16 @@ class _RegisterPasswordScreenState
 
                         // Password Field
                         AppTextField(
-                          label: 'Password',
+                          label: 'Пароль',
                           controller: _passwordController,
                           hint: '••••••••',
                           obscureText: true,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Please enter password';
+                              return 'Введите пароль';
                             }
                             if (value.length < 6) {
-                              return 'Password too short';
+                              return 'Пароль слишком короткий';
                             }
                             return null;
                           },
@@ -194,13 +202,13 @@ class _RegisterPasswordScreenState
 
                         // Confirm Password Field
                         AppTextField(
-                          label: 'Confirm password',
+                          label: 'Повторите пароль',
                           controller: _confirmPasswordController,
                           hint: '••••••••',
                           obscureText: true,
                           validator: (value) {
                             if (value != _passwordController.text) {
-                              return 'Passwords do not match';
+                              return 'Пароли не совпадают';
                             }
                             return null;
                           },
@@ -210,7 +218,7 @@ class _RegisterPasswordScreenState
 
                         // Finish Button
                         PrimaryButton(
-                          label: 'Create Account',
+                          label: 'Создать аккаунт',
                           onPressed: _onFinish,
                           isLoading: authState is AsyncLoading,
                         ),

@@ -16,16 +16,17 @@ extension GoRouterExtensions on GoRouter {
   void goEditProfile() => push(AppRoutes.editProfile);
 
   /// Навигация на экран входа
-  void goLogin() => go('${AppRoutes.auth}${AppRoutes.login}');
+  void goLogin() => go(AppRoutes.login);
 
   /// Навигация на экран регистрации
-  void goRegister() => go('${AppRoutes.auth}${AppRoutes.register}');
+  void goRegister() => go(AppRoutes.register);
 
   /// Навигация на выбор интересов
-  void goInterestsSelection() => go('${AppRoutes.auth}${AppRoutes.interestsSelection}');
+  void goInterestsSelection() => go(AppRoutes.interestsSelection);
 
   /// Навигация на детальную страницу события
-  void goEventDetail(String eventId) => push('${AppRoutes.home}/event/$eventId');
+  void goEventDetail(String eventId) =>
+      push('${AppRoutes.home}/event/$eventId');
 
   /// Навигация на создание события
   void goCreateEvent() => push('${AppRoutes.home}/create-event');
@@ -42,10 +43,8 @@ extension GoRouterExtensions on GoRouter {
 /// Расширения для BuildContext для удобной навигации
 extension BuildContextRouterExtensions on GoRouter {
   /// Проверка, находимся ли мы на маршруте
-  bool isAtRoute(String location) => routerDelegate.currentConfiguration
-      .uri
-      .toString()
-      .startsWith(location);
+  bool isAtRoute(String location) =>
+      routerDelegate.currentConfiguration.uri.toString().startsWith(location);
 
   /// Получить текущий маршрут
   String get currentRoute => routerDelegate.currentConfiguration.uri.toString();

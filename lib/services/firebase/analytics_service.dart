@@ -73,7 +73,7 @@ class AnalyticsService {
       parameters: {
         'event_id': eventId,
         'event_type': eventType,
-        if (category != null) 'category': category,
+        'category': ?category,
       },
     );
   }
@@ -128,7 +128,7 @@ class AnalyticsService {
     await _analytics.logSearch(
       searchTerm: searchTerm,
       parameters: {
-        if (category != null) 'category': category,
+        'category': ?category,
       },
     );
   }
@@ -171,7 +171,7 @@ class AnalyticsService {
       name: 'send_message',
       parameters: {
         'chat_type': chatType,
-        if (chatId != null) 'chat_id': chatId,
+        'chat_id': ?chatId,
       },
     );
   }

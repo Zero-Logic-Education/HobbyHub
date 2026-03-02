@@ -1,8 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 
 /// Сервис для работы с Firebase Authentication
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
 
   /// Получить текущего пользователя
   User? get currentUser => _auth.currentUser;
@@ -42,14 +45,56 @@ class AuthService {
 
   /// Вход с Google
   Future<UserCredential?> signInWithGoogle() async {
-    // Requires google_sign_in package
-    throw UnimplementedError('Google Sign-In not implemented yet');
+    try {
+      // 1. Запуск процесса входа Google
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      if (googleUser == null) return null; // Отмена пользователем
+
+      // 2. Получение данных аутентификации от Google
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+
+      // 3. Создание учетных данных для Firebase
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      // 4. Вход в Firebase
+      return await _auth.signInWithCredential(credential);
+    } on FirebaseAuthException catch (e) {
+      throw _handleAuthException(e);
+    } catch (e) {
+      rethrow;
+    }
   }
 
-  /// Вход с Apple
-  Future<UserCredential?> signInWithApple() async {
-    // Requires sign_in_with_apple package
-    throw UnimplementedError('Apple Sign-In not implemented yet');
+  /// Вход с Facebook
+  Future<UserCredential?> signInWithFacebook() async {
+    try {
+      // 1. Запуск процесса входа Facebook
+      final LoginResult result = await FacebookAuth.instance.login(
+        permissions: ['email', 'public_profile'],
+      );
+
+      if (result.status == LoginStatus.success) {
+        // 2. Получение Access Token
+        final OAuthCredential credential = FacebookAuthProvider.credential(
+          result.accessToken!.tokenString,
+        );
+
+        // 3. Вход в Firebase
+        return await _auth.signInWithCredential(credential);
+      } else if (result.status == LoginStatus.cancelled) {
+        return null;
+      } else {
+        throw result.message ?? 'Unknown Facebook error';
+      }
+    } on FirebaseAuthException catch (e) {
+      throw _handleAuthException(e);
+    } catch (e) {
+      rethrow;
+    }
   }
 
   /// Отправить email для сброса пароля
@@ -85,10 +130,7 @@ class AuthService {
   }
 
   /// Обновить профиль пользователя
-  Future<void> updateProfile({
-    String? displayName,
-    String? photoURL,
-  }) async {
+  Future<void> updateProfile({String? displayName, String? photoURL}) async {
     try {
       await currentUser?.updateDisplayName(displayName);
       await currentUser?.updatePhotoURL(photoURL);

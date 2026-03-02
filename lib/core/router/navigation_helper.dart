@@ -9,9 +9,14 @@ class NavigationHelper {
     context.go(AppRoutes.home);
   }
 
-  /// Переход на экран с картой
+  /// Переход на экран с поиском
   static void goMap(BuildContext context) {
-    context.go(AppRoutes.map);
+    context.go(AppRoutes.search);
+  }
+
+  // Переход на экран  сообщества
+  static void goCommunities(BuildContext context) {
+    context.go(AppRoutes.communities);
   }
 
   /// Переход на профиль
@@ -58,11 +63,6 @@ class NavigationHelper {
     context.push('${AppRoutes.home}/create-event');
   }
 
-  /// Переход на список сообществ
-  static void goCommunities(BuildContext context) {
-    context.push('${AppRoutes.home}/communities');
-  }
-
   /// Переход на детальную страницу сообщества
   static void goCommunityDetail(BuildContext context, String communityId) {
     context.push('${AppRoutes.home}/communities/$communityId');
@@ -85,7 +85,9 @@ class NavigationHelper {
 
   /// Проверить, находимся ли на маршруте
   static bool isAtRoute(BuildContext context, String location) {
-    final currentLocation = GoRouter.of(context).routeInformationProvider.value.uri.toString();
+    final currentLocation = GoRouter.of(
+      context,
+    ).routeInformationProvider.value.uri.toString();
     return currentLocation.startsWith(location);
   }
 }

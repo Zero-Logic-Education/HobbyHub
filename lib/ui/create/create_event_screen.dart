@@ -19,7 +19,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
   final TextEditingController _descriptionController = TextEditingController();
 
   final List<Map<String, dynamic>> _types = [
-    {'id': 'One-time', 'label': 'Разовое', 'icon': Icons.🎯},
+    {'id': 'One-time', 'label': 'Разовое', 'icon': Icons.event_outlined},
     {'id': 'Recurring', 'label': 'Повторяющееся', 'icon': Icons.cached_rounded},
     {'id': 'Series', 'label': 'Серия', 'icon': Icons.assignment_outlined},
   ];
@@ -129,37 +129,50 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                         final isSelected = _selectedType == type['id'];
                         return Expanded(
                           child: GestureDetector(
-                            onTap: () => setState(() => _selectedType = type['id']),
+                            onTap: () =>
+                                setState(() => _selectedType = type['id']),
                             child: Container(
                               margin: EdgeInsets.only(
                                 right: type['id'] != 'Series' ? 12 : 0,
                               ),
                               padding: const EdgeInsets.symmetric(vertical: 20),
                               decoration: BoxDecoration(
-                                color: isSelected ? AppColors.primary : Colors.white,
+                                color: isSelected
+                                    ? AppColors.primary
+                                    : Colors.white,
                                 borderRadius: BorderRadius.circular(20),
                                 border: Border.all(
-                                  color: isSelected ? AppColors.primary : const Color(0xFFF0F0F0),
+                                  color: isSelected
+                                      ? AppColors.primary
+                                      : const Color(0xFFF0F0F0),
                                 ),
-                                boxShadow: isSelected ? [
-                                  BoxShadow(
-                                    color: AppColors.primary.withValues(alpha: 0.3),
-                                    blurRadius: 12,
-                                    offset: const Offset(0, 6),
-                                  )
-                                ] : null,
+                                boxShadow: isSelected
+                                    ? [
+                                        BoxShadow(
+                                          color: AppColors.primary.withValues(
+                                            alpha: 0.3,
+                                          ),
+                                          blurRadius: 12,
+                                          offset: const Offset(0, 6),
+                                        ),
+                                      ]
+                                    : null,
                               ),
                               child: Column(
                                 children: [
                                   Icon(
                                     type['icon'] as IconData,
-                                    color: isSelected ? Colors.white : AppColors.textSecondary,
+                                    color: isSelected
+                                        ? Colors.white
+                                        : AppColors.textSecondary,
                                   ),
                                   const SizedBox(height: 8),
                                   Text(
                                     type['label'],
                                     style: AppTypography.bodySmall.copyWith(
-                                      color: isSelected ? Colors.white : AppColors.textSecondary,
+                                      color: isSelected
+                                          ? Colors.white
+                                          : AppColors.textSecondary,
                                       fontWeight: FontWeight.w700,
                                     ),
                                   ),
@@ -180,6 +193,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                     ),
                     const SizedBox(height: 12),
                     AppTextField(
+                      label: 'Название события',
                       controller: _titleController,
                       hint: 'Дайте вашему событию крутое имя',
                     ),
@@ -195,37 +209,49 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                     GridView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        childAspectRatio: 2.5,
-                        crossAxisSpacing: 12,
-                        mainAxisSpacing: 12,
-                      ),
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            childAspectRatio: 2.5,
+                            crossAxisSpacing: 12,
+                            mainAxisSpacing: 12,
+                          ),
                       itemCount: _categories.length,
                       itemBuilder: (context, index) {
                         final category = _categories[index];
                         final isSelected = _selectedCategory == category['id'];
                         return GestureDetector(
-                          onTap: () => setState(() => _selectedCategory = category['id']),
+                          onTap: () => setState(
+                            () => _selectedCategory = category['id'],
+                          ),
                           child: Container(
                             decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(16),
                               border: Border.all(
-                                color: isSelected ? AppColors.primary : const Color(0xFFF0F0F0),
+                                color: isSelected
+                                    ? AppColors.primary
+                                    : const Color(0xFFF0F0F0),
                                 width: isSelected ? 2 : 1,
                               ),
                             ),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Text(category['icon'], style: const TextStyle(fontSize: 18)),
+                                Text(
+                                  category['icon'],
+                                  style: const TextStyle(fontSize: 18),
+                                ),
                                 const SizedBox(width: 8),
                                 Text(
                                   category['label'],
                                   style: AppTypography.bodyMedium.copyWith(
-                                    fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                                    color: isSelected ? AppColors.primary : AppColors.textPrimary,
+                                    fontWeight: isSelected
+                                        ? FontWeight.w700
+                                        : FontWeight.w500,
+                                    color: isSelected
+                                        ? AppColors.primary
+                                        : AppColors.textPrimary,
                                   ),
                                 ),
                               ],
@@ -243,20 +269,35 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                       ),
                     ),
                     const SizedBox(height: 12),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: const Color(0xFFF0F0F0)),
-                      ),
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: TextField(
-                        controller: _descriptionController,
-                        maxLines: 5,
-                        decoration: InputDecoration(
-                          hintText: 'Расскажите людям, о чем ваше событие...',
-                          hintStyle: AppTypography.bodyMedium.copyWith(color: AppColors.textTertiary),
-                          border: InputBorder.none,
+                    TextField(
+                      controller: _descriptionController,
+                      maxLines: 5,
+                      decoration: InputDecoration(
+                        hintText: 'Расскажите людям, о чем ваше событие...',
+                        hintStyle: AppTypography.bodyMedium.copyWith(
+                          color: AppColors.textTertiary,
+                        ),
+                        filled: true,
+                        fillColor: Colors.white,
+                        contentPadding: const EdgeInsets.all(16),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          borderSide: const BorderSide(
+                            color: Color(0xFFF0F0F0),
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          borderSide: const BorderSide(
+                            color: Color(0xFFF0F0F0),
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          borderSide: BorderSide(
+                            color: AppColors.primary,
+                            width: 1.5,
+                          ),
                         ),
                       ),
                     ),

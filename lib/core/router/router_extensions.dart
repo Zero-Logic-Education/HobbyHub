@@ -6,8 +6,11 @@ extension GoRouterExtensions on GoRouter {
   /// Навигация на главный экран
   void goHome() => go(AppRoutes.home);
 
-  /// Навигация на экран карты
-  void goMap() => go(AppRoutes.map);
+  /// Навигация на экран поиска
+  void goSearch() => go(AppRoutes.search);
+
+  /// Навигация на экран сообществ
+  void goCommunities() => go(AppRoutes.communities);
 
   /// Навигация на экран профиля
   void goProfile() => go(AppRoutes.profile);

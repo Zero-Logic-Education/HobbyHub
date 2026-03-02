@@ -14,6 +14,7 @@ import '../../ui/onboarding/location_screen.dart';
 import '../../ui/onboarding/parental_consent_screen.dart';
 import '../../ui/profile/profile_screen.dart';
 import '../../ui/main_shell/main_shell.dart';
+import '../../ui/search/search_screen.dart';
 import '../../providers/auth_provider.dart';
 
 /// Константы путей маршрутов
@@ -180,16 +181,13 @@ final routerProvider = Provider<GoRouter>((ref) {
               ),
             ],
           ),
-          // Вкладка: Карта
+          // Вкладка: Поиск
           StatefulShellBranch(
             routes: [
               GoRoute(
                 path: AppRoutes.map,
-                name: 'map',
-                builder: (context, state) => Scaffold(
-                  appBar: AppBar(title: const Text('Карта')),
-                  body: const Center(child: Text('Map Screen')),
-                ),
+                name: 'search',
+                builder: (context, state) => const SearchScreen(),
               ),
             ],
           ),

@@ -95,7 +95,7 @@ class _RegisterPasswordScreenState
                                 ),
                                 const SizedBox(width: 8),
                                 Text(
-                                  'Назад',
+                                  'Back',
                                   style: AppTypography.bodyMedium.copyWith(
                                     color: AppColors.textSecondary,
                                     fontWeight: FontWeight.w500,
@@ -156,7 +156,7 @@ class _RegisterPasswordScreenState
 
                         // Header
                         Text(
-                          'Установите пароль',
+                          'Set password',
                           style: AppTypography.headingLarge.copyWith(
                             fontSize: 32,
                             color: AppColors.textPrimary,
@@ -165,7 +165,7 @@ class _RegisterPasswordScreenState
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          "Последний шаг для защиты вашего аккаунта",
+                          "One last step to secure your account",
                           style: AppTypography.bodyLarge.copyWith(
                             color: AppColors.textSecondary,
                           ),
@@ -175,16 +175,16 @@ class _RegisterPasswordScreenState
 
                         // Password Field
                         AppTextField(
-                          label: 'Пароль',
+                          label: 'Password',
                           controller: _passwordController,
                           hint: '••••••••',
                           obscureText: true,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Пожалуйста, введите пароль';
+                              return 'Please enter password';
                             }
                             if (value.length < 6) {
-                              return 'Пароль слишком короткий';
+                              return 'Password too short';
                             }
                             return null;
                           },

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:hobby_hub/core/theme/app_colors.dart';
-import 'package:hobby_hub/core/theme/app_spacing.dart';
-import 'package:hobby_hub/core/theme/app_typography.dart';
+import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_spacing.dart';
+import '../../core/theme/app_typography.dart';
 
 /// Кастомное текстовое поле с поддержкой валидации
 class AppTextField extends StatefulWidget {
@@ -87,20 +87,22 @@ class _AppTextFieldState extends State<AppTextField> {
 
         // Input field
         Container(
+          height: AppSpacing.inputHeight, // Фиксированная высота 48.0
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+            borderRadius: BorderRadius.circular(16),
             border: Border.all(
               color: hasError
                   ? AppColors.error
                   : _isFocused
-                      ? AppColors.primary
-                      : AppColors.lightPink,
-              width: _isFocused ? 2 : 1,
+                  ? AppColors.primary
+                  : AppColors.border,
+              width: _isFocused ? 1.5 : 1,
             ),
             color: hasError
-                ? AppColors.error.withValues(alpha: 0.05)
-                : AppColors.lightPink,
+                ? AppColors.primary.withValues(alpha: 0.1)
+                : AppColors.surfaceVariant,
           ),
+          alignment: Alignment.center, // Центрирование контента
           child: TextFormField(
             controller: widget.controller,
             focusNode: _focusNode,
@@ -118,31 +120,46 @@ class _AppTextFieldState extends State<AppTextField> {
                 color: AppColors.textHint,
               ),
               border: InputBorder.none,
+              isDense: true, // Более компактное поле
               contentPadding: EdgeInsets.symmetric(
                 horizontal: AppSpacing.md,
-                vertical: AppSpacing.md,
+                vertical:
+                    0, // Убираем вертикальные отступы внутри, так как высота фиксирована
               ),
               prefixIcon: widget.prefixIcon != null
                   ? Padding(
-                      padding: EdgeInsets.only(left: AppSpacing.md),
-                      child: widget.prefixIcon,
+                      padding: EdgeInsets.symmetric(horizontal: AppSpacing.sm),
+                      child: IconTheme(
+                        data: IconThemeData(
+                          size: 20,
+                          color: AppColors.textSecondary,
+                        ),
+                        child: widget.prefixIcon!,
+                      ),
                     )
                   : null,
               suffixIcon: widget.suffixIcon != null
                   ? Padding(
-                      padding: EdgeInsets.only(right: AppSpacing.md),
-                      child: widget.suffixIcon,
+                      padding: EdgeInsets.symmetric(horizontal: AppSpacing.sm),
+                      child: IconTheme(
+                        data: IconThemeData(
+                          size: 20,
+                          color: AppColors.textSecondary,
+                        ),
+                        child: widget.suffixIcon!,
+                      ),
                     )
                   : null,
-              prefixIconConstraints: BoxConstraints(
-                minWidth: 0,
+              prefixIconConstraints: const BoxConstraints(
+                minWidth: 40,
                 minHeight: 0,
               ),
-              suffixIconConstraints: BoxConstraints(
-                minWidth: 0,
+              suffixIconConstraints: const BoxConstraints(
+                minWidth: 40,
                 minHeight: 0,
               ),
             ),
+            textAlignVertical: TextAlignVertical.center, // Центрирование текста
             style: AppTypography.bodyMedium.copyWith(
               color: AppColors.textPrimary,
             ),
@@ -155,9 +172,7 @@ class _AppTextFieldState extends State<AppTextField> {
             padding: EdgeInsets.only(top: AppSpacing.xs),
             child: Text(
               widget.errorText!,
-              style: AppTypography.labelSmall.copyWith(
-                color: AppColors.error,
-              ),
+              style: AppTypography.labelSmall.copyWith(color: AppColors.error),
             ),
           ),
       ],

@@ -42,6 +42,9 @@ class User {
   /// Верифицирован ли пользователь
   final bool isVerified;
 
+  /// Email родителя (для пользователей < 18 лет)
+  final String? parentEmail;
+
   /// Дата создания аккаунта
   @JsonKey(fromJson: _timestampFromJson, toJson: _timestampToJson)
   final DateTime createdAt;
@@ -62,6 +65,9 @@ class User {
   /// Количество созданных событий
   final int eventsCreated;
 
+  /// Номер телефона пользователя
+  final String? phoneNumber;
+
   User({
     required this.id,
     required this.email,
@@ -75,12 +81,14 @@ class User {
     this.latitude,
     this.longitude,
     this.isVerified = false,
+    this.parentEmail,
     required this.createdAt,
     this.updatedAt,
     this.friends = const [],
     this.eventsAttended = 0,
     this.organizerRating = 0.0,
     this.eventsCreated = 0,
+    this.phoneNumber,
   });
 
   factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
@@ -99,12 +107,14 @@ class User {
     double? latitude,
     double? longitude,
     bool? isVerified,
+    String? parentEmail,
     DateTime? createdAt,
     DateTime? updatedAt,
     List<String>? friends,
     int? eventsAttended,
     double? organizerRating,
     int? eventsCreated,
+    String? phoneNumber,
   }) {
     return User(
       id: id ?? this.id,
@@ -119,12 +129,14 @@ class User {
       latitude: latitude ?? this.latitude,
       longitude: longitude ?? this.longitude,
       isVerified: isVerified ?? this.isVerified,
+      parentEmail: parentEmail ?? this.parentEmail,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       friends: friends ?? this.friends,
       eventsAttended: eventsAttended ?? this.eventsAttended,
       organizerRating: organizerRating ?? this.organizerRating,
       eventsCreated: eventsCreated ?? this.eventsCreated,
+      phoneNumber: phoneNumber ?? this.phoneNumber,
     );
   }
 

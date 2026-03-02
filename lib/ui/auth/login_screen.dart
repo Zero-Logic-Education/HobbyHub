@@ -120,7 +120,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 ),
                                 const SizedBox(width: 8),
                                 Text(
-                                  'Back',
+                                  'Назад',
                                   style: AppTypography.bodyMedium.copyWith(
                                     color: AppColors.textSecondary,
                                     fontWeight: FontWeight.w500,
@@ -135,7 +135,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
                         // Header
                         Text(
-                          'Welcome back',
+                          'С возвращением',
                           style: AppTypography.headingLarge.copyWith(
                             fontSize: 32,
                             color: AppColors.textPrimary,
@@ -144,7 +144,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Sign in to continue to HobbyHub',
+                          'Войдите, чтобы продолжить в HobbyHub',
                           style: AppTypography.bodyLarge.copyWith(
                             color: AppColors.textSecondary,
                           ),
@@ -160,10 +160,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           keyboardType: TextInputType.emailAddress,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Please enter email';
+                              return 'Пожалуйста, введите email';
                             }
                             if (!value.contains('@')) {
-                              return 'Invalid email format';
+                              return 'Некорректный формат email';
                             }
                             return null;
                           },
@@ -173,16 +173,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
                         // Password Field
                         AppTextField(
-                          label: 'Password',
+                          label: 'Пароль',
                           controller: _passwordController,
-                          hint: 'Enter your password',
+                          hint: 'Введите ваш пароль',
                           obscureText: true,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Please enter password';
+                              return 'Пожалуйста, введите пароль';
                             }
                             if (value.length < 6) {
-                              return 'Password too short';
+                              return 'Пароль слишком короткий';
                             }
                             return null;
                           },
@@ -201,7 +201,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                             ),
                             child: Text(
-                              'Forgot password?',
+                              'Забыли пароль?',
                               style: AppTypography.labelLarge.copyWith(
                                 color: AppColors.primary,
                                 fontWeight: FontWeight.w700,
@@ -226,7 +226,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 horizontal: 16,
                               ),
                               child: Text(
-                                'or continue with',
+                                'или через',
                                 style: AppTypography.bodySmall.copyWith(
                                   color: AppColors.textTertiary,
                                   fontSize: 14,
@@ -246,7 +246,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
                         // Social Buttons
                         SocialAuthButton(
-                          label: 'Continue with Google',
+                          label: 'Продолжить через Google',
                           isGoogle: true,
                           onPressed: () => ref
                               .read(authNotifierProvider.notifier)
@@ -254,7 +254,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         ),
                         const SizedBox(height: 16),
                         SocialAuthButton(
-                          label: 'Continue with Facebook',
+                          label: 'Продолжить через Facebook',
                           isFacebook: true,
                           onPressed: () => ref
                               .read(authNotifierProvider.notifier)
@@ -264,7 +264,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         const SizedBox(height: 32),
                         // Submit Button
                         PrimaryButton(
-                          label: 'Sign In',
+                          label: 'Войти',
                           onPressed: _login,
                           isLoading: authState is AsyncLoading,
                         ),
@@ -276,7 +276,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              "Don't have an account? ",
+                              "Нет аккаунта? ",
                               style: AppTypography.bodyMedium.copyWith(
                                 color: AppColors.textSecondary,
                               ),
@@ -284,7 +284,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             InkWell(
                               onTap: () => context.push(AppRoutes.register),
                               child: Text(
-                                'Sign Up',
+                                'Создать',
                                 style: AppTypography.subheadingMedium.copyWith(
                                   color: AppColors.primary,
                                   fontWeight: FontWeight.w700,

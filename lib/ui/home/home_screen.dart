@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../providers/auth_provider.dart';
+import 'event_detail_screen.dart';
 
 // TODO: В будущем данные будут загружаться из Firebase Firestore
 // Сейчас используем mock данные для отображения UI
@@ -13,7 +14,10 @@ class HomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authStateProvider);
-    final userName = authState.value?.displayName ?? authState.value?.email?.split('@')[0] ?? 'User';
+    final userName =
+        authState.value?.displayName ??
+        authState.value?.email?.split('@')[0] ??
+        'User';
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -82,10 +86,7 @@ class HomeScreen extends ConsumerWidget {
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
-                      colors: [
-                        Color(0xFFFF8A7A),
-                        Color(0xFFFF9B8A),
-                      ],
+                      colors: [Color(0xFFFF8A7A), Color(0xFFFF9B8A)],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),
@@ -192,7 +193,7 @@ class HomeScreen extends ConsumerWidget {
               ),
 
               const SizedBox(height: 4),
-              
+
               // TODO: Данные из Firestore
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -208,12 +209,13 @@ class HomeScreen extends ConsumerWidget {
               const SizedBox(height: 12),
 
               // Event Cards
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Column(
                   children: [
                     _EventCard(
-                      imageUrl: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=800',
+                      imageUrl:
+                          'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=800',
                       category: 'Здоровье',
                       title: 'Утренняя йога-сессия',
                       date: 'Сегодня, 8:00',
@@ -224,7 +226,8 @@ class HomeScreen extends ConsumerWidget {
                     ),
                     SizedBox(height: 16),
                     _EventCard(
-                      imageUrl: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800',
+                      imageUrl:
+                          'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800',
                       category: 'Технологии',
                       title: 'Tech Networking Mixer',
                       date: 'Завтра, 18:00',
@@ -235,7 +238,8 @@ class HomeScreen extends ConsumerWidget {
                     ),
                     SizedBox(height: 16),
                     _EventCard(
-                      imageUrl: 'https://images.unsplash.com/photo-1610701596007-11502861dcfa?w=800',
+                      imageUrl:
+                          'https://images.unsplash.com/photo-1610701596007-11502861dcfa?w=800',
                       category: 'Искусство',
                       title: 'Мастер-класс по гончарству',
                       date: 'Суббота, 14:00',
@@ -246,7 +250,8 @@ class HomeScreen extends ConsumerWidget {
                     ),
                     SizedBox(height: 16),
                     _EventCard(
-                      imageUrl: 'https://images.unsplash.com/photo-1511192336575-5a79af67a629?w=800',
+                      imageUrl:
+                          'https://images.unsplash.com/photo-1511192336575-5a79af67a629?w=800',
                       category: 'Музыка',
                       title: 'Джазовый вечер',
                       date: 'Пятница, 20:00',
@@ -273,10 +278,7 @@ class _FilterChip extends StatelessWidget {
   final String label;
   final bool isSelected;
 
-  const _FilterChip({
-    required this.label,
-    required this.isSelected,
-  });
+  const _FilterChip({required this.label, required this.isSelected});
 
   @override
   Widget build(BuildContext context) {
@@ -293,9 +295,7 @@ class _FilterChip extends StatelessWidget {
           fontWeight: FontWeight.w500,
         ),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       ),
     );
   }
@@ -328,12 +328,24 @@ class _EventCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: InkWell(
         onTap: () {
-          // TODO: Навигация на страницу события
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => EventDetailScreen(
+                title: title,
+                date: date,
+                location: location,
+                imageUrl: imageUrl,
+                price: price,
+                category: category,
+                categoryColor: categoryColor,
+                participants: participants,
+              ),
+            ),
+          );
         },
         borderRadius: BorderRadius.circular(16),
         child: Column(
@@ -402,8 +414,8 @@ class _EventCard extends StatelessWidget {
                       vertical: 6,
                     ),
                     decoration: BoxDecoration(
-                      color: ageRestriction != null 
-                          ? Colors.black87 
+                      color: ageRestriction != null
+                          ? Colors.black87
                           : AppColors.primary,
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -493,15 +505,21 @@ class _EventCard extends StatelessWidget {
                           children: [
                             Positioned(
                               left: 0,
-                              child: _ParticipantAvatar(color: AppColors.primary),
+                              child: _ParticipantAvatar(
+                                color: AppColors.primary,
+                              ),
                             ),
                             Positioned(
                               left: 20,
-                              child: _ParticipantAvatar(color: Color(0xFF64B5F6)),
+                              child: _ParticipantAvatar(
+                                color: Color(0xFF64B5F6),
+                              ),
                             ),
                             Positioned(
                               left: 40,
-                              child: _ParticipantAvatar(color: Color(0xFF81C784)),
+                              child: _ParticipantAvatar(
+                                color: Color(0xFF81C784),
+                              ),
                             ),
                           ],
                         ),

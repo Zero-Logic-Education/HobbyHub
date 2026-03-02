@@ -15,6 +15,8 @@ import '../../ui/onboarding/parental_consent_screen.dart';
 import '../../ui/profile/profile_screen.dart';
 import '../../ui/main_shell/main_shell.dart';
 import '../../ui/search/search_screen.dart';
+import '../../ui/create/create_event_screen.dart';
+import '../../ui/communities/communities_screen.dart';
 import '../../providers/auth_provider.dart';
 
 /// Константы путей маршрутов
@@ -32,7 +34,8 @@ class AppRoutes {
 
   // Основные экраны
   static const String home = '/home';
-  static const String map = '/map';
+  static const String search = '/search';
+  static const String createEvent = '/create';
   static const String communities = '/communities';
   static const String chats = '/chats';
   static const String profile = '/profile';
@@ -185,7 +188,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           StatefulShellBranch(
             routes: [
               GoRoute(
-                path: AppRoutes.map,
+                path: AppRoutes.search,
                 name: 'search',
                 builder: (context, state) => const SearchScreen(),
               ),
@@ -195,11 +198,9 @@ final routerProvider = Provider<GoRouter>((ref) {
           StatefulShellBranch(
             routes: [
               GoRoute(
-                path: '/create',
-                builder: (context, state) => Scaffold(
-                  appBar: AppBar(title: const Text('Создать')),
-                  body: const Center(child: Text('Create Page')),
-                ),
+                path: AppRoutes.createEvent,
+                name: 'create-event',
+                builder: (context, state) => const CreateEventScreen(),
               ),
             ],
           ),
@@ -209,10 +210,7 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: AppRoutes.communities,
                 name: 'communities',
-                builder: (context, state) => Scaffold(
-                  appBar: AppBar(title: const Text('Сообщества')),
-                  body: const Center(child: Text('Communities')),
-                ),
+                builder: (context, state) => const CommunitiesScreen(),
               ),
             ],
           ),

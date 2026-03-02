@@ -31,10 +31,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   void _onContinue() {
     if (!_formKey.currentState!.validate()) return;
 
-    // Переход на экран пароля с передачей данных
+    // Переход на экран возраста с передачей данных
     context.push(
-      '${AppRoutes.register}/password',
-      extra: {
+      AppRoutes.ageVerification,
+      extra: <String, dynamic>{
         'name': _nameController.text.trim(),
         'email': _emailController.text.trim(),
         'phone': _phoneController.text.trim(),

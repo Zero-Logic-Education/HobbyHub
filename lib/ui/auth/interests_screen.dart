@@ -4,11 +4,12 @@ import 'package:go_router/go_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../core/router/app_router.dart';
-import '../../providers/user_provider.dart';
 import '../shared/app_button.dart';
 
 class InterestsScreen extends ConsumerStatefulWidget {
-  const InterestsScreen({super.key});
+  final Map<String, dynamic> userData;
+
+  const InterestsScreen({super.key, this.userData = const {}});
 
   @override
   ConsumerState<InterestsScreen> createState() => _InterestsScreenState();
@@ -30,7 +31,11 @@ class _InterestsScreenState extends ConsumerState<InterestsScreen> {
     },
     {'id': 'photo', 'label': 'Фотография', 'icon': Icons.camera_alt_rounded},
     {'id': 'books', 'label': 'Книги', 'icon': Icons.auto_stories_rounded},
-    {'id': 'travel', 'label': 'Путешествия', 'icon': Icons.flight_takeoff_rounded},
+    {
+      'id': 'travel',
+      'label': 'Путешествия',
+      'icon': Icons.flight_takeoff_rounded,
+    },
     {'id': 'gaming', 'label': 'Игры', 'icon': Icons.sports_esports_rounded},
     {'id': 'fitness', 'label': 'Фитнес', 'icon': Icons.fitness_center_rounded},
     {'id': 'movies', 'label': 'Кино', 'icon': Icons.movie_rounded},
@@ -46,13 +51,12 @@ class _InterestsScreenState extends ConsumerState<InterestsScreen> {
     });
   }
 
-  Future<void> _submit() async {
-    final notifier = ref.read(currentUserProfileNotifierProvider.notifier);
-    await notifier.updateProfile(interests: _selectedInterests.toList());
-
-    if (mounted) {
-      context.go(AppRoutes.home);
-    }
+  void _submit() {
+    final updatedData = <String, dynamic>{
+      ...widget.userData,
+      'interests': _selectedInterests.toList(),
+    };
+    context.push('${AppRoutes.register}/password', extra: updatedData);
   }
 
   @override
@@ -96,7 +100,7 @@ class _InterestsScreenState extends ConsumerState<InterestsScreen> {
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          'Back',
+                          'Назад',
                           style: AppTypography.bodyMedium.copyWith(
                             color: AppColors.textSecondary,
                             fontWeight: FontWeight.w500,
@@ -237,7 +241,13 @@ class _InterestsScreenState extends ConsumerState<InterestsScreen> {
                 // Skip Button
                 Center(
                   child: TextButton(
-                    onPressed: () => context.go(AppRoutes.home),
+                    onPressed: () => context.push(
+                      '${AppRoutes.register}/password',
+                      extra: <String, dynamic>{
+                        ...widget.userData,
+                        'interests': <String>[],
+                      },
+                    ),
                     child: Text(
                       'Пропустить пока что',
                       style: AppTypography.bodyLarge.copyWith(

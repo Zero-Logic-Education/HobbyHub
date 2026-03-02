@@ -64,13 +64,6 @@ final routerProvider = Provider<GoRouter>((ref) {
           currentPath == AppRoutes.welcome ||
           currentPath == AppRoutes.splash;
 
-      // Пути онбординга после регистрации
-      final isOnboardingPath =
-          currentPath == AppRoutes.ageVerification ||
-          currentPath == AppRoutes.interestsSelection ||
-          currentPath == AppRoutes.locationPermission ||
-          currentPath == AppRoutes.parentalConsent;
-
       // Если загружается, не редиректим (пока ждем ответа от Firebase)
       if (authState.isLoading && currentPath == AppRoutes.splash) {
         return null;
@@ -81,11 +74,15 @@ final routerProvider = Provider<GoRouter>((ref) {
         return AppRoutes.welcome;
       }
 
-      // Если авторизован и пытается зайти на Login/Welcome (но не на Splash)
-      if (isLoggedIn &&
-          isAuthPath &&
-          currentPath != AppRoutes.splash &&
-          !isOnboardingPath) {
+      // Если авторизован — редиректим на home ТОЛЬКО с welcome/login/auth-корня.
+      // Онбординг (age, interests, register, parental, location) проходит уже
+      // после создания аккаунта, поэтому не мешаем этим путям.
+      final isRootAuthPath =
+          currentPath == AppRoutes.welcome ||
+          currentPath == AppRoutes.login ||
+          currentPath == AppRoutes.auth;
+
+      if (isLoggedIn && isRootAuthPath && currentPath != AppRoutes.splash) {
         return AppRoutes.home;
       }
 
@@ -126,7 +123,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                 path: 'password',
                 name: 'register-password',
                 builder: (context, state) {
-                  final data = state.extra as Map<String, String>;
+                  final data = state.extra as Map<String, dynamic>? ?? {};
                   return RegisterPasswordScreen(userData: data);
                 },
               ),
@@ -135,12 +132,18 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: 'age-verification',
             name: 'age-verification',
-            builder: (context, state) => const AgeVerificationScreen(),
+            builder: (context, state) {
+              final data = state.extra as Map<String, dynamic>? ?? {};
+              return AgeVerificationScreen(userData: data);
+            },
           ),
           GoRoute(
             path: 'interests-selection',
             name: 'interests-selection',
-            builder: (context, state) => const InterestsScreen(),
+            builder: (context, state) {
+              final data = state.extra as Map<String, dynamic>? ?? {};
+              return InterestsScreen(userData: data);
+            },
           ),
           GoRoute(
             path: 'location',

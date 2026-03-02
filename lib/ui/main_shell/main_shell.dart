@@ -48,9 +48,9 @@ class MainShell extends StatelessWidget {
             label: 'Группы',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.more_horiz),
-            activeIcon: Icon(Icons.more_horiz, weight: 700),
-            label: 'Еще',
+            icon: Icon(Icons.person_outline),
+            activeIcon: Icon(Icons.person),
+            label: 'Профиль',
           ),
         ],
       ),

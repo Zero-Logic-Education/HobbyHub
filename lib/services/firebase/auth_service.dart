@@ -5,7 +5,8 @@ import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 /// Сервис для работы с Firebase Authentication
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
+  // Добавляем serverClientId для Google Sign-In на Android
+  final GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email', 'profile']);
 
   /// Получить текущего пользователя
   User? get currentUser => _auth.currentUser;
@@ -19,11 +20,15 @@ class AuthService {
     required String password,
   }) async {
     try {
-      return await _auth.createUserWithEmailAndPassword(
+      print('Signing up with email: $email');
+      final result = await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
+      print('Successfully signed up with email');
+      return result;
     } on FirebaseAuthException catch (e) {
+      print('Firebase Auth Error: ${e.code} - ${e.message}');
       throw _handleAuthException(e);
     }
   }
@@ -34,11 +39,15 @@ class AuthService {
     required String password,
   }) async {
     try {
-      return await _auth.signInWithEmailAndPassword(
+      print('Signing in with email: $email');
+      final result = await _auth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
+      print('Successfully signed in with email');
+      return result;
     } on FirebaseAuthException catch (e) {
+      print('Firebase Auth Error: ${e.code} - ${e.message}');
       throw _handleAuthException(e);
     }
   }
@@ -48,11 +57,18 @@ class AuthService {
     try {
       // 1. Запуск процесса входа Google
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-      if (googleUser == null) return null; // Отмена пользователем
+      if (googleUser == null) {
+        print('Google Sign-In cancelled by user');
+        return null; // Отмена пользователем
+      }
+
+      print('Google Sign-In: User selected - ${googleUser.email}');
 
       // 2. Получение данных аутентификации от Google
       final GoogleSignInAuthentication googleAuth =
           await googleUser.authentication;
+
+      print('Google Sign-In: Got auth tokens');
 
       // 3. Создание учетных данных для Firebase
       final AuthCredential credential = GoogleAuthProvider.credential(
@@ -60,11 +76,17 @@ class AuthService {
         idToken: googleAuth.idToken,
       );
 
+      print('Google Sign-In: Created Firebase credential');
+
       // 4. Вход в Firebase
-      return await _auth.signInWithCredential(credential);
+      final result = await _auth.signInWithCredential(credential);
+      print('Google Sign-In: Successfully signed in');
+      return result;
     } on FirebaseAuthException catch (e) {
+      print('Firebase Auth Error: ${e.code} - ${e.message}');
       throw _handleAuthException(e);
     } catch (e) {
+      print('Google Sign-In Error: $e');
       rethrow;
     }
   }

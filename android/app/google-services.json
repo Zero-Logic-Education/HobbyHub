@@ -12,7 +12,20 @@
           "package_name": "com.example.hobby_hub"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "924214570624-k7bgoev7tkgichdi4plcel78pjfv7f7k.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.hobby_hub",
+            "certificate_hash": "16b862c734219a6f3d26b9e4463412beb8ed0485"
+          }
+        },
+        {
+          "client_id": "924214570624-rkdo42g7ugbjg7ft3c89ue9d340sgo16.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyDL_MUbgacEvig9TQh8v5NxIccnV1F_5YU"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "924214570624-rkdo42g7ugbjg7ft3c89ue9d340sgo16.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "924214570624-s7mitsd6m05st5qr5qhpcnbhv6s77m6t.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.hobbyHub"
+              }
+            }
+          ]
         }
       }
     }

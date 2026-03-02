@@ -120,6 +120,11 @@ class _AppTextFieldState extends State<AppTextField> {
                 color: AppColors.textHint,
               ),
               border: InputBorder.none,
+              enabledBorder: InputBorder.none,
+              focusedBorder: InputBorder.none,
+              errorBorder: InputBorder.none,
+              focusedErrorBorder: InputBorder.none,
+              disabledBorder: InputBorder.none,
               isDense: true, // Более компактное поле
               contentPadding: EdgeInsets.symmetric(
                 horizontal: AppSpacing.md,

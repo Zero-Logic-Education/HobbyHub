@@ -10,6 +10,7 @@ class WelcomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('✅ WelcomeScreen: Building screen');
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(

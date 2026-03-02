@@ -71,25 +71,22 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print('✅ LoginScreen: Building screen');
     final authState = ref.watch(authNotifierProvider);
 
     ref.listen(authNotifierProvider, (previous, next) {
-      next.when(
-        data: (_) {
-          if (previous is AsyncLoading) {
-            context.go(AppRoutes.home);
-          }
-        },
-        error: (e, _) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(e.toString()),
-              backgroundColor: AppColors.error,
-            ),
-          );
-        },
-        loading: () {},
-      );
+      if (previous?.isLoading == true && next.hasValue) {
+        // Успешная авторизация
+        context.go(AppRoutes.home);
+      } else if (next.hasError) {
+        // Ошибка авторизации
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(next.error.toString()),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
     });
 
     return Scaffold(

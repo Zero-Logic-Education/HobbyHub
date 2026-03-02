@@ -50,22 +50,18 @@ class _RegisterPasswordScreenState
     final authState = ref.watch(authNotifierProvider);
 
     ref.listen(authNotifierProvider, (previous, next) {
-      next.when(
-        data: (_) {
-          if (previous is AsyncLoading) {
-            context.go(AppRoutes.ageVerification);
-          }
-        },
-        error: (e, _) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(e.toString()),
-              backgroundColor: AppColors.error,
-            ),
-          );
-        },
-        loading: () {},
-      );
+      if (previous?.isLoading == true && next.hasValue) {
+        // Успешная регистрация
+        context.go(AppRoutes.ageVerification);
+      } else if (next.hasError) {
+        // Ошибка регистрации
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(next.error.toString()),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
     });
 
     return Scaffold(

@@ -48,19 +48,40 @@ final routerProvider = Provider<GoRouter>((ref) {
 
     // Редиректы в зависимости от состояния авторизации
     redirect: (context, state) {
-      final isLoggedIn = authState.value != null;
-      final isAuthPath =
-          state.uri.path.startsWith('/auth') ||
-          state.uri.path == AppRoutes.welcome ||
-          state.uri.path == AppRoutes.splash;
+      // Проверяем состояние авторизации
+      final isLoggedIn =
+          authState.whenOrNull(data: (user) => user != null) ?? false;
 
+      final currentPath = state.uri.path;
+
+      // Пути, доступные без авторизации
+      final isAuthPath =
+          currentPath.startsWith('/auth') ||
+          currentPath == AppRoutes.welcome ||
+          currentPath == AppRoutes.splash;
+
+      // Пути онбординга после регистрации
+      final isOnboardingPath =
+          currentPath == AppRoutes.ageVerification ||
+          currentPath == AppRoutes.interestsSelection ||
+          currentPath == AppRoutes.locationPermission ||
+          currentPath == AppRoutes.parentalConsent;
+
+      // Если загружается, не редиректим (пока ждем ответа от Firebase)
+      if (authState.isLoading && currentPath == AppRoutes.splash) {
+        return null;
+      }
+
+      // Если НЕ авторизован и пытается попасть на защищенные страницы
       if (!isLoggedIn && !isAuthPath) {
         return AppRoutes.welcome;
       }
 
-      if (isLoggedIn && isAuthPath && state.uri.path != AppRoutes.splash) {
-        // Если залогинен и пытается зайти на Login/Welcome - на Home
-        // Но Splash пропускаем, чтобы он сам перенаправил
+      // Если авторизован и пытается зайти на Login/Welcome (но не на Splash)
+      if (isLoggedIn &&
+          isAuthPath &&
+          currentPath != AppRoutes.splash &&
+          !isOnboardingPath) {
         return AppRoutes.home;
       }
 

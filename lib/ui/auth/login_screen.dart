@@ -71,7 +71,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print('✅ LoginScreen: Building screen');
+
     final authState = ref.watch(authNotifierProvider);
 
     ref.listen(authNotifierProvider, (previous, next) {

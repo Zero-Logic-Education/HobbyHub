@@ -5,9 +5,6 @@ import '../../core/theme/app_typography.dart';
 import '../../providers/auth_provider.dart';
 import 'event_detail_screen.dart';
 
-// TODO: В будущем данные будут загружаться из Firebase Firestore
-// Сейчас используем mock данные для отображения UI
-
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
@@ -98,7 +95,7 @@ class HomeScreen extends ConsumerWidget {
                       Text(
                         'ОТКРОЙ ДЛЯ СЕБЯ',
                         style: AppTypography.bodySmall.copyWith(
-                          color: Colors.white.withOpacity(0.9),
+                          color: Colors.white.withValues(alpha: 0.9),
                           fontWeight: FontWeight.w600,
                           letterSpacing: 1.2,
                         ),
@@ -116,7 +113,7 @@ class HomeScreen extends ConsumerWidget {
                       ElevatedButton(
                         onPressed: () {},
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white.withOpacity(0.3),
+                          backgroundColor: Colors.white.withValues(alpha: 0.3),
                           foregroundColor: Colors.white,
                           elevation: 0,
                           padding: const EdgeInsets.symmetric(
@@ -194,7 +191,6 @@ class HomeScreen extends ConsumerWidget {
 
               const SizedBox(height: 4),
 
-              // TODO: Данные из Firestore
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Text(
@@ -372,7 +368,7 @@ class _EventCard extends StatelessWidget {
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) {
                         return Container(
-                          color: categoryColor.withOpacity(0.3),
+                          color: categoryColor.withValues(alpha: 0.3),
                           child: Icon(
                             Icons.image,
                             size: 60,

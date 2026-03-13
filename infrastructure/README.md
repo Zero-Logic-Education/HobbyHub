@@ -4,8 +4,9 @@
 
 **Инфраструктурные конфигурации проекта HobbyHub**
 
-[![Firebase](https://img.shields.io/badge/Firebase-CLI-FFCA28?logo=firebase&logoColor=black)](https://firebase.google.com/docs/cli)
-[![Firestore](https://img.shields.io/badge/Firestore-Rules-orange?logo=firebase&logoColor=black)](https://firebase.google.com/docs/firestore/security/get-started)
+[![Firebase](https://img.shields.io/badge/Firebase-Platform-FFCA28?logo=firebase&logoColor=black)](https://firebase.google.com/)
+[![Firestore](https://img.shields.io/badge/Firestore-Security%20Rules-orange?logo=firebase&logoColor=black)](https://firebase.google.com/docs/firestore/security/get-started)
+[![Cloud Storage](https://img.shields.io/badge/Cloud%20Storage-Rules-1A73E8?logo=googlecloud&logoColor=white)](https://firebase.google.com/docs/storage/security)
 
 </div>
 
@@ -23,9 +24,10 @@
 
 Папка содержит инфраструктурные артефакты проекта:
 
-- правила безопасности и индексы Firestore;
+- конфигурацию Firebase CLI для проекта и деплоя;
+- правила безопасности и индексы для Firestore;
 - правила доступа к Cloud Storage;
-- конфигурацию Firebase-проекта.
+- настройки Firebase Hosting для web-сборки приложения.
 
 ---
 
@@ -35,10 +37,10 @@
 
 | **Путь** | **Назначение** |
 |:---|:---|
-| `firebase/firebase.json` | Корневая конфигурация Firebase CLI |
-| `firebase/firestore.rules` | Правила безопасности Firestore |
-| `firebase/firestore.indexes.json` | Составные индексы коллекций Firestore |
-| `firebase/storage.rules` | Правила доступа к Cloud Storage |
+| `firebase/firebase.json` | Конфигурация Firebase CLI: сервисы, пути, hosting rewrites |
+| `firebase/firestore.rules` | Политики доступа к коллекциям users, communities, events, messages |
+| `firebase/firestore.indexes.json` | Составные индексы для Firestore-запросов |
+| `firebase/storage.rules` | Правила чтения и записи файлов в Cloud Storage |
 
 </div>
 
@@ -50,9 +52,9 @@
 
 | **Сервис** | **Конфиг** | **Что настраивается** |
 |:---|:---|:---|
-| Firestore | `firebase/firestore.rules` | Права доступа к коллекциям users, communities, events, messages |
-| Firestore | `firebase/firestore.indexes.json` | Составные индексы для сложных запросов |
-| Cloud Storage | `firebase/storage.rules` | Права на чтение / запись файлов |
-| Firebase CLI | `firebase/firebase.json` | Цели деплоя и пути к файлам конфигурации |
+| Firebase CLI | `firebase/firebase.json` | Привязка проекта, пути конфигов, настройки Hosting |
+| Firestore Security | `firebase/firestore.rules` | Авторизация, роли, приватность профилей, возрастные ограничения |
+| Firestore Indexes | `firebase/firestore.indexes.json` | Индексы для фильтрации и сортировки в сложных выборках |
+| Cloud Storage Security | `firebase/storage.rules` | Доступ к медиафайлам пользователей, событий и сообществ |
 
 </div>

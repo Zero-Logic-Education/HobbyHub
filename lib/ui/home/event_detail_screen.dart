@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 
-// TODO: В будущем данные будут загружаться из Firebase Firestore
 class EventDetailScreen extends StatelessWidget {
   final String title;
   final String date;
@@ -65,7 +64,7 @@ class EventDetailScreen extends StatelessWidget {
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) {
                   return Container(
-                    color: categoryColor.withOpacity(0.3),
+                    color: categoryColor.withValues(alpha: 0.3),
                     child: Center(
                       child: Icon(
                         Icons.image,
@@ -150,7 +149,7 @@ class EventDetailScreen extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: AppColors.primary.withOpacity(0.1),
+                          color: AppColors.primary.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Icon(
@@ -256,7 +255,7 @@ class EventDetailScreen extends StatelessWidget {
                       vertical: 8,
                     ),
                     decoration: BoxDecoration(
-                      color: categoryColor.withOpacity(0.1),
+                      color: categoryColor.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(

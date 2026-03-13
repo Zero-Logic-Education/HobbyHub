@@ -20,15 +20,15 @@ class AuthService {
     required String password,
   }) async {
     try {
-      print('Signing up with email: $email');
+
       final result = await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
-      print('Successfully signed up with email');
+
       return result;
     } on FirebaseAuthException catch (e) {
-      print('Firebase Auth Error: ${e.code} - ${e.message}');
+
       throw _handleAuthException(e);
     }
   }
@@ -39,15 +39,15 @@ class AuthService {
     required String password,
   }) async {
     try {
-      print('Signing in with email: $email');
+
       final result = await _auth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
-      print('Successfully signed in with email');
+
       return result;
     } on FirebaseAuthException catch (e) {
-      print('Firebase Auth Error: ${e.code} - ${e.message}');
+
       throw _handleAuthException(e);
     }
   }
@@ -58,17 +58,17 @@ class AuthService {
       // 1. Запуск процесса входа Google
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
       if (googleUser == null) {
-        print('Google Sign-In cancelled by user');
+
         return null; // Отмена пользователем
       }
 
-      print('Google Sign-In: User selected - ${googleUser.email}');
+
 
       // 2. Получение данных аутентификации от Google
       final GoogleSignInAuthentication googleAuth =
           await googleUser.authentication;
 
-      print('Google Sign-In: Got auth tokens');
+
 
       // 3. Создание учетных данных для Firebase
       final AuthCredential credential = GoogleAuthProvider.credential(
@@ -76,17 +76,17 @@ class AuthService {
         idToken: googleAuth.idToken,
       );
 
-      print('Google Sign-In: Created Firebase credential');
+
 
       // 4. Вход в Firebase
       final result = await _auth.signInWithCredential(credential);
-      print('Google Sign-In: Successfully signed in');
+
       return result;
     } on FirebaseAuthException catch (e) {
-      print('Firebase Auth Error: ${e.code} - ${e.message}');
+
       throw _handleAuthException(e);
     } catch (e) {
-      print('Google Sign-In Error: $e');
+
       rethrow;
     }
   }

@@ -5,11 +5,11 @@
         "default": {
           "projectId": "hobbyhub-dev",
           "appId": "1:924214570624:android:8bc3efe8c3476650f6c065",
-          "fileOutput": "android/app/google-services.json"
+          "fileOutput": "../../apps/android/app/google-services.json"
         }
       },
       "dart": {
-        "lib/firebase_options.dart": {
+        "../../apps/lib/firebase_options.dart": {
           "projectId": "hobbyhub-dev",
           "configurations": {
             "android": "1:924214570624:android:8bc3efe8c3476650f6c065",
@@ -27,7 +27,7 @@
     "rules": "storage.rules"
   },
   "hosting": {
-    "public": "build/web",
+    "public": "../../apps/build/web",
     "ignore": [
       "firebase.json",
       "**/.*",

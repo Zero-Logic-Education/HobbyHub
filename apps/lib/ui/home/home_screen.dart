@@ -1,16 +1,63 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/event_provider.dart';
 import 'event_detail_screen.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
+  String _formatEventDate(DateTime dateTime) {
+    final now = DateTime.now();
+    final eventDate = DateTime(dateTime.year, dateTime.month, dateTime.day);
+    final today = DateTime(now.year, now.month, now.day);
+    final tomorrow = today.add(const Duration(days: 1));
+    final time = DateFormat('HH:mm').format(dateTime);
+
+    if (eventDate == today) return 'Сегодня, $time';
+    if (eventDate == tomorrow) return 'Завтра, $time';
+
+    return DateFormat('dd.MM, HH:mm').format(dateTime);
+  }
+
+  String _formatPrice(double price, bool isFree) {
+    if (isFree || price <= 0) return 'Бесплатно';
+    final hasFraction = price % 1 != 0;
+    return '${price.toStringAsFixed(hasFraction ? 2 : 0)} ₽';
+  }
+
+  String _categoryLabel(List<String> categories) {
+    if (categories.isEmpty) return 'Разное';
+    return categories.first;
+  }
+
+  Color _categoryColor(String category) {
+    switch (category.toLowerCase()) {
+      case 'спорт':
+      case 'sports':
+        return const Color(0xFF81C784);
+      case 'технологии':
+      case 'tech':
+        return const Color(0xFF64B5F6);
+      case 'творчество':
+      case 'искусство':
+      case 'art':
+        return const Color(0xFFBA68C8);
+      case 'музыка':
+      case 'music':
+        return const Color(0xFFFFB74D);
+      default:
+        return AppColors.primary;
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authStateProvider);
+    final eventsState = ref.watch(eventsStreamProvider);
     final userName =
         authState.value?.displayName ??
         authState.value?.email?.split('@')[0] ??
@@ -190,74 +237,79 @@ class HomeScreen extends ConsumerWidget {
               ),
 
               const SizedBox(height: 4),
-
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Text(
-                  'TODO: Загрузка из Firebase Firestore',
-                  style: AppTypography.bodySmall.copyWith(
-                    color: AppColors.textSecondary,
-                    fontStyle: FontStyle.italic,
-                  ),
-                ),
-              ),
-
               const SizedBox(height: 12),
 
-              // Event Cards
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Column(
-                  children: [
-                    _EventCard(
-                      imageUrl:
-                          'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=800',
-                      category: 'Здоровье',
-                      title: 'Утренняя йога-сессия',
-                      date: 'Сегодня, 8:00',
-                      location: 'Центральный парк',
-                      participants: 24,
-                      price: 'Бесплатно',
-                      categoryColor: Color(0xFF81C784),
+                child: eventsState.when(
+                  data: (events) {
+                    if (events.isEmpty) {
+                      return Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(color: const Color(0xFFF0F0F0)),
+                        ),
+                        child: Text(
+                          'Пока нет событий. Создай первое на вкладке "Создать".',
+                          style: AppTypography.bodyMedium.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                      );
+                    }
+
+                    return Column(
+                      children: [
+                        for (int index = 0; index < events.length; index++) ...[
+                          _EventCard(
+                            imageUrl: events[index].coverImageUrl ?? '',
+                            category: _categoryLabel(events[index].categories),
+                            title: events[index].title,
+                            date: _formatEventDate(events[index].startTime),
+                            location:
+                                (events[index].address ?? '').trim().isNotEmpty
+                                ? events[index].address!
+                                : 'Локация не указана',
+                            participants: events[index].participants.length,
+                            price: _formatPrice(
+                              events[index].price,
+                              events[index].isFree,
+                            ),
+                            ageRestriction: events[index].minAge >= 18
+                                ? '${events[index].minAge}+'
+                                : null,
+                            categoryColor: _categoryColor(
+                              _categoryLabel(events[index].categories),
+                            ),
+                          ),
+                          if (index != events.length - 1)
+                            const SizedBox(height: 16),
+                        ],
+                      ],
+                    );
+                  },
+                  loading: () => const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 24),
+                    child: Center(child: CircularProgressIndicator()),
+                  ),
+                  error: (error, stackTrace) => Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: const Color(0xFFF0F0F0)),
                     ),
-                    SizedBox(height: 16),
-                    _EventCard(
-                      imageUrl:
-                          'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800',
-                      category: 'Технологии',
-                      title: 'Tech Networking Mixer',
-                      date: 'Завтра, 18:00',
-                      location: 'Tech Hub, Downtown',
-                      participants: 56,
-                      price: '\$15',
-                      categoryColor: Color(0xFF64B5F6),
+                    child: Text(
+                      'Ошибка загрузки событий: $error',
+                      style: AppTypography.bodyMedium.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
                     ),
-                    SizedBox(height: 16),
-                    _EventCard(
-                      imageUrl:
-                          'https://images.unsplash.com/photo-1610701596007-11502861dcfa?w=800',
-                      category: 'Искусство',
-                      title: 'Мастер-класс по гончарству',
-                      date: 'Суббота, 14:00',
-                      location: 'Арт-студия',
-                      participants: 12,
-                      price: '\$25',
-                      categoryColor: Color(0xFFBA68C8),
-                    ),
-                    SizedBox(height: 16),
-                    _EventCard(
-                      imageUrl:
-                          'https://images.unsplash.com/photo-1511192336575-5a79af67a629?w=800',
-                      category: 'Музыка',
-                      title: 'Джазовый вечер',
-                      date: 'Пятница, 20:00',
-                      location: 'Jazz Club',
-                      participants: 45,
-                      price: '\$20',
-                      ageRestriction: '18+',
-                      categoryColor: Color(0xFFFFB74D),
-                    ),
-                  ],
+                  ),
                 ),
               ),
 

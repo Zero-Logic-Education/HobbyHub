@@ -1,31 +1,59 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
+import '../../models/event.dart';
 
 class EventDetailScreen extends StatelessWidget {
-  final String title;
-  final String date;
-  final String location;
-  final String imageUrl;
-  final String price;
-  final String category;
-  final Color categoryColor;
-  final int participants;
+  final Event event;
 
   const EventDetailScreen({
     super.key,
-    required this.title,
-    required this.date,
-    required this.location,
-    required this.imageUrl,
-    required this.price,
-    required this.category,
-    required this.categoryColor,
-    required this.participants,
+    required this.event,
   });
+
+  String _formatDate(DateTime dateTime) {
+    return DateFormat('dd.MM.yyyy, HH:mm').format(dateTime);
+  }
+
+  String _formatPrice(double price, bool isFree) {
+    if (isFree || price <= 0) return 'Бесплатно';
+    final hasFraction = price % 1 != 0;
+    return '${price.toStringAsFixed(hasFraction ? 2 : 0)} ₽';
+  }
+
+  String _categoryLabel() {
+    if (event.categories.isEmpty) return 'Разное';
+    return event.categories.first;
+  }
+
+  Color _categoryColor() {
+    switch (_categoryLabel().toLowerCase()) {
+      case 'спорт':
+      case 'sports':
+        return const Color(0xFF81C784);
+      case 'технологии':
+      case 'tech':
+        return const Color(0xFF64B5F6);
+      case 'творчество':
+      case 'искусство':
+      case 'art':
+        return const Color(0xFFBA68C8);
+      case 'музыка':
+      case 'music':
+        return const Color(0xFFFFB74D);
+      default:
+        return AppColors.primary;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    final categoryColor = _categoryColor();
+    final location = (event.address ?? '').trim().isNotEmpty
+        ? event.address!
+        : 'Локация не указана';
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: CustomScrollView(
@@ -60,7 +88,7 @@ class EventDetailScreen extends StatelessWidget {
             ],
             flexibleSpace: FlexibleSpaceBar(
               background: Image.network(
-                imageUrl,
+                event.coverImageUrl ?? '',
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) {
                   return Container(
@@ -87,7 +115,7 @@ class EventDetailScreen extends StatelessWidget {
                 children: [
                   // Title
                   Text(
-                    title,
+                    event.title,
                     style: AppTypography.headingLarge.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -111,7 +139,7 @@ class EventDetailScreen extends StatelessWidget {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              date,
+                              _formatDate(event.startTime),
                               style: AppTypography.bodyLarge.copyWith(
                                 fontWeight: FontWeight.w600,
                               ),
@@ -130,7 +158,7 @@ class EventDetailScreen extends StatelessWidget {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            price,
+                            _formatPrice(event.price, event.isFree),
                             style: AppTypography.headingMedium.copyWith(
                               color: AppColors.primary,
                               fontWeight: FontWeight.bold,
@@ -169,13 +197,13 @@ class EventDetailScreen extends StatelessWidget {
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
-                            const SizedBox(height: 2),
-                            Text(
-                              'ул. Главная, 123, Москва',
-                              style: AppTypography.bodySmall.copyWith(
-                                color: AppColors.textSecondary,
+                            if (event.latitude != 0 || event.longitude != 0)
+                              Text(
+                                '${event.latitude.toStringAsFixed(4)}, ${event.longitude.toStringAsFixed(4)}',
+                                style: AppTypography.bodySmall.copyWith(
+                                  color: AppColors.textSecondary,
+                                ),
                               ),
-                            ),
                           ],
                         ),
                       ),
@@ -213,7 +241,7 @@ class EventDetailScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    'Присоединяйтесь к нам для потрясающего вечера живой музыки, художественных выставок и нетворкинга! Познакомьтесь с другими любителями хобби и откройте для себя новые увлечения в яркой атмосфере сообщества.',
+                    event.description,
                     style: AppTypography.bodyMedium.copyWith(
                       color: AppColors.textSecondary,
                       height: 1.6,
@@ -259,7 +287,7 @@ class EventDetailScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
-                      category,
+                      _categoryLabel(),
                       style: AppTypography.bodyMedium.copyWith(
                         color: categoryColor,
                         fontWeight: FontWeight.w600,
@@ -321,7 +349,7 @@ class EventDetailScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Участники ($participants)',
+                        'Участники (${event.participants.length})',
                         style: AppTypography.headingMedium.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
@@ -359,14 +387,14 @@ class EventDetailScreen extends StatelessWidget {
                               left: 60,
                               child: _AttendeeAvatar(color: Color(0xFF81C784)),
                             ),
-                            if (participants > 3)
+                            if (event.participants.length > 3)
                               Positioned(
                                 left: 90,
                                 child: CircleAvatar(
                                   radius: 20,
                                   backgroundColor: AppColors.primary,
                                   child: Text(
-                                    '+${participants - 3}',
+                                    '+${event.participants.length - 3}',
                                     style: AppTypography.bodySmall.copyWith(
                                       color: Colors.white,
                                       fontWeight: FontWeight.bold,

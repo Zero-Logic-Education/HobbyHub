@@ -92,7 +92,7 @@ class EventFilterNotifier extends StateNotifier<EventFilters> {
       : super(const EventFilters());
 
   void setDateFilter(DateTime? date) {
-    state = state.copyWith(date: date);
+    state = state.copyWith(date: date, weekendOnly: false);
   }
 
   void setCategoryFilter(List<String> categories) {
@@ -107,6 +107,13 @@ class EventFilterNotifier extends StateNotifier<EventFilters> {
     state = state.copyWith(isFree: isFree);
   }
 
+  void setWeekendOnly(bool enabled) {
+    state = state.copyWith(
+      weekendOnly: enabled,
+      date: enabled ? null : state.date,
+    );
+  }
+
   void clearFilters() {
     state = const EventFilters();
   }
@@ -118,25 +125,33 @@ class EventFilters {
   final List<String> categories;
   final int? minAge;
   final bool? isFree;
+  final bool weekendOnly;
+
+  static const Object _unset = Object();
 
   const EventFilters({
     this.date,
     this.categories = const [],
     this.minAge,
     this.isFree,
+    this.weekendOnly = false,
   });
 
   EventFilters copyWith({
-    DateTime? date,
+    Object? date = _unset,
     List<String>? categories,
-    int? minAge,
-    bool? isFree,
+    Object? minAge = _unset,
+    Object? isFree = _unset,
+    Object? weekendOnly = _unset,
   }) {
     return EventFilters(
-      date: date ?? this.date,
+      date: identical(date, _unset) ? this.date : date as DateTime?,
       categories: categories ?? this.categories,
-      minAge: minAge ?? this.minAge,
-      isFree: isFree ?? this.isFree,
+      minAge: identical(minAge, _unset) ? this.minAge : minAge as int?,
+      isFree: identical(isFree, _unset) ? this.isFree : isFree as bool?,
+      weekendOnly: identical(weekendOnly, _unset)
+          ? this.weekendOnly
+          : weekendOnly as bool,
     );
   }
 }
@@ -149,12 +164,20 @@ final eventFilterProvider =
 
 /// Провайдер для отфильтрованных событий
 final filteredEventsListProvider = Provider<List<Event>>((ref) {
-  final eventsAsync = ref.watch(eventsProvider);
+  final eventsAsync = ref.watch(eventsStreamProvider);
   final filters = ref.watch(eventFilterProvider);
 
   return eventsAsync.maybeWhen(
     data: (events) {
       var filtered = events;
+
+      // Фильтр только на выходных
+      if (filters.weekendOnly) {
+        filtered = filtered.where((event) {
+          final weekday = event.startTime.weekday;
+          return weekday == DateTime.saturday || weekday == DateTime.sunday;
+        }).toList();
+      }
 
       // Фильтр по дате
       if (filters.date != null) {
@@ -177,13 +200,13 @@ final filteredEventsListProvider = Provider<List<Event>>((ref) {
       // Фильтр по возрасту
       if (filters.minAge != null) {
         filtered = filtered
-            .where((event) => event.minAge <= filters.minAge!)
+            .where((event) => event.minAge >= filters.minAge!)
             .toList();
       }
 
-      // Фильтр по цене (бесплатные)
-      if (filters.isFree != null && filters.isFree!) {
-        filtered = filtered.where((event) => event.isFree).toList();
+      // Фильтр по цене
+      if (filters.isFree != null) {
+        filtered = filtered.where((event) => event.isFree == filters.isFree).toList();
       }
 
       return filtered;

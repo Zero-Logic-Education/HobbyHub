@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
+import '../../models/event.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/event_provider.dart';
 import 'event_detail_screen.dart';
@@ -58,6 +59,17 @@ class HomeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authStateProvider);
     final eventsState = ref.watch(eventsStreamProvider);
+    final filteredEvents = ref.watch(filteredEventsListProvider);
+    final filters = ref.watch(eventFilterProvider);
+    final filterNotifier = ref.read(eventFilterProvider.notifier);
+
+    final today = DateTime.now();
+    final isTodaySelected =
+      filters.date != null &&
+      filters.date!.year == today.year &&
+      filters.date!.month == today.month &&
+      filters.date!.day == today.day;
+
     final userName =
         authState.value?.displayName ??
         authState.value?.email?.split('@')[0] ??
@@ -200,10 +212,30 @@ class HomeScreen extends ConsumerWidget {
                   scrollDirection: Axis.horizontal,
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   children: [
-                    _FilterChip(label: 'На выходных', isSelected: true),
-                    _FilterChip(label: 'Сегодня', isSelected: false),
-                    _FilterChip(label: 'Бесплатно', isSelected: false),
-                    _FilterChip(label: 'Онлайн', isSelected: false),
+                    _FilterChip(
+                      label: 'На выходных',
+                      isSelected: filters.weekendOnly,
+                      onSelected: (selected) =>
+                          filterNotifier.setWeekendOnly(selected),
+                    ),
+                    _FilterChip(
+                      label: 'Сегодня',
+                      isSelected: isTodaySelected,
+                      onSelected: (selected) =>
+                          filterNotifier.setDateFilter(selected ? today : null),
+                    ),
+                    _FilterChip(
+                      label: 'Бесплатно',
+                      isSelected: filters.isFree == true,
+                      onSelected: (selected) =>
+                          filterNotifier.setFreeFilter(selected ? true : null),
+                    ),
+                    _FilterChip(
+                      label: '18+',
+                      isSelected: filters.minAge == 18,
+                      onSelected: (selected) =>
+                          filterNotifier.setAgeFilter(selected ? 18 : null),
+                    ),
                   ],
                 ),
               ),
@@ -223,7 +255,7 @@ class HomeScreen extends ConsumerWidget {
                       ),
                     ),
                     TextButton(
-                      onPressed: () {},
+                      onPressed: filterNotifier.clearFilters,
                       child: Text(
                         'Все',
                         style: TextStyle(
@@ -242,8 +274,8 @@ class HomeScreen extends ConsumerWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: eventsState.when(
-                  data: (events) {
-                    if (events.isEmpty) {
+                  data: (_) {
+                    if (filteredEvents.isEmpty) {
                       return Container(
                         width: double.infinity,
                         padding: const EdgeInsets.all(20),
@@ -253,7 +285,7 @@ class HomeScreen extends ConsumerWidget {
                           border: Border.all(color: const Color(0xFFF0F0F0)),
                         ),
                         child: Text(
-                          'Пока нет событий. Создай первое на вкладке "Создать".',
+                          'По выбранным фильтрам событий нет.',
                           style: AppTypography.bodyMedium.copyWith(
                             color: AppColors.textSecondary,
                           ),
@@ -263,29 +295,36 @@ class HomeScreen extends ConsumerWidget {
 
                     return Column(
                       children: [
-                        for (int index = 0; index < events.length; index++) ...[
+                        for (
+                          int index = 0;
+                          index < filteredEvents.length;
+                          index++
+                        ) ...[
                           _EventCard(
-                            imageUrl: events[index].coverImageUrl ?? '',
-                            category: _categoryLabel(events[index].categories),
-                            title: events[index].title,
-                            date: _formatEventDate(events[index].startTime),
+                            event: filteredEvents[index],
+                            imageUrl: filteredEvents[index].coverImageUrl ?? '',
+                            category: _categoryLabel(filteredEvents[index].categories),
+                            title: filteredEvents[index].title,
+                            date: _formatEventDate(filteredEvents[index].startTime),
                             location:
-                                (events[index].address ?? '').trim().isNotEmpty
-                                ? events[index].address!
+                                (filteredEvents[index].address ?? '')
+                                        .trim()
+                                        .isNotEmpty
+                                ? filteredEvents[index].address!
                                 : 'Локация не указана',
-                            participants: events[index].participants.length,
+                            participants: filteredEvents[index].participants.length,
                             price: _formatPrice(
-                              events[index].price,
-                              events[index].isFree,
+                              filteredEvents[index].price,
+                              filteredEvents[index].isFree,
                             ),
-                            ageRestriction: events[index].minAge >= 18
-                                ? '${events[index].minAge}+'
+                            ageRestriction: filteredEvents[index].minAge >= 18
+                                ? '${filteredEvents[index].minAge}+'
                                 : null,
                             categoryColor: _categoryColor(
-                              _categoryLabel(events[index].categories),
+                              _categoryLabel(filteredEvents[index].categories),
                             ),
                           ),
-                          if (index != events.length - 1)
+                          if (index != filteredEvents.length - 1)
                             const SizedBox(height: 16),
                         ],
                       ],
@@ -325,8 +364,13 @@ class HomeScreen extends ConsumerWidget {
 class _FilterChip extends StatelessWidget {
   final String label;
   final bool isSelected;
+  final ValueChanged<bool> onSelected;
 
-  const _FilterChip({required this.label, required this.isSelected});
+  const _FilterChip({
+    required this.label,
+    required this.isSelected,
+    required this.onSelected,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -335,7 +379,7 @@ class _FilterChip extends StatelessWidget {
       child: FilterChip(
         label: Text(label),
         selected: isSelected,
-        onSelected: (value) {},
+        onSelected: onSelected,
         backgroundColor: Colors.grey[200],
         selectedColor: AppColors.primary,
         labelStyle: TextStyle(
@@ -350,6 +394,7 @@ class _FilterChip extends StatelessWidget {
 }
 
 class _EventCard extends StatelessWidget {
+  final Event event;
   final String imageUrl;
   final String category;
   final String title;
@@ -361,6 +406,7 @@ class _EventCard extends StatelessWidget {
   final Color categoryColor;
 
   const _EventCard({
+    required this.event,
     required this.imageUrl,
     required this.category,
     required this.title,
@@ -382,16 +428,7 @@ class _EventCard extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => EventDetailScreen(
-                title: title,
-                date: date,
-                location: location,
-                imageUrl: imageUrl,
-                price: price,
-                category: category,
-                categoryColor: categoryColor,
-                participants: participants,
-              ),
+              builder: (context) => EventDetailScreen(event: event),
             ),
           );
         },

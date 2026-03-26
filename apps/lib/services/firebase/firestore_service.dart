@@ -33,10 +33,7 @@ class FirestoreService {
 
   /// Удалить пользователя
   Future<void> deleteUser(String uid) async {
-    await _firestore
-        .collection(AppConstants.usersCollection)
-        .doc(uid)
-        .delete();
+    await _firestore.collection(AppConstants.usersCollection).doc(uid).delete();
   }
 
   /// Stream пользователя
@@ -66,7 +63,9 @@ class FirestoreService {
 
   /// Обновить событие
   Future<void> updateEvent(
-      String eventId, Map<String, dynamic> eventData) async {
+    String eventId,
+    Map<String, dynamic> eventData,
+  ) async {
     await _firestore
         .collection(AppConstants.eventsCollection)
         .doc(eventId)
@@ -88,7 +87,7 @@ class FirestoreService {
   }) async {
     Query query = _firestore
         .collection(AppConstants.eventsCollection)
-        .orderBy('startTime', descending: false)
+        .orderBy('createdAt', descending: true)
         .limit(limit);
 
     if (startAfter != null) {
@@ -102,18 +101,19 @@ class FirestoreService {
   Stream<QuerySnapshot> eventsStream({int limit = 20}) {
     return _firestore
         .collection(AppConstants.eventsCollection)
-        .orderBy('startTime', descending: false)
+        .orderBy('createdAt', descending: true)
         .limit(limit)
         .snapshots();
   }
 
   /// Поиск событий по категориям
   Future<QuerySnapshot> searchEventsByCategories(
-      List<String> categories) async {
+    List<String> categories,
+  ) async {
     return await _firestore
         .collection(AppConstants.eventsCollection)
         .where('categories', arrayContainsAny: categories)
-        .where('startTime', isGreaterThan: DateTime.now())
+        .where('startTime', isGreaterThan: DateTime.now().toIso8601String())
         .orderBy('startTime')
         .limit(20)
         .get();
@@ -123,7 +123,8 @@ class FirestoreService {
 
   /// Создать сообщество
   Future<DocumentReference> createCommunity(
-      Map<String, dynamic> communityData) async {
+    Map<String, dynamic> communityData,
+  ) async {
     return await _firestore
         .collection(AppConstants.communitiesCollection)
         .add(communityData);
@@ -139,7 +140,9 @@ class FirestoreService {
 
   /// Обновить сообщество
   Future<void> updateCommunity(
-      String communityId, Map<String, dynamic> communityData) async {
+    String communityId,
+    Map<String, dynamic> communityData,
+  ) async {
     await _firestore
         .collection(AppConstants.communitiesCollection)
         .doc(communityId)
@@ -200,7 +203,8 @@ class FirestoreService {
 
   /// Transaction для атомарных операций
   Future<T> runTransaction<T>(
-      Future<T> Function(Transaction) transactionHandler) {
+    Future<T> Function(Transaction) transactionHandler,
+  ) {
     return _firestore.runTransaction(transactionHandler);
   }
 }

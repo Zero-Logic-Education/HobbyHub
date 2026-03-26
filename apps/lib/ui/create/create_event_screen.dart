@@ -202,13 +202,20 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
       throw Exception('Укажите адрес события');
     }
 
-    final locations = await locationFromAddress(address);
-    if (locations.isEmpty) {
-      throw Exception('Не удалось определить координаты по адресу');
-    }
+    try {
+      final locations = await locationFromAddress(address);
+      if (locations.isEmpty) {
+        throw Exception('Не удалось определить координаты по адресу. Уточните адрес.');
+      }
 
-    _latitude = locations.first.latitude;
-    _longitude = locations.first.longitude;
+      _latitude = locations.first.latitude;
+      _longitude = locations.first.longitude;
+    } catch (e) {
+      if (e.toString().contains('Не удалось определить координаты')) {
+        rethrow;
+      }
+      throw Exception('Не удалось определить координаты по адресу. Уточните адрес.');
+    }
   }
 
   String? _validateTitle(String? value) {
@@ -337,7 +344,11 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
       _showMessage('Событие создано');
       context.go(AppRoutes.home);
     } catch (e) {
-      _showMessage('Не удалось создать событие: $e');
+      String errorMessage = e.toString();
+      if (e is Exception) {
+        errorMessage = errorMessage.replaceAll('Exception: ', '');
+      }
+      _showMessage('Не удалось создать событие: $errorMessage');
     } finally {
       if (mounted) {
         setState(() {

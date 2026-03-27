@@ -17,6 +17,8 @@ import '../../ui/main_shell/main_shell.dart';
 import '../../ui/search/search_screen.dart';
 import '../../ui/create/create_event_screen.dart';
 import '../../ui/communities/communities_screen.dart';
+import '../../ui/communities/create/create_community_screen.dart';
+import '../../ui/communities/detail/community_detail_screen.dart';
 import '../../ui/profile/edit/edit_profile_screen.dart';
 import '../../providers/auth_provider.dart';
 
@@ -38,6 +40,9 @@ class AppRoutes {
   static const String search = '/search';
   static const String createEvent = '/create';
   static const String communities = '/communities';
+  static const String createCommunity = '/communities/create';
+  static const String communityDetail = '/communities/detail';
+
   static const String chats = '/chats';
   static const String profile = '/profile';
   static const String editProfile = '/profile/edit';
@@ -205,6 +210,21 @@ final routerProvider = Provider<GoRouter>((ref) {
                 path: AppRoutes.communities,
                 name: 'communities',
                 builder: (context, state) => const CommunitiesScreen(),
+                routes: [
+                  GoRoute(
+                    path: 'create',
+                    name: 'create-community',
+                    builder: (context, state) => const CreateCommunityScreen(),
+                  ),
+                  GoRoute(
+                    path: ':id',
+                    name: 'community-detail',
+                    builder: (context, state) {
+                      final id = state.pathParameters['id']!;
+                      return CommunityDetailScreen(communityId: id);
+                    },
+                  ),
+                ],
               ),
             ],
           ),

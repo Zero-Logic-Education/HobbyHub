@@ -328,3 +328,23 @@ final userEventsStreamProvider = StreamProvider<List<Event>>((ref) {
         .toList();
   });
 });
+
+/// Провайдер для отслеживания событий конкретного сообщества
+final communityEventsProvider = StreamProvider.family<List<Event>, String>((
+  ref,
+  communityId,
+) {
+  final firestoreService = ref.watch(firestoreServiceProvider);
+  return firestoreService.communityEventsStream(communityId).map((
+    querySnapshot,
+  ) {
+    return querySnapshot.docs
+        .map(
+          (doc) => Event.fromJson({
+            ...doc.data() as Map<String, dynamic>,
+            'id': doc.id,
+          }),
+        )
+        .toList();
+  });
+});

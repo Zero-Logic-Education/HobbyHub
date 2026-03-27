@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../providers/community_provider.dart';
@@ -47,17 +48,20 @@ class _CommunitiesScreenState extends ConsumerState<CommunitiesScreen>
                     ),
                   ),
                   const Spacer(),
-                  Container(
-                    width: 44,
-                    height: 44,
-                    decoration: BoxDecoration(
-                      color: AppColors.lightCoral,
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                    child: Icon(
-                      Icons.add_rounded,
-                      color: AppColors.primary,
-                      size: 22,
+                  GestureDetector(
+                    onTap: () => context.push('/communities/create'),
+                    child: Container(
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        color: AppColors.lightCoral,
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: Icon(
+                        Icons.add_rounded,
+                        color: AppColors.primary,
+                        size: 22,
+                      ),
                     ),
                   ),
                 ],
@@ -177,107 +181,110 @@ class _CommunityCard extends StatelessWidget {
     final categoryBg = categoryColor.withValues(alpha: 0.1);
     final membersCount = item.members.length;
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.06),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Cover image
-          Stack(
-            children: [
-              ClipRRect(
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(20),
-                ),
-                child: Image.network(
-                  item.coverImageUrl ??
-                      'https://via.placeholder.com/800x400?text=${item.name}',
-                  height: 160,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, _, _) => Container(
-                    height: 160,
-                    color: AppColors.surfaceSecondary,
-                    child: const Center(
-                      child: Icon(
-                        Icons.image_outlined,
-                        size: 40,
-                        color: AppColors.textTertiary,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-
-          // Info section
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+    return GestureDetector(
+      onTap: () => context.push('/communities/detail/${item.id}'),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.06),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Cover image
+            Stack(
               children: [
-                Text(
-                  item.name,
-                  style: AppTypography.subheadingLarge.copyWith(
-                    fontWeight: FontWeight.w800,
+                ClipRRect(
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(20),
                   ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    // Category tag
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: categoryBg,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Text(
-                        category,
-                        style: AppTypography.bodySmall.copyWith(
-                          color: categoryColor,
-                          fontWeight: FontWeight.w700,
+                  child: Image.network(
+                    item.coverImageUrl ??
+                        'https://via.placeholder.com/800x400?text=${item.name}',
+                    height: 160,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, _, _) => Container(
+                      height: 160,
+                      color: AppColors.surfaceSecondary,
+                      child: const Center(
+                        child: Icon(
+                          Icons.image_outlined,
+                          size: 40,
+                          color: AppColors.textTertiary,
                         ),
                       ),
                     ),
-                    const Spacer(),
-                    // Members
-                    Icon(
-                      Icons.people_outline_rounded,
-                      size: 16,
-                      color: AppColors.textTertiary,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      '$membersCount',
-                      style: AppTypography.bodySmall.copyWith(
-                        color: AppColors.textSecondary,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
               ],
             ),
-          ),
-        ],
+
+            // Info section
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    item.name,
+                    style: AppTypography.subheadingLarge.copyWith(
+                      fontWeight: FontWeight.w800,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      // Category tag
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: categoryBg,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(
+                          category,
+                          style: AppTypography.bodySmall.copyWith(
+                            color: categoryColor,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                      const Spacer(),
+                      // Members
+                      Icon(
+                        Icons.people_outline_rounded,
+                        size: 16,
+                        color: AppColors.textTertiary,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        '$membersCount',
+                        style: AppTypography.bodySmall.copyWith(
+                          color: AppColors.textSecondary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -77,6 +77,18 @@ class UserProfileNotifier extends StateNotifier<AsyncValue<void>> {
     });
   }
 
+  /// Обновить геолокацию пользователя
+  Future<void> updateLocation(double latitude, double longitude) async {
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(() async {
+      await _firestoreService.updateUser(userId, {
+        'latitude': latitude,
+        'longitude': longitude,
+        'updatedAt': DateTime.now().toIso8601String(),
+      });
+    });
+  }
+
   /// Добавить интерес к профилю
   Future<void> addInterest(String interestId) async {
     state = const AsyncValue.loading();

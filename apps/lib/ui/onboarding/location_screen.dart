@@ -1,20 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../core/router/app_router.dart';
+import '../../providers/user_provider.dart';
 import '../shared/app_button.dart';
 
-class LocationPermissionScreen extends StatefulWidget {
+class LocationPermissionScreen extends ConsumerStatefulWidget {
   const LocationPermissionScreen({super.key});
 
   @override
-  State<LocationPermissionScreen> createState() =>
+  ConsumerState<LocationPermissionScreen> createState() =>
       _LocationPermissionScreenState();
 }
 
-class _LocationPermissionScreenState extends State<LocationPermissionScreen> {
+class _LocationPermissionScreenState extends ConsumerState<LocationPermissionScreen> {
   bool _isRequesting = false;
 
   Future<void> _requestPermission() async {
@@ -23,6 +25,18 @@ class _LocationPermissionScreenState extends State<LocationPermissionScreen> {
       LocationPermission permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
+      }
+
+      if (permission == LocationPermission.deniedForever) {
+        throw Exception('Location permissions are permanently denied, we cannot request permissions.');
+      }
+
+      if (permission == LocationPermission.whileInUse || permission == LocationPermission.always) {
+        Position position = await Geolocator.getCurrentPosition();
+        await ref.read(currentUserProfileNotifierProvider.notifier).updateLocation(
+          position.latitude,
+          position.longitude,
+        );
       }
 
       if (mounted) {

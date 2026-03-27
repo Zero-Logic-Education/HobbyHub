@@ -233,3 +233,19 @@ final selectedEventProvider =
     StateNotifierProvider<SelectedEventNotifier, Event?>((ref) {
   return SelectedEventNotifier();
 });
+
+/// Провайдер для строки поиска
+final eventSearchQueryProvider = StateProvider<String>((ref) => '');
+
+/// Провайдер для поиска событий
+final searchedEventsProvider = Provider<List<Event>>((ref) {
+  final query = ref.watch(eventSearchQueryProvider).toLowerCase();
+  final events = ref.watch(filteredEventsListProvider);
+
+  if (query.isEmpty) return events;
+
+  return events.where((event) {
+    return event.title.toLowerCase().contains(query) ||
+           event.description.toLowerCase().contains(query);
+  }).toList();
+});

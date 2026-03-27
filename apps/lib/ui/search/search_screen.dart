@@ -1,74 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
+import '../../providers/event_provider.dart';
+import '../../providers/interest_provider.dart';
+import '../shared/event_card.dart';
 
-class SearchScreen extends StatefulWidget {
+class SearchScreen extends ConsumerStatefulWidget {
   const SearchScreen({super.key});
 
   @override
-  State<SearchScreen> createState() => _SearchScreenState();
+  ConsumerState<SearchScreen> createState() => _SearchScreenState();
 }
 
-class _SearchScreenState extends State<SearchScreen> {
+class _SearchScreenState extends ConsumerState<SearchScreen> {
   final TextEditingController _searchController = TextEditingController();
 
-  final List<Map<String, dynamic>> _categories = [
-    {
-      'title': 'Спорт',
-      'icon': '🏃',
-      'count': 12,
-      'color': const Color(0xFFFFF2F2),
-    },
-    {
-      'title': 'Технологии',
-      'icon': '💻',
-      'count': 8,
-      'color': const Color(0xFFF2F8FF),
-    },
-    {
-      'title': 'Творчество',
-      'icon': '🎨',
-      'count': 15,
-      'color': const Color(0xFFFFF9F2),
-    },
-    {
-      'title': 'Музыка',
-      'icon': '🎵',
-      'count': 24,
-      'color': const Color(0xFFF9F2FF),
-    },
-    {
-      'title': 'Еда и напитки',
-      'icon': '🍽️',
-      'count': 10,
-      'color': const Color(0xFFF2FFF2),
-    },
-    {
-      'title': 'Здоровье',
-      'icon': '🧘',
-      'count': 18,
-      'color': const Color(0xFFF2FFFF),
-    },
-    {
-      'title': 'Фотография',
-      'icon': '📷',
-      'count': 5,
-      'color': const Color(0xFFF7F7F7),
-    },
-    {
-      'title': 'Книги',
-      'icon': '📚',
-      'count': 9,
-      'color': const Color(0xFFFFF2FB),
-    },
-  ];
-
-  final List<String> _popularSearches = [
-    'Йога для начинающих',
-    'IT Meetup',
-    'Мастер-класс по рисованию',
-    'Беговой клуб',
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _searchController.addListener(() {
+      ref.read(eventSearchQueryProvider.notifier).state = _searchController.text;
+    });
+  }
 
   @override
   void dispose() {
@@ -78,6 +32,9 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final query = ref.watch(eventSearchQueryProvider);
+    final isSearching = query.isNotEmpty;
+
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
@@ -129,110 +86,126 @@ class _SearchScreenState extends State<SearchScreen> {
               ),
             ),
 
-            // Browse Categories Title
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(24, 32, 24, 16),
-                child: Text(
-                  'Просмотр категорий',
-                  style: AppTypography.subheadingLarge.copyWith(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary,
-                  ),
-                ),
-              ),
-            ),
-
-            // Categories Grid
-            SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              sliver: SliverGrid(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 16,
-                  crossAxisSpacing: 16,
-                  childAspectRatio: 0.85,
-                ),
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                    final category = _categories[index];
-                    return _CategoryCard(
-                      title: category['title'],
-                      icon: category['icon'],
-                      count: category['count'],
-                      color: category['color'],
-                    );
-                  },
-                  childCount: _categories.length,
-                ),
-              ),
-            ),
-
-            // Popular Searches Title
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(24, 32, 24, 16),
-                child: Text(
-                  'Популярные запросы',
-                  style: AppTypography.subheadingLarge.copyWith(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary,
-                  ),
-                ),
-              ),
-            ),
-
-            // Popular Searches Chips
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: Wrap(
-                  spacing: 12,
-                  runSpacing: 12,
-                  children: _popularSearches.map((search) {
-                    return Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 10,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(30),
-                        border: Border.all(
-                          color: const Color(0xFFE0E0E0),
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(
-                            Icons.search_rounded,
-                            size: 18,
-                            color: AppColors.textSecondary,
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            search,
-                            style: AppTypography.bodyMedium.copyWith(
-                              color: AppColors.textPrimary,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  }).toList(),
-                ),
-              ),
-            ),
+            if (isSearching)
+              _buildSearchResults()
+            else
+              ..._buildExploreSections(),
 
             const SliverToBoxAdapter(child: SizedBox(height: 100)),
           ],
         ),
       ),
     );
+  }
+
+  Widget _buildSearchResults() {
+    final events = ref.watch(searchedEventsProvider);
+
+    if (events.isEmpty) {
+      return SliverToBoxAdapter(
+        child: Padding(
+          padding: const EdgeInsets.all(32),
+          child: Center(
+            child: Text(
+              'Ничего не найдено',
+              style: AppTypography.bodyLarge.copyWith(
+                color: AppColors.textSecondary,
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    return SliverPadding(
+      padding: const EdgeInsets.all(24),
+      sliver: SliverList(
+        delegate: SliverChildBuilderDelegate(
+          (context, index) => Padding(
+            padding: const EdgeInsets.only(bottom: 16),
+            child: EventCard(event: events[index]),
+          ),
+          childCount: events.length,
+        ),
+      ),
+    );
+  }
+
+  List<Widget> _buildExploreSections() {
+    final interestsAsync = ref.watch(interestsProvider);
+
+    return [
+      // Browse Categories Title
+      SliverToBoxAdapter(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(24, 32, 24, 16),
+          child: Text(
+            'Просмотр категорий',
+            style: AppTypography.subheadingLarge.copyWith(
+              fontSize: 20,
+              fontWeight: FontWeight.w700,
+              color: AppColors.textPrimary,
+            ),
+          ),
+        ),
+      ),
+
+      // Categories Grid
+      interestsAsync.when(
+        data: (interests) {
+          if (interests.isEmpty) {
+            return SliverToBoxAdapter(child: Container());
+          }
+          return SliverPadding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            sliver: SliverGrid(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                mainAxisSpacing: 16,
+                crossAxisSpacing: 16,
+                childAspectRatio: 0.85,
+              ),
+              delegate: SliverChildBuilderDelegate(
+                (context, index) {
+                  final interest = interests[index];
+                  // Random-ish color based on index
+                  final hue = (index * 137.5) % 360;
+                  final color = HSLColor.fromAHSL(1.0, hue, 0.7, 0.9).toColor();
+
+                  return _CategoryCard(
+                    title: interest.name,
+                    icon: _getIconForCategory(interest.category),
+                    count: interest.popularity,
+                    color: color,
+                  );
+                },
+                childCount: interests.length,
+              ),
+            ),
+          );
+        },
+        loading: () => const SliverToBoxAdapter(
+          child: Center(child: CircularProgressIndicator()),
+        ),
+        error: (e, _) => SliverToBoxAdapter(
+          child: Center(child: Text('Ошибка: $e')),
+        ),
+      ),
+    ];
+  }
+
+  String _getIconForCategory(String category) {
+    switch (category.toLowerCase()) {
+      case 'sports': return '🏃';
+      case 'tech': return '💻';
+      case 'art': return '🎨';
+      case 'music': return '🎵';
+      case 'food': return '🍽️';
+      case 'wellness': return '🧘';
+      case 'photo': return '📷';
+      case 'books': return '📚';
+      default: return '🌟';
+    }
   }
 }
 
@@ -288,10 +261,13 @@ class _CategoryCard extends StatelessWidget {
               color: AppColors.textPrimary,
               fontWeight: FontWeight.w700,
             ),
+            textAlign: TextAlign.center,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
           const SizedBox(height: 4),
           Text(
-            '$count событий',
+            'Популярность: $count',
             style: AppTypography.bodySmall.copyWith(
               color: AppColors.textTertiary,
             ),

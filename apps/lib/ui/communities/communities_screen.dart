@@ -1,64 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
+import '../../providers/community_provider.dart';
+import '../../models/community.dart';
 
-class CommunitiesScreen extends StatefulWidget {
+class CommunitiesScreen extends ConsumerStatefulWidget {
   const CommunitiesScreen({super.key});
 
   @override
-  State<CommunitiesScreen> createState() => _CommunitiesScreenState();
+  ConsumerState<CommunitiesScreen> createState() => _CommunitiesScreenState();
 }
 
-class _CommunitiesScreenState extends State<CommunitiesScreen>
+class _CommunitiesScreenState extends ConsumerState<CommunitiesScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-
-  final List<_CommunityItem> _myGroups = [
-    _CommunityItem(
-      name: 'Йога-сообщество',
-      category: 'Здоровье',
-      categoryColor: Color(0xFF27AE60),
-      categoryBg: Color(0xFFE8F8EF),
-      members: 234,
-      lastActive: '2 ч. назад',
-      notifications: 3,
-      imageUrl:
-          'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=800&q=80',
-    ),
-    _CommunityItem(
-      name: 'Техно-энтузиасты',
-      category: 'Технологии',
-      categoryColor: Color(0xFF2D9CDB),
-      categoryBg: Color(0xFFE8F4FD),
-      members: 567,
-      lastActive: '5 мин. назад',
-      notifications: 12,
-      imageUrl:
-          'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800&q=80',
-    ),
-    _CommunityItem(
-      name: 'Арт и керамика',
-      category: 'Творчество',
-      categoryColor: Color(0xFFF2994A),
-      categoryBg: Color(0xFFFEF3E8),
-      members: 89,
-      lastActive: '1 д. назад',
-      notifications: 0,
-      imageUrl:
-          'https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=800&q=80',
-    ),
-    _CommunityItem(
-      name: 'Беговой клуб',
-      category: 'Спорт',
-      categoryColor: Color(0xFFF17A5D),
-      categoryBg: Color(0xFFFFF0ED),
-      members: 412,
-      lastActive: '3 ч. назад',
-      notifications: 5,
-      imageUrl:
-          'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800&q=80',
-    ),
-  ];
 
   @override
   void initState() {
@@ -149,45 +105,56 @@ class _CommunitiesScreenState extends State<CommunitiesScreen>
   }
 
   Widget _buildMyGroups() {
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
-      children: [
-        ..._myGroups.map((item) => _CommunityCard(item: item)),
-        const SizedBox(height: 8),
-        // Discover More Button
-        Container(
-          margin: const EdgeInsets.symmetric(horizontal: 4),
-          child: OutlinedButton(
-            onPressed: () => _tabController.animateTo(1),
-            style: OutlinedButton.styleFrom(
-              foregroundColor: AppColors.primary,
-              side: BorderSide(color: AppColors.primary, width: 1.5),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              padding: const EdgeInsets.symmetric(vertical: 18),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'Найти больше сообществ',
-                  style: AppTypography.subheadingSmall.copyWith(
-                    color: AppColors.primary,
-                    fontWeight: FontWeight.w700,
+    final communitiesAsync = ref.watch(userCommunitiesProvider);
+
+    return communitiesAsync.when(
+      data: (communities) {
+        if (communities.isEmpty) {
+          return const Center(child: Text('У вас пока нет групп'));
+        }
+        return ListView(
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+          children: [
+            ...communities.map((item) => _CommunityCard(item: item)),
+            const SizedBox(height: 8),
+            // Discover More Button
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 4),
+              child: OutlinedButton(
+                onPressed: () => _tabController.animateTo(1),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AppColors.primary,
+                  side: BorderSide(color: AppColors.primary, width: 1.5),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
                   ),
+                  padding: const EdgeInsets.symmetric(vertical: 18),
                 ),
-                const SizedBox(width: 8),
-                Icon(
-                  Icons.arrow_forward_rounded,
-                  color: AppColors.primary,
-                  size: 18,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Найти больше сообществ',
+                      style: AppTypography.subheadingSmall.copyWith(
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Icon(
+                      Icons.arrow_forward_rounded,
+                      color: AppColors.primary,
+                      size: 18,
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
-          ),
-        ),
-      ],
+          ],
+        );
+      },
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (err, stack) => Center(child: Text('Ошибка загрузки сообществ: $err')),
     );
   }
 
@@ -197,11 +164,17 @@ class _CommunitiesScreenState extends State<CommunitiesScreen>
 }
 
 class _CommunityCard extends StatelessWidget {
-  final _CommunityItem item;
+  final Community item;
   const _CommunityCard({required this.item});
 
   @override
   Widget build(BuildContext context) {
+    // Generate dynamic colors based on the first category
+    final category = item.categories.isNotEmpty ? item.categories.first : 'Разное';
+    final categoryColor = _getCategoryColor(category);
+    final categoryBg = categoryColor.withValues(alpha: 0.1);
+    final membersCount = item.members.length;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
@@ -226,7 +199,7 @@ class _CommunityCard extends StatelessWidget {
                   top: Radius.circular(20),
                 ),
                 child: Image.network(
-                  item.imageUrl,
+                  item.coverImageUrl ?? 'https://via.placeholder.com/800x400?text=${item.name}',
                   height: 160,
                   width: double.infinity,
                   fit: BoxFit.cover,
@@ -243,30 +216,6 @@ class _CommunityCard extends StatelessWidget {
                   ),
                 ),
               ),
-              // Notification badge
-              if (item.notifications > 0)
-                Positioned(
-                  top: 12,
-                  right: 12,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 5,
-                    ),
-                    decoration: BoxDecoration(
-                      color: AppColors.primary,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Text(
-                      '${item.notifications}',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-                ),
             ],
           ),
 
@@ -281,6 +230,8 @@ class _CommunityCard extends StatelessWidget {
                   style: AppTypography.subheadingLarge.copyWith(
                     fontWeight: FontWeight.w800,
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 8),
                 Row(
@@ -292,13 +243,13 @@ class _CommunityCard extends StatelessWidget {
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: item.categoryBg,
+                        color: categoryBg,
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
-                        item.category,
+                        category,
                         style: AppTypography.bodySmall.copyWith(
-                          color: item.categoryColor,
+                          color: categoryColor,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
@@ -312,18 +263,10 @@ class _CommunityCard extends StatelessWidget {
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      '${item.members}',
+                      '$membersCount',
                       style: AppTypography.bodySmall.copyWith(
                         color: AppColors.textSecondary,
                         fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    // Last active
-                    Text(
-                      item.lastActive,
-                      style: AppTypography.bodySmall.copyWith(
-                        color: AppColors.textTertiary,
                       ),
                     ),
                   ],
@@ -335,26 +278,15 @@ class _CommunityCard extends StatelessWidget {
       ),
     );
   }
+
+  Color _getCategoryColor(String category) {
+    switch (category.toLowerCase()) {
+      case 'здоровье': return const Color(0xFF27AE60);
+      case 'технологии': return const Color(0xFF2D9CDB);
+      case 'творчество': return const Color(0xFFF2994A);
+      case 'спорт': return const Color(0xFFF17A5D);
+      default: return AppColors.primary;
+    }
+  }
 }
 
-class _CommunityItem {
-  final String name;
-  final String category;
-  final Color categoryColor;
-  final Color categoryBg;
-  final int members;
-  final String lastActive;
-  final int notifications;
-  final String imageUrl;
-
-  const _CommunityItem({
-    required this.name,
-    required this.category,
-    required this.categoryColor,
-    required this.categoryBg,
-    required this.members,
-    required this.lastActive,
-    required this.notifications,
-    required this.imageUrl,
-  });
-}

@@ -72,6 +72,13 @@ service cloud.firestore {
         allow read: if isUser(userId);
         allow write: if isUser(userId);
       }
+      
+      match /notifications/{notificationId} {
+        allow read: if isUser(userId);
+        allow create: if isAuthenticated();
+        allow update: if isUser(userId);
+        allow delete: if isUser(userId) || isAdmin();
+      }
     }
     
     // === EVENTS COLLECTION ===
@@ -155,14 +162,7 @@ service cloud.firestore {
       }
     }
     
-    // === NOTIFICATIONS COLLECTION ===
-    match /notifications/{notificationId} {
-      allow read: if isUser(resource.data.userId);
-      allow create: if isAuthenticated();
-      allow update: if isUser(resource.data.userId);
-      allow delete: if isUser(resource.data.userId) || isAdmin();
-    }
-    
+
     // === REPORTS COLLECTION ===
     match /reports/{reportId} {
       allow create: if isAuthenticated() &&

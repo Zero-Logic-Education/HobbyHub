@@ -153,7 +153,10 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: 'parental-consent',
             name: 'parental-consent',
-            builder: (context, state) => const ParentalConsentScreen(),
+            builder: (context, state) {
+              final data = state.extra as Map<String, dynamic>? ?? {};
+              return ParentalConsentScreen(userData: data);
+            },
           ),
         ],
       ),

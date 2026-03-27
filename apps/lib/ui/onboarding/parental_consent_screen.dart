@@ -4,12 +4,13 @@ import 'package:go_router/go_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../core/router/app_router.dart';
-import '../../providers/user_provider.dart';
 import '../shared/app_button.dart';
 import '../shared/app_text_field.dart';
 
 class ParentalConsentScreen extends ConsumerStatefulWidget {
-  const ParentalConsentScreen({super.key});
+  final Map<String, dynamic> userData;
+
+  const ParentalConsentScreen({super.key, this.userData = const {}});
 
   @override
   ConsumerState<ParentalConsentScreen> createState() =>
@@ -30,12 +31,14 @@ class _ParentalConsentScreenState extends ConsumerState<ParentalConsentScreen> {
     if (!_formKey.currentState!.validate()) return;
 
     final parentEmail = _emailController.text.trim();
-    final notifier = ref.read(currentUserProfileNotifierProvider.notifier);
-
-    await notifier.updateProfile(parentEmail: parentEmail);
+    
+    final updatedData = <String, dynamic>{
+      ...widget.userData,
+      'parentEmail': parentEmail,
+    };
 
     if (mounted) {
-      context.push(AppRoutes.interestsSelection);
+      context.push(AppRoutes.interestsSelection, extra: updatedData);
     }
   }
 

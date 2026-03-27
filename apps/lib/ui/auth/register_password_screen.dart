@@ -44,16 +44,23 @@ class _RegisterPasswordScreenState
     if (!mounted) return;
     final result = ref.read(authNotifierProvider);
     if (!result.hasError) {
-      // Сохраняем профиль: имя, возраст, интересы
+      // Верифицируем возраст, что также создает документ пользователя в Firestore
+      final verifyAgeNotifier = ref.read(ageVerificationNotifierProvider.notifier);
+      await verifyAgeNotifier.verifyAge(age: widget.userData['age'] as int);
+
+      // Сохраняем профиль: имя, активности, интересы, родительский email
       final profileNotifier = ref.read(
         currentUserProfileNotifierProvider.notifier,
       );
       await profileNotifier.updateProfile(
         displayName: widget.userData['name'] as String?,
         interests: (widget.userData['interests'] as List?)?.cast<String>(),
+        parentEmail: widget.userData['parentEmail'] as String?,
       );
+
       if (!mounted) return;
-      context.go(AppRoutes.home);
+      // После успешной регистрации переходим на запрос геолокации
+      context.go(AppRoutes.locationPermission);
     }
   }
 

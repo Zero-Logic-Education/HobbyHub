@@ -46,10 +46,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
         data: (firebaseUser) {
           if (firebaseUser == null) return _buildNotLoggedIn();
           final firestoreUser = currentUser.value;
-          final displayName =
-              firestoreUser?.displayName ??
-              firebaseUser.displayName ??
-              'Пользователь';
+          
+          String displayName = firestoreUser?.displayName ?? firebaseUser.displayName ?? '';
+          if (displayName.trim().isEmpty) {
+            displayName = firestoreUser?.username ?? 
+                firebaseUser.email?.split('@')[0] ?? 
+                'Пользователь';
+          }
+              
           final email = firestoreUser?.email ?? firebaseUser.email ?? '';
           final photoUrl = firestoreUser?.photoUrl ?? firebaseUser.photoURL;
           final bio =

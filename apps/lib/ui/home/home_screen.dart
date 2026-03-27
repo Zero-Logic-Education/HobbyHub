@@ -77,17 +77,21 @@ class HomeScreen extends ConsumerWidget {
         filters.date!.day == today.day;
 
     final userName = userProfileAsync.when(
-      data: (user) => 
-          user?.displayName ?? 
-          user?.username ??
-          authState.value?.displayName ?? 
-          authState.value?.email?.split('@')[0] ?? 
-          'User',
+      data: (user) {
+        String name = user?.displayName ?? authState.value?.displayName ?? '';
+        if (name.trim().isEmpty) {
+          name = user?.username ?? authState.value?.email?.split('@')[0] ?? 'User';
+        }
+        return name;
+      },
       loading: () => 'Загрузка...',
-      error: (e, st) => 
-          authState.value?.displayName ?? 
-          authState.value?.email?.split('@')[0] ?? 
-          'User',
+      error: (e, st) {
+        String name = authState.value?.displayName ?? '';
+        if (name.trim().isEmpty) {
+          name = authState.value?.email?.split('@')[0] ?? 'User';
+        }
+        return name;
+      },
     );
 
     return Scaffold(

@@ -29,3 +29,17 @@ final allCommunitiesProvider = FutureProvider<List<Community>>((ref) async {
     return Community.fromJson(data);
   }).toList();
 });
+
+/// Провайдер для получения конкретного сообщества
+final communityStreamProvider = StreamProvider.family<Community?, String>((
+  ref,
+  communityId,
+) {
+  final firestoreService = ref.watch(firestoreServiceProvider);
+  return firestoreService.getCommunityStream(communityId).map((doc) {
+    if (!doc.exists) return null;
+    final data = doc.data() as Map<String, dynamic>;
+    data['id'] = doc.id;
+    return Community.fromJson(data);
+  });
+});

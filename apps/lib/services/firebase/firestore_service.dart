@@ -207,4 +207,45 @@ class FirestoreService {
   ) {
     return _firestore.runTransaction(transactionHandler);
   }
+
+  /// Присоединиться к сообществу
+  Future<void> joinCommunity(String communityId, String userId) async {
+    await _firestore
+        .collection(AppConstants.communitiesCollection)
+        .doc(communityId)
+        .update({
+          'members': FieldValue.arrayUnion([userId]),
+        });
+  }
+
+  /// Покинуть сообщество
+  Future<void> leaveCommunity(String communityId, String userId) async {
+    await _firestore
+        .collection(AppConstants.communitiesCollection)
+        .doc(communityId)
+        .update({
+          'members': FieldValue.arrayRemove([userId]),
+        });
+  }
+
+  /// Получить стрим сообщества
+  Stream<DocumentSnapshot> getCommunityStream(String communityId) {
+    return _firestore
+        .collection(AppConstants.communitiesCollection)
+        .doc(communityId)
+        .snapshots();
+  }
+
+  /// Stream событий сообщества
+  Stream<QuerySnapshot> communityEventsStream(
+    String communityId, {
+    int limit = 20,
+  }) {
+    return _firestore
+        .collection(AppConstants.eventsCollection)
+        .where('communityId', isEqualTo: communityId)
+        .orderBy('date', descending: false)
+        .limit(limit)
+        .snapshots();
+  }
 }

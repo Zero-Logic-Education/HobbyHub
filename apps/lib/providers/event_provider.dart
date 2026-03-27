@@ -316,7 +316,7 @@ final userEventsStreamProvider = StreamProvider<List<Event>>((ref) {
   if (userId == null) return Stream.value([]);
 
   final firestoreService = ref.watch(firestoreServiceProvider);
-  return firestoreService.eventsStream().map((querySnapshot) {
+  return firestoreService.userEventsStream(userId).map((querySnapshot) {
     return querySnapshot.docs
         .map(
           (doc) => Event.fromJson({
@@ -324,7 +324,6 @@ final userEventsStreamProvider = StreamProvider<List<Event>>((ref) {
             'id': doc.id,
           }),
         )
-        .where((event) => event.organizerId == userId)
         .toList();
   });
 });

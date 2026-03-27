@@ -55,7 +55,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
 
   Widget _buildProfile({required String displayName, required String email, required String? photoUrl, required List<dynamic> interests}) {
     final initials = displayName.trim().split(' ').take(2).map((e) => e.isNotEmpty ? e[0] : '').join();
-    final tags = interests.isNotEmpty ? interests.map((e) => e.toString()).toList() : ['Музыка', 'Фотография', 'Еда и напитки', 'Путешествия'];
+    final tags = interests.map((e) => e.toString()).toList();
     final tagColors = [
       [const Color(0xFFF17A5D), const Color(0xFFFFF0ED)],
       [const Color(0xFF2D9CDB), const Color(0xFFE8F4FD)],
@@ -203,13 +203,16 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
               const SizedBox(height: 4),
               const _SectionLabel(label: 'ИНТЕРЕСЫ'),
               const SizedBox(height: 12),
-              Wrap(
-                spacing: 8, runSpacing: 8,
-                children: tags.asMap().entries.map((e) {
-                  final c = tagColors[e.key % tagColors.length];
-                  return _InterestTag(label: e.value, fg: c[0], bg: c[1]);
-                }).toList(),
-              ),
+              if (tags.isEmpty)
+                Text('Нет сохраненных интересов', style: AppTypography.bodyMedium.copyWith(color: AppColors.textTertiary))
+              else
+                Wrap(
+                  spacing: 8, runSpacing: 8,
+                  children: tags.asMap().entries.map((e) {
+                    final c = tagColors[e.key % tagColors.length];
+                    return _InterestTag(label: e.value, fg: c[0], bg: c[1]);
+                  }).toList(),
+                ),
               const SizedBox(height: 28),
               const _SectionLabel(label: 'НАСТРОЙКИ'),
               const SizedBox(height: 12),

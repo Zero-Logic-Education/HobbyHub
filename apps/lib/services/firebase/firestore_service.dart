@@ -280,4 +280,46 @@ class FirestoreService {
       transaction.set(reviewRef, reviewData, SetOptions(merge: true));
     });
   }
+
+  // ==================== EVENT APPLICATIONS ====================
+
+  /// Получить стрим заявок на событие
+  Stream<QuerySnapshot> getEventApplications(String eventId) {
+    return _firestore
+        .collection('events')
+        .doc(eventId)
+        .collection('applications')
+        .where('status', isEqualTo: 'pending')
+        .snapshots();
+  }
+
+  /// Одобрить заявку
+  Future<void> approveApplication(String eventId, String userId) async {
+    final batch = _firestore.batch();
+    
+    final appRef = _firestore
+        .collection('events')
+        .doc(eventId)
+        .collection('applications')
+        .doc(userId);
+    batch.update(appRef, {'status': 'approved'});
+    
+    final eventRef = _firestore.collection('events').doc(eventId);
+    batch.update(eventRef, {
+      'participants': FieldValue.arrayUnion([userId])
+    });
+
+    await batch.commit();
+  }
+
+  /// Отклонить заявку
+  Future<void> rejectApplication(String eventId, String userId) async {
+    final appRef = _firestore
+        .collection('events')
+        .doc(eventId)
+        .collection('applications')
+        .doc(userId);
+    
+    await appRef.update({'status': 'rejected'});
+  }
 }

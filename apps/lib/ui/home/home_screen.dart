@@ -11,6 +11,7 @@ import 'event_detail_screen.dart';
 import 'map_screen.dart';
 import '../notifications/notifications_screen.dart';
 import '../../providers/notification_provider.dart';
+import '../../providers/user_provider.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -62,6 +63,7 @@ class HomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authStateProvider);
+    final userProfileAsync = ref.watch(currentUserStreamProvider);
     final eventsState = ref.watch(eventsStreamProvider);
     final filteredEvents = ref.watch(filteredEventsListProvider);
     final filters = ref.watch(eventFilterProvider);
@@ -74,10 +76,19 @@ class HomeScreen extends ConsumerWidget {
         filters.date!.month == today.month &&
         filters.date!.day == today.day;
 
-    final userName =
-        authState.value?.displayName ??
-        authState.value?.email?.split('@')[0] ??
-        'User';
+    final userName = userProfileAsync.when(
+      data: (user) => 
+          user?.displayName ?? 
+          user?.username ??
+          authState.value?.displayName ?? 
+          authState.value?.email?.split('@')[0] ?? 
+          'User',
+      loading: () => 'Загрузка...',
+      error: (e, st) => 
+          authState.value?.displayName ?? 
+          authState.value?.email?.split('@')[0] ?? 
+          'User',
+    );
 
     return Scaffold(
       backgroundColor: Colors.white,

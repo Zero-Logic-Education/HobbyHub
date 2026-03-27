@@ -322,4 +322,34 @@ class FirestoreService {
     
     await appRef.update({'status': 'rejected'});
   }
+
+  // ==================== NOTIFICATIONS ====================
+
+  /// Получить уведомления пользователя
+  Stream<QuerySnapshot> getUserNotifications(String userId, {int limit = 50}) {
+    return _firestore
+        .collection('users')
+        .doc(userId)
+        .collection('notifications')
+        .orderBy('createdAt', descending: true)
+        .limit(limit)
+        .snapshots();
+  }
+
+  /// Отметить уведомление как прочитанное
+  Future<void> markNotificationAsRead(String userId, String notificationId) async {
+    await _firestore
+        .collection('users')
+        .doc(userId)
+        .collection('notifications')
+        .doc(notificationId)
+        .update({'isRead': true});
+  }
+
+  /// Сохранить FCM токен
+  Future<void> saveFcmToken(String userId, String token) async {
+    await _firestore.collection('users').doc(userId).set({
+      'fcmTokens': FieldValue.arrayUnion([token])
+    }, SetOptions(merge: true));
+  }
 }

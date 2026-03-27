@@ -7,6 +7,7 @@ import '../../models/event.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/event_provider.dart';
 import 'event_detail_screen.dart';
+import 'map_screen.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -121,6 +122,17 @@ class HomeScreen extends ConsumerWidget {
                           ),
                         ],
                       ),
+                    ),
+                    // Map icon
+                    IconButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const MapScreen()),
+                        );
+                      },
+                      icon: const Icon(Icons.map_outlined),
+                      iconSize: 28,
                     ),
                     // Notification icon
                     IconButton(

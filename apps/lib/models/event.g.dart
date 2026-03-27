@@ -17,6 +17,9 @@ Event _$EventFromJson(Map<String, dynamic> json) => Event(
   longitude: (json['longitude'] as num).toDouble(),
   address: json['address'] as String?,
   coverImageUrl: json['coverImageUrl'] as String?,
+  images:
+      (json['images'] as List<dynamic>?)?.map((e) => e as String).toList() ??
+      const [],
   categories:
       (json['categories'] as List<dynamic>?)
           ?.map((e) => e as String)
@@ -58,6 +61,7 @@ Map<String, dynamic> _$EventToJson(Event instance) => <String, dynamic>{
   'longitude': instance.longitude,
   'address': instance.address,
   'coverImageUrl': instance.coverImageUrl,
+  'images': instance.images,
   'categories': instance.categories,
   'participants': instance.participants,
   'maxParticipants': instance.maxParticipants,

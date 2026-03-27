@@ -233,3 +233,13 @@ final ageVerificationNotifierProvider =
       final firestoreService = ref.watch(firestoreServiceProvider);
       return AgeVerificationNotifier(firestoreService, userId);
     });
+
+/// Провайдер для получения любого пользователя по ID
+final userProfileProvider = FutureProvider.family<User?, String>((ref, userId) async {
+  final firestoreService = ref.watch(firestoreServiceProvider);
+  final docSnapshot = await firestoreService.getUser(userId);
+
+  if (!docSnapshot.exists) return null;
+
+  return User.fromJson(docSnapshot.data() as Map<String, dynamic>);
+});

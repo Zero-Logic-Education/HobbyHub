@@ -20,7 +20,6 @@ class AuthService {
     required String password,
   }) async {
     try {
-
       final result = await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
@@ -28,7 +27,6 @@ class AuthService {
 
       return result;
     } on FirebaseAuthException catch (e) {
-
       throw _handleAuthException(e);
     }
   }
@@ -39,7 +37,6 @@ class AuthService {
     required String password,
   }) async {
     try {
-
       final result = await _auth.signInWithEmailAndPassword(
         email: email,
         password: password,
@@ -47,7 +44,6 @@ class AuthService {
 
       return result;
     } on FirebaseAuthException catch (e) {
-
       throw _handleAuthException(e);
     }
   }
@@ -58,17 +54,12 @@ class AuthService {
       // 1. Запуск процесса входа Google
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
       if (googleUser == null) {
-
         return null; // Отмена пользователем
       }
-
-
 
       // 2. Получение данных аутентификации от Google
       final GoogleSignInAuthentication googleAuth =
           await googleUser.authentication;
-
-
 
       // 3. Создание учетных данных для Firebase
       final AuthCredential credential = GoogleAuthProvider.credential(
@@ -76,17 +67,13 @@ class AuthService {
         idToken: googleAuth.idToken,
       );
 
-
-
       // 4. Вход в Firebase
       final result = await _auth.signInWithCredential(credential);
 
       return result;
     } on FirebaseAuthException catch (e) {
-
       throw _handleAuthException(e);
     } catch (e) {
-
       rethrow;
     }
   }

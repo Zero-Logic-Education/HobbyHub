@@ -18,24 +18,16 @@ Future<void> setupServiceLocator() async {
   // ============================================================================
 
   // Firebase Auth
-  getIt.registerSingleton<FirebaseAuth>(
-    FirebaseAuth.instance,
-  );
+  getIt.registerSingleton<FirebaseAuth>(FirebaseAuth.instance);
 
   // Firebase Firestore
-  getIt.registerSingleton<FirebaseFirestore>(
-    FirebaseFirestore.instance,
-  );
+  getIt.registerSingleton<FirebaseFirestore>(FirebaseFirestore.instance);
 
   // Firebase Storage
-  getIt.registerSingleton<FirebaseStorage>(
-    FirebaseStorage.instance,
-  );
+  getIt.registerSingleton<FirebaseStorage>(FirebaseStorage.instance);
 
   // Firebase Messaging
-  getIt.registerSingleton<FirebaseMessaging>(
-    FirebaseMessaging.instance,
-  );
+  getIt.registerSingleton<FirebaseMessaging>(FirebaseMessaging.instance);
 
   // ============================================================================
   // Local Storage
@@ -50,19 +42,13 @@ Future<void> setupServiceLocator() async {
   // ============================================================================
 
   // Auth Service
-  getIt.registerSingleton<AuthService>(
-    AuthService(),
-  );
+  getIt.registerSingleton<AuthService>(AuthService());
 
   // Firestore Service
-  getIt.registerSingleton<FirestoreService>(
-    FirestoreService(),
-  );
+  getIt.registerSingleton<FirestoreService>(FirestoreService());
 
   // Messaging Service
-  getIt.registerSingleton<MessagingService>(
-    MessagingService(),
-  );
+  getIt.registerSingleton<MessagingService>(MessagingService());
 
   // ============================================================================
   // Repositories (если потребуются в будущем)

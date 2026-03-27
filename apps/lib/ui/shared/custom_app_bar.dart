@@ -37,7 +37,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       title: Text(
         title,
-        style: titleStyle ??
+        style:
+            titleStyle ??
             AppTypography.headingMedium.copyWith(
               color: titleColor ?? AppColors.textPrimary,
             ),
@@ -80,9 +81,9 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   @override
-  Size get preferredSize =>
-      Size.fromHeight(AppSpacing.appBarHeight +
-          (bottom?.preferredSize.height ?? 0));
+  Size get preferredSize => Size.fromHeight(
+    AppSpacing.appBarHeight + (bottom?.preferredSize.height ?? 0),
+  );
 }
 
 /// AppBar для главного экрана с заголовком и поиском
@@ -122,11 +123,7 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
             padding: EdgeInsets.only(right: AppSpacing.md),
             child: GestureDetector(
               onTap: onSearchTap,
-              child: Icon(
-                Icons.search,
-                color: AppColors.textPrimary,
-                size: 24,
-              ),
+              child: Icon(Icons.search, color: AppColors.textPrimary, size: 24),
             ),
           ),
         if (actions != null) ...actions!,
@@ -198,11 +195,7 @@ class _SearchAppBarState extends State<SearchAppBar> {
         onTap: widget.onBackTap ?? () => Navigator.of(context).pop(),
         child: Padding(
           padding: EdgeInsets.all(AppSpacing.md),
-          child: Icon(
-            Icons.arrow_back,
-            color: AppColors.textPrimary,
-            size: 24,
-          ),
+          child: Icon(Icons.arrow_back, color: AppColors.textPrimary, size: 24),
         ),
       ),
       title: Container(
@@ -225,11 +218,7 @@ class _SearchAppBarState extends State<SearchAppBar> {
             ),
             prefixIcon: Padding(
               padding: EdgeInsets.only(left: AppSpacing.sm),
-              child: Icon(
-                Icons.search,
-                color: AppColors.textHint,
-                size: 20,
-              ),
+              child: Icon(Icons.search, color: AppColors.textHint, size: 20),
             ),
             suffixIcon: _controller.text.isNotEmpty
                 ? GestureDetector(
@@ -288,11 +277,7 @@ class ProfileAppBar extends StatelessWidget implements PreferredSizeWidget {
         onTap: onBackTap ?? () => Navigator.of(context).pop(),
         child: Padding(
           padding: EdgeInsets.all(AppSpacing.md),
-          child: Icon(
-            Icons.arrow_back,
-            color: AppColors.textPrimary,
-            size: 24,
-          ),
+          child: Icon(Icons.arrow_back, color: AppColors.textPrimary, size: 24),
         ),
       ),
       actions: [

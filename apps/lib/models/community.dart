@@ -87,7 +87,8 @@ class Community {
     this.rating = 0.0,
   });
 
-  factory Community.fromJson(Map<String, dynamic> json) => _$CommunityFromJson(json);
+  factory Community.fromJson(Map<String, dynamic> json) =>
+      _$CommunityFromJson(json);
   Map<String, dynamic> toJson() => _$CommunityToJson(this);
 
   Community copyWith({

@@ -37,7 +37,7 @@ class Event {
 
   /// URL обложки события
   final String? coverImageUrl;
-  
+
   /// Дополнительные фотографии
   final List<String> images;
 

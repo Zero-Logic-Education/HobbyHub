@@ -15,7 +15,10 @@ class _MapScreenState extends ConsumerState<MapScreen> {
   GoogleMapController? _mapController;
   Set<Marker> _markers = {};
 
-  final LatLng _initialPosition = const LatLng(55.751244, 37.618423); // Пример: Москва
+  final LatLng _initialPosition = const LatLng(
+    55.751244,
+    37.618423,
+  ); // Пример: Москва
 
   void _onMapCreated(GoogleMapController controller) {
     _mapController = controller;
@@ -24,24 +27,27 @@ class _MapScreenState extends ConsumerState<MapScreen> {
 
   void _updateMarkers() {
     final events = ref.read(eventsStreamProvider).value ?? [];
-    final markers = events.where((e) => e.latitude != 0 && e.longitude != 0).map((event) {
-      return Marker(
-        markerId: MarkerId(event.id),
-        position: LatLng(event.latitude, event.longitude),
-        infoWindow: InfoWindow(
-          title: event.title,
-          snippet: event.address,
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => EventDetailScreen(event: event),
-              ),
-            );
-          },
-        ),
-      );
-    }).toSet();
+    final markers = events
+        .where((e) => e.latitude != 0 && e.longitude != 0)
+        .map((event) {
+          return Marker(
+            markerId: MarkerId(event.id),
+            position: LatLng(event.latitude, event.longitude),
+            infoWindow: InfoWindow(
+              title: event.title,
+              snippet: event.address,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => EventDetailScreen(event: event),
+                  ),
+                );
+              },
+            ),
+          );
+        })
+        .toSet();
 
     setState(() {
       _markers = markers;
@@ -59,7 +65,10 @@ class _MapScreenState extends ConsumerState<MapScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Карта событий', style: TextStyle(color: Colors.black)),
+        title: const Text(
+          'Карта событий',
+          style: TextStyle(color: Colors.black),
+        ),
         backgroundColor: Colors.white,
         iconTheme: const IconThemeData(color: Colors.black),
         elevation: 1,

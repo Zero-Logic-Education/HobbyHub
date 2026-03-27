@@ -81,7 +81,9 @@ class EventCard extends StatelessWidget {
                       padding: EdgeInsets.all(AppSpacing.sm),
                       child: Icon(
                         isFavorite ? Icons.favorite : Icons.favorite_border,
-                        color: isFavorite ? AppColors.error : AppColors.textSecondary,
+                        color: isFavorite
+                            ? AppColors.error
+                            : AppColors.textSecondary,
                         size: 20,
                       ),
                     ),
@@ -99,7 +101,9 @@ class EventCard extends StatelessWidget {
                       ),
                       decoration: BoxDecoration(
                         color: _getStatusColor(event.status),
-                        borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+                        borderRadius: BorderRadius.circular(
+                          AppSpacing.radiusSm,
+                        ),
                       ),
                       child: Text(
                         event.status,
@@ -165,7 +169,9 @@ class EventCard extends StatelessWidget {
                         ),
                         decoration: BoxDecoration(
                           color: AppColors.lightPink,
-                          borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+                          borderRadius: BorderRadius.circular(
+                            AppSpacing.radiusSm,
+                          ),
                         ),
                         child: Text(
                           event.price > 0 ? '${event.price}₽' : 'Бесплатно',
@@ -233,11 +239,7 @@ class EventCard extends StatelessWidget {
   }) {
     return Row(
       children: [
-        Icon(
-          icon,
-          size: 16,
-          color: AppColors.textSecondary,
-        ),
+        Icon(icon, size: 16, color: AppColors.textSecondary),
         SizedBox(width: AppSpacing.xs),
         Expanded(
           child: Text(

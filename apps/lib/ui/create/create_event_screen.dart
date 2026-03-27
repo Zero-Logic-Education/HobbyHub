@@ -146,9 +146,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   }
 
   Future<void> _pickAdditionalImages() async {
-    final images = await _imagePicker.pickMultiImage(
-      imageQuality: 80,
-    );
+    final images = await _imagePicker.pickMultiImage(imageQuality: 80);
 
     if (images.isNotEmpty) {
       if (mounted) {
@@ -192,12 +190,16 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
       String autoAddress = '';
       if (placemarks.isNotEmpty) {
         final place = placemarks.first;
-        autoAddress = <String?>[
-          place.street,
-          place.locality,
-          place.administrativeArea,
-          place.country,
-        ].whereType<String>().where((part) => part.trim().isNotEmpty).join(', ');
+        autoAddress =
+            <String?>[
+                  place.street,
+                  place.locality,
+                  place.administrativeArea,
+                  place.country,
+                ]
+                .whereType<String>()
+                .where((part) => part.trim().isNotEmpty)
+                .join(', ');
       }
 
       setState(() {
@@ -225,7 +227,9 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     try {
       final locations = await locationFromAddress(address);
       if (locations.isEmpty) {
-        throw Exception('Не удалось определить координаты по адресу. Уточните адрес.');
+        throw Exception(
+          'Не удалось определить координаты по адресу. Уточните адрес.',
+        );
       }
 
       _latitude = locations.first.latitude;
@@ -234,7 +238,9 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
       if (e.toString().contains('Не удалось определить координаты')) {
         rethrow;
       }
-      throw Exception('Не удалось определить координаты по адресу. Уточните адрес.');
+      throw Exception(
+        'Не удалось определить координаты по адресу. Уточните адрес.',
+      );
     }
   }
 
@@ -327,13 +333,19 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
       String? imageUrl;
       List<String> additionalImageUrls = [];
       final eventId = _uuid.v4();
-      
+
       if (_coverImageFile != null) {
-        imageUrl = await _storageService.uploadEventImage(eventId, _coverImageFile!);
+        imageUrl = await _storageService.uploadEventImage(
+          eventId,
+          _coverImageFile!,
+        );
       }
-      
+
       if (_additionalImages.isNotEmpty) {
-        additionalImageUrls = await _storageService.uploadEventImages(eventId, _additionalImages);
+        additionalImageUrls = await _storageService.uploadEventImages(
+          eventId,
+          _additionalImages,
+        );
       }
 
       final parsedPrice = _isFree
@@ -499,7 +511,10 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(category['icon'], style: const TextStyle(fontSize: 18)),
+                      Text(
+                        category['icon'],
+                        style: const TextStyle(fontSize: 18),
+                      ),
                       const SizedBox(width: 8),
                       Text(
                         category['label'],
@@ -704,11 +719,16 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                           padding: const EdgeInsets.only(right: 8),
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(8),
-                            child: Image.file(_additionalImages[index], height: 64, width: 64, fit: BoxFit.cover),
+                            child: Image.file(
+                              _additionalImages[index],
+                              height: 64,
+                              width: 64,
+                              fit: BoxFit.cover,
+                            ),
                           ),
                         );
-                      }
-                  ),
+                      },
+                    ),
             ),
           ),
           const SizedBox(height: 24),

@@ -44,7 +44,8 @@ class Interest {
     this.isFeatured = false,
   });
 
-  factory Interest.fromJson(Map<String, dynamic> json) => _$InterestFromJson(json);
+  factory Interest.fromJson(Map<String, dynamic> json) =>
+      _$InterestFromJson(json);
   Map<String, dynamic> toJson() => _$InterestToJson(this);
 
   Interest copyWith({

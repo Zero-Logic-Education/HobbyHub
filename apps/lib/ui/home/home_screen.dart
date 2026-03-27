@@ -6,6 +6,7 @@ import '../../core/theme/app_typography.dart';
 import '../../models/event.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/event_provider.dart';
+import '../chat/chat_list_screen.dart';
 import 'event_detail_screen.dart';
 import 'map_screen.dart';
 
@@ -66,10 +67,10 @@ class HomeScreen extends ConsumerWidget {
 
     final today = DateTime.now();
     final isTodaySelected =
-      filters.date != null &&
-      filters.date!.year == today.year &&
-      filters.date!.month == today.month &&
-      filters.date!.day == today.day;
+        filters.date != null &&
+        filters.date!.year == today.year &&
+        filters.date!.month == today.month &&
+        filters.date!.day == today.day;
 
     final userName =
         authState.value?.displayName ??
@@ -128,7 +129,9 @@ class HomeScreen extends ConsumerWidget {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => const MapScreen()),
+                          MaterialPageRoute(
+                            builder: (context) => const MapScreen(),
+                          ),
                         );
                       },
                       icon: const Icon(Icons.map_outlined),
@@ -138,6 +141,19 @@ class HomeScreen extends ConsumerWidget {
                     IconButton(
                       onPressed: () {},
                       icon: const Icon(Icons.notifications_outlined),
+                      iconSize: 28,
+                    ),
+                    // Chats/Messages icon
+                    IconButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const ChatListScreen(),
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.chat_bubble_outline),
                       iconSize: 28,
                     ),
                   ],
@@ -315,16 +331,21 @@ class HomeScreen extends ConsumerWidget {
                           _EventCard(
                             event: filteredEvents[index],
                             imageUrl: filteredEvents[index].coverImageUrl ?? '',
-                            category: _categoryLabel(filteredEvents[index].categories),
+                            category: _categoryLabel(
+                              filteredEvents[index].categories,
+                            ),
                             title: filteredEvents[index].title,
-                            date: _formatEventDate(filteredEvents[index].startTime),
+                            date: _formatEventDate(
+                              filteredEvents[index].startTime,
+                            ),
                             location:
                                 (filteredEvents[index].address ?? '')
-                                        .trim()
-                                        .isNotEmpty
+                                    .trim()
+                                    .isNotEmpty
                                 ? filteredEvents[index].address!
                                 : 'Локация не указана',
-                            participants: filteredEvents[index].participants.length,
+                            participants:
+                                filteredEvents[index].participants.length,
                             price: _formatPrice(
                               filteredEvents[index].price,
                               filteredEvents[index].isFree,

@@ -30,8 +30,9 @@ class NavigationNotifier extends StateNotifier<AppRoute> {
 }
 
 /// Провайдер для управления навигацией
-final navigationProvider =
-    StateNotifierProvider<NavigationNotifier, AppRoute>((ref) {
+final navigationProvider = StateNotifierProvider<NavigationNotifier, AppRoute>((
+  ref,
+) {
   return NavigationNotifier();
 });
 
@@ -58,12 +59,7 @@ final loadingProvider = StateNotifierProvider<LoadingNotifier, bool>((ref) {
 });
 
 /// Enum для toast сообщений
-enum ToastType {
-  success,
-  error,
-  info,
-  warning,
-}
+enum ToastType { success, error, info, warning }
 
 /// Класс для toast сообщения
 class ToastMessage {
@@ -82,9 +78,11 @@ class ToastMessage {
 class ToastNotifier extends StateNotifier<ToastMessage?> {
   ToastNotifier() : super(null);
 
-  void show(String message,
-      {ToastType type = ToastType.info,
-      Duration duration = const Duration(seconds: 3)}) {
+  void show(
+    String message, {
+    ToastType type = ToastType.info,
+    Duration duration = const Duration(seconds: 3),
+  }) {
     state = ToastMessage(message: message, type: type, duration: duration);
 
     Future.delayed(duration, () {
@@ -116,7 +114,9 @@ class ToastNotifier extends StateNotifier<ToastMessage?> {
 }
 
 /// Провайдер для управления toast сообщениями
-final toastProvider = StateNotifierProvider<ToastNotifier, ToastMessage?>((ref) {
+final toastProvider = StateNotifierProvider<ToastNotifier, ToastMessage?>((
+  ref,
+) {
   return ToastNotifier();
 });
 
@@ -158,5 +158,5 @@ class FilterVisibilityNotifier extends StateNotifier<bool> {
 /// Провайдер для видимости фильтров
 final filterVisibilityProvider =
     StateNotifierProvider<FilterVisibilityNotifier, bool>((ref) {
-  return FilterVisibilityNotifier();
-});
+      return FilterVisibilityNotifier();
+    });

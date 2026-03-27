@@ -86,7 +86,6 @@ class _CommunitiesScreenState extends ConsumerState<CommunitiesScreen>
                 tabs: const [
                   Tab(text: 'Мои группы'),
                   Tab(text: 'Найти'),
-
                 ],
               ),
             ),
@@ -154,7 +153,8 @@ class _CommunitiesScreenState extends ConsumerState<CommunitiesScreen>
         );
       },
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (err, stack) => Center(child: Text('Ошибка загрузки сообществ: $err')),
+      error: (err, stack) =>
+          Center(child: Text('Ошибка загрузки сообществ: $err')),
     );
   }
 
@@ -170,7 +170,9 @@ class _CommunityCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Generate dynamic colors based on the first category
-    final category = item.categories.isNotEmpty ? item.categories.first : 'Разное';
+    final category = item.categories.isNotEmpty
+        ? item.categories.first
+        : 'Разное';
     final categoryColor = _getCategoryColor(category);
     final categoryBg = categoryColor.withValues(alpha: 0.1);
     final membersCount = item.members.length;
@@ -199,7 +201,8 @@ class _CommunityCard extends StatelessWidget {
                   top: Radius.circular(20),
                 ),
                 child: Image.network(
-                  item.coverImageUrl ?? 'https://via.placeholder.com/800x400?text=${item.name}',
+                  item.coverImageUrl ??
+                      'https://via.placeholder.com/800x400?text=${item.name}',
                   height: 160,
                   width: double.infinity,
                   fit: BoxFit.cover,
@@ -281,12 +284,16 @@ class _CommunityCard extends StatelessWidget {
 
   Color _getCategoryColor(String category) {
     switch (category.toLowerCase()) {
-      case 'здоровье': return const Color(0xFF27AE60);
-      case 'технологии': return const Color(0xFF2D9CDB);
-      case 'творчество': return const Color(0xFFF2994A);
-      case 'спорт': return const Color(0xFFF17A5D);
-      default: return AppColors.primary;
+      case 'здоровье':
+        return const Color(0xFF27AE60);
+      case 'технологии':
+        return const Color(0xFF2D9CDB);
+      case 'творчество':
+        return const Color(0xFFF2994A);
+      case 'спорт':
+        return const Color(0xFFF17A5D);
+      default:
+        return AppColors.primary;
     }
   }
 }
-

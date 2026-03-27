@@ -74,12 +74,14 @@ class MessagingService {
   /// Обработка клика по уведомлению
   void _handleMessageOpenedApp(RemoteMessage message) {
     if (kDebugMode) {
-      print('Пользователь кликнул на уведомление: ${message.notification?.title}');
+      print(
+        'Пользователь кликнул на уведомление: ${message.notification?.title}',
+      );
       print('Data: ${message.data}');
     }
 
     final data = message.data;
-    
+
     if (data.containsKey('eventId')) {
       // Перейти на экран события
       // navigatorKey.currentState?.pushNamed('/event', arguments: data['eventId']);

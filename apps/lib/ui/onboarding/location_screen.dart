@@ -16,7 +16,8 @@ class LocationPermissionScreen extends ConsumerStatefulWidget {
       _LocationPermissionScreenState();
 }
 
-class _LocationPermissionScreenState extends ConsumerState<LocationPermissionScreen> {
+class _LocationPermissionScreenState
+    extends ConsumerState<LocationPermissionScreen> {
   bool _isRequesting = false;
 
   Future<void> _requestPermission() async {
@@ -28,15 +29,17 @@ class _LocationPermissionScreenState extends ConsumerState<LocationPermissionScr
       }
 
       if (permission == LocationPermission.deniedForever) {
-        throw Exception('Location permissions are permanently denied, we cannot request permissions.');
+        throw Exception(
+          'Location permissions are permanently denied, we cannot request permissions.',
+        );
       }
 
-      if (permission == LocationPermission.whileInUse || permission == LocationPermission.always) {
+      if (permission == LocationPermission.whileInUse ||
+          permission == LocationPermission.always) {
         Position position = await Geolocator.getCurrentPosition();
-        await ref.read(currentUserProfileNotifierProvider.notifier).updateLocation(
-          position.latitude,
-          position.longitude,
-        );
+        await ref
+            .read(currentUserProfileNotifierProvider.notifier)
+            .updateLocation(position.latitude, position.longitude);
       }
 
       if (mounted) {

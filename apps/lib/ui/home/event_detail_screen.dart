@@ -7,10 +7,7 @@ import '../../models/event.dart';
 class EventDetailScreen extends StatelessWidget {
   final Event event;
 
-  const EventDetailScreen({
-    super.key,
-    required this.event,
-  });
+  const EventDetailScreen({super.key, required this.event});
 
   String _formatDate(DateTime dateTime) {
     return DateFormat('dd.MM.yyyy, HH:mm').format(dateTime);
@@ -94,11 +91,7 @@ class EventDetailScreen extends StatelessWidget {
                   return Container(
                     color: categoryColor.withValues(alpha: 0.3),
                     child: Center(
-                      child: Icon(
-                        Icons.image,
-                        size: 60,
-                        color: categoryColor,
-                      ),
+                      child: Icon(Icons.image, size: 60, color: categoryColor),
                     ),
                   );
                 },
@@ -338,6 +331,12 @@ class EventDetailScreen extends StatelessWidget {
                             ),
                           ],
                         ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.chat_bubble_outline),
+                        onPressed: () {
+                          // Not passing actual creator logic yet, since this file is stateless without riverpod
+                        },
                       ),
                     ],
                   ),

@@ -58,17 +58,10 @@ abstract class AppStyles {
   );
 
   // Граница
-  static Border get bottomBorder => Border(
-    bottom: BorderSide(
-      color: AppColors.divider,
-      width: 1,
-    ),
-  );
+  static Border get bottomBorder =>
+      Border(bottom: BorderSide(color: AppColors.divider, width: 1));
 
-  static Border get fullBorder => Border.all(
-    color: AppColors.border,
-    width: 1,
-  );
+  static Border get fullBorder => Border.all(color: AppColors.border, width: 1);
 
   // Input Decoration
   static InputDecoration inputDecoration({
@@ -80,19 +73,14 @@ abstract class AppStyles {
   }) {
     return InputDecoration(
       hintText: hintText,
-      hintStyle: AppTypography.bodyMedium.copyWith(
-        color: AppColors.textHint,
-      ),
+      hintStyle: AppTypography.bodyMedium.copyWith(color: AppColors.textHint),
       labelText: labelText,
       labelStyle: AppTypography.bodyMedium.copyWith(
         color: AppColors.textSecondary,
       ),
       prefixIcon: prefixIcon != null ? Icon(prefixIcon) : null,
       suffixIcon: suffixIcon != null
-          ? IconButton(
-        icon: Icon(suffixIcon),
-        onPressed: onSuffixIconPressed,
-      )
+          ? IconButton(icon: Icon(suffixIcon), onPressed: onSuffixIconPressed)
           : null,
       filled: true,
       fillColor: AppColors.lightPink,
@@ -106,10 +94,7 @@ abstract class AppStyles {
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-        borderSide: const BorderSide(
-          color: AppColors.primary,
-          width: 2,
-        ),
+        borderSide: const BorderSide(color: AppColors.primary, width: 2),
       ),
       contentPadding: const EdgeInsets.symmetric(
         horizontal: AppSpacing.lg,
@@ -148,10 +133,7 @@ abstract class AppStyles {
   static ButtonStyle outlineButtonStyle = OutlinedButton.styleFrom(
     foregroundColor: AppColors.primary,
     elevation: 0,
-    side: const BorderSide(
-      color: AppColors.primary,
-      width: 2,
-    ),
+    side: const BorderSide(color: AppColors.primary, width: 2),
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
     ),
@@ -178,11 +160,8 @@ abstract class AppStyles {
   );
 
   // Divider
-  static Divider get divider => const Divider(
-    color: AppColors.divider,
-    thickness: 1,
-    height: 16,
-  );
+  static Divider get divider =>
+      const Divider(color: AppColors.divider, thickness: 1, height: 16);
 
   static SizedBox get spacingXs => const SizedBox(height: AppSpacing.xs);
   static SizedBox get spacingSm => const SizedBox(height: AppSpacing.sm);

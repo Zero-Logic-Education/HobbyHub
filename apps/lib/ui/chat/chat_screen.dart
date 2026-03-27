@@ -1,0 +1,128 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../providers/chat_providers.dart';
+import '../../providers/user_provider.dart';
+import '../../services/chat_service.dart';
+
+class ChatScreen extends ConsumerStatefulWidget {
+  final String chatId;
+  final String otherUserId;
+
+  const ChatScreen({
+    super.key,
+    required this.chatId,
+    required this.otherUserId,
+  });
+
+  @override
+  ConsumerState<ChatScreen> createState() => _ChatScreenState();
+}
+
+class _ChatScreenState extends ConsumerState<ChatScreen> {
+  final TextEditingController _messageController = TextEditingController();
+
+  void _sendMessage() {
+    final text = _messageController.text.trim();
+    if (text.isEmpty) return;
+
+    final userId = ref.read(authUserIdProvider);
+    if (userId == null) return;
+
+    ref.read(chatServiceProvider).sendMessage(widget.chatId, userId, text);
+    _messageController.clear();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final messagesAsync = ref.watch(chatMessagesStreamProvider(widget.chatId));
+    final currentUserId = ref.watch(authUserIdProvider);
+    final otherUserProfileAsync = ref.watch(
+      userProfileProvider(widget.otherUserId),
+    );
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(otherUserProfileAsync.value?.username ?? 'Загрузка...'),
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            child: messagesAsync.when(
+              data: (messages) {
+                if (messages.isEmpty) {
+                  return const Center(child: Text('Нет сообщений'));
+                }
+                return ListView.builder(
+                  reverse: true,
+                  itemCount: messages.length,
+                  itemBuilder: (context, index) {
+                    final message = messages[index];
+                    final isMe = message.senderId == currentUserId;
+
+                    return Align(
+                      alignment: isMe
+                          ? Alignment.centerRight
+                          : Alignment.centerLeft,
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(
+                          vertical: 4,
+                          horizontal: 8,
+                        ),
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: isMe
+                              ? Theme.of(context).primaryColor
+                              : Colors.grey[300],
+                          borderRadius: BorderRadius.circular(16).copyWith(
+                            bottomRight: isMe
+                                ? const Radius.circular(0)
+                                : const Radius.circular(16),
+                            bottomLeft: !isMe
+                                ? const Radius.circular(0)
+                                : const Radius.circular(16),
+                          ),
+                        ),
+                        child: Text(
+                          message.text,
+                          style: TextStyle(
+                            color: isMe ? Colors.white : Colors.black87,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                );
+              },
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (error, stack) => Center(child: Text('Ошибка: $error')),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _messageController,
+                    decoration: const InputDecoration(
+                      hintText: 'Введите сообщение...',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(20)),
+                      ),
+                    ),
+                    onSubmitted: (_) => _sendMessage(),
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.send),
+                  onPressed: _sendMessage,
+                  color: Theme.of(context).primaryColor,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

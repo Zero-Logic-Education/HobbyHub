@@ -33,17 +33,15 @@ class AppCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: backgroundColor ?? Colors.white,
         border: border,
-        borderRadius: borderRadius ?? BorderRadius.circular(AppSpacing.radiusMd),
+        borderRadius:
+            borderRadius ?? BorderRadius.circular(AppSpacing.radiusMd),
         boxShadow: shadows ?? AppStyles.shadowSmallList,
       ),
       child: child,
     );
 
     if (onTap != null) {
-      return GestureDetector(
-        onTap: onTap,
-        child: card,
-      );
+      return GestureDetector(onTap: onTap, child: card);
     }
 
     return card;
@@ -81,10 +79,7 @@ class ProfileCard extends StatelessWidget {
                 ? NetworkImage(avatarUrl!)
                 : null,
             child: avatarUrl == null
-                ? Icon(
-                    Icons.person_outline,
-                    color: AppColors.primary,
-                  )
+                ? Icon(Icons.person_outline, color: AppColors.primary)
                 : null,
           ),
           SizedBox(width: AppSpacing.md),
@@ -97,9 +92,9 @@ class ProfileCard extends StatelessWidget {
                 Text(
                   name,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textPrimary,
-                      ),
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textPrimary,
+                  ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -109,8 +104,8 @@ class ProfileCard extends StatelessWidget {
                     child: Text(
                       subtitle!,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: AppColors.textSecondary,
-                          ),
+                        color: AppColors.textSecondary,
+                      ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -160,11 +155,7 @@ class InfoCard extends StatelessWidget {
               color: AppColors.lightPink,
               shape: BoxShape.circle,
             ),
-            child: Icon(
-              icon,
-              color: iconColor ?? AppColors.primary,
-              size: 24,
-            ),
+            child: Icon(icon, color: iconColor ?? AppColors.primary, size: 24),
           ),
           SizedBox(width: AppSpacing.md),
           Expanded(
@@ -174,9 +165,9 @@ class InfoCard extends StatelessWidget {
                 Text(
                   title,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textPrimary,
-                      ),
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textPrimary,
+                  ),
                 ),
                 if (subtitle != null)
                   Padding(
@@ -184,8 +175,8 @@ class InfoCard extends StatelessWidget {
                     child: Text(
                       subtitle!,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: AppColors.textSecondary,
-                          ),
+                        color: AppColors.textSecondary,
+                      ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -193,10 +184,7 @@ class InfoCard extends StatelessWidget {
               ],
             ),
           ),
-          Icon(
-            Icons.chevron_right,
-            color: AppColors.textHint,
-          ),
+          Icon(Icons.chevron_right, color: AppColors.textHint),
         ],
       ),
     );
@@ -226,19 +214,15 @@ class EmptyStateCard extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            icon,
-            size: 64,
-            color: iconColor ?? AppColors.textHint,
-          ),
+          Icon(icon, size: 64, color: iconColor ?? AppColors.textHint),
           SizedBox(height: AppSpacing.lg),
           Text(
             title,
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: AppColors.textPrimary,
-                  fontWeight: FontWeight.w600,
-                ),
+              color: AppColors.textPrimary,
+              fontWeight: FontWeight.w600,
+            ),
           ),
           if (subtitle != null)
             Padding(
@@ -246,9 +230,9 @@ class EmptyStateCard extends StatelessWidget {
               child: Text(
                 subtitle!,
                 textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: AppColors.textSecondary,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
               ),
             ),
           if (action != null)
@@ -295,9 +279,9 @@ class BadgeCard extends StatelessWidget {
             child: Text(
               badge,
               style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
           SizedBox(width: AppSpacing.md),
@@ -308,9 +292,9 @@ class BadgeCard extends StatelessWidget {
                 Text(
                   title,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textPrimary,
-                      ),
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textPrimary,
+                  ),
                 ),
                 if (subtitle != null)
                   Padding(
@@ -318,8 +302,8 @@ class BadgeCard extends StatelessWidget {
                     child: Text(
                       subtitle!,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: AppColors.textSecondary,
-                          ),
+                        color: AppColors.textSecondary,
+                      ),
                     ),
                   ),
               ],

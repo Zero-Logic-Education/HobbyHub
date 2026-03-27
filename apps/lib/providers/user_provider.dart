@@ -235,7 +235,10 @@ final ageVerificationNotifierProvider =
     });
 
 /// Провайдер для получения любого пользователя по ID
-final userProfileProvider = FutureProvider.family<User?, String>((ref, userId) async {
+final userProfileProvider = FutureProvider.family<User?, String>((
+  ref,
+  userId,
+) async {
   final firestoreService = ref.watch(firestoreServiceProvider);
   final docSnapshot = await firestoreService.getUser(userId);
 

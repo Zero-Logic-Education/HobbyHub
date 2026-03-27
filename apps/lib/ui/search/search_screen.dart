@@ -20,7 +20,8 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
   void initState() {
     super.initState();
     _searchController.addListener(() {
-      ref.read(eventSearchQueryProvider.notifier).state = _searchController.text;
+      ref.read(eventSearchQueryProvider.notifier).state =
+          _searchController.text;
     });
   }
 
@@ -165,46 +166,51 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                 crossAxisSpacing: 16,
                 childAspectRatio: 0.85,
               ),
-              delegate: SliverChildBuilderDelegate(
-                (context, index) {
-                  final interest = interests[index];
-                  // Random-ish color based on index
-                  final hue = (index * 137.5) % 360;
-                  final color = HSLColor.fromAHSL(1.0, hue, 0.7, 0.9).toColor();
+              delegate: SliverChildBuilderDelegate((context, index) {
+                final interest = interests[index];
+                // Random-ish color based on index
+                final hue = (index * 137.5) % 360;
+                final color = HSLColor.fromAHSL(1.0, hue, 0.7, 0.9).toColor();
 
-                  return _CategoryCard(
-                    title: interest.name,
-                    icon: _getIconForCategory(interest.category),
-                    count: interest.popularity,
-                    color: color,
-                  );
-                },
-                childCount: interests.length,
-              ),
+                return _CategoryCard(
+                  title: interest.name,
+                  icon: _getIconForCategory(interest.category),
+                  count: interest.popularity,
+                  color: color,
+                );
+              }, childCount: interests.length),
             ),
           );
         },
         loading: () => const SliverToBoxAdapter(
           child: Center(child: CircularProgressIndicator()),
         ),
-        error: (e, _) => SliverToBoxAdapter(
-          child: Center(child: Text('Ошибка: $e')),
-        ),
+        error: (e, _) =>
+            SliverToBoxAdapter(child: Center(child: Text('Ошибка: $e'))),
       ),
     ];
   }
 
   String _getIconForCategory(String category) {
     switch (category.toLowerCase()) {
-      case 'sports': return '🏃';
-      case 'tech': return '💻';
-      case 'art': return '🎨';
-      case 'music': return '🎵';
-      case 'food': return '🍽️';
-      case 'wellness': return '🧘';
-      case 'photo': return '📷';
-      case 'books': return '📚';
-      default: return '🌟';
+      case 'sports':
+        return '🏃';
+      case 'tech':
+        return '💻';
+      case 'art':
+        return '🎨';
+      case 'music':
+        return '🎵';
+      case 'food':
+        return '🍽️';
+      case 'wellness':
+        return '🧘';
+      case 'photo':
+        return '📷';
+      case 'books':
+        return '📚';
+      default:
+        return '🌟';
     }
   }
 }
@@ -228,10 +234,7 @@ class _CategoryCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(
-          color: const Color(0xFFF0F0F0),
-          width: 1,
-        ),
+        border: Border.all(color: const Color(0xFFF0F0F0), width: 1),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.02),
@@ -249,10 +252,7 @@ class _CategoryCard extends StatelessWidget {
               color: color,
               borderRadius: BorderRadius.circular(20),
             ),
-            child: Text(
-              icon,
-              style: const TextStyle(fontSize: 28),
-            ),
+            child: Text(icon, style: const TextStyle(fontSize: 28)),
           ),
           const SizedBox(height: 12),
           Text(

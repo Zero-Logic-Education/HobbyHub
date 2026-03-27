@@ -83,7 +83,7 @@ service cloud.firestore {
                      ));
       
       allow create: if isAuthenticated() && 
-              isOldEnough(25) &&
+              isOldEnough(12) &&
               request.resource.data.organizerId == request.auth.uid &&
               request.resource.data.visibility in ['public', 'private'] &&
               request.resource.data.minAge in [12, 18, 25];
@@ -108,16 +108,16 @@ service cloud.firestore {
     
     // === COMMUNITIES COLLECTION ===
     match /communities/{communityId} {
-      allow read: if resource.data.privacy == 'public' ||
+      allow read: if resource.data.privacyLevel == 'public' ||
                      (isAuthenticated() && (
                        resource.data.creatorId == request.auth.uid ||
                        request.auth.uid in resource.data.members
                      ));
       
       allow create: if isAuthenticated() &&
-              isOldEnough(25) &&
+              isOldEnough(12) &&
               request.resource.data.creatorId == request.auth.uid &&
-              request.resource.data.privacy in ['public', 'private'] &&
+              request.resource.data.privacyLevel in ['public', 'private'] &&
               request.resource.data.minAge in [12, 18, 25];
       
       allow update: if isUser(resource.data.creatorId);

@@ -87,6 +87,7 @@ class FirestoreService {
   }) async {
     Query query = _firestore
         .collection(AppConstants.eventsCollection)
+        .where('visibility', isEqualTo: 'public')
         .orderBy('createdAt', descending: true)
         .limit(limit);
 
@@ -101,6 +102,7 @@ class FirestoreService {
   Stream<QuerySnapshot> eventsStream({int limit = 20}) {
     return _firestore
         .collection(AppConstants.eventsCollection)
+        .where('visibility', isEqualTo: 'public')
         .orderBy('createdAt', descending: true)
         .limit(limit)
         .snapshots();
@@ -112,6 +114,7 @@ class FirestoreService {
   ) async {
     return await _firestore
         .collection(AppConstants.eventsCollection)
+        .where('visibility', isEqualTo: 'public')
         .where('categories', arrayContainsAny: categories)
         .where('startTime', isGreaterThan: DateTime.now().toIso8601String())
         .orderBy('startTime')
@@ -153,6 +156,7 @@ class FirestoreService {
   Future<QuerySnapshot> getCommunities({int limit = 20}) async {
     return await _firestore
         .collection(AppConstants.communitiesCollection)
+        .where('privacyLevel', isEqualTo: 'public')
         .orderBy('name')
         .limit(limit)
         .get();
@@ -243,6 +247,7 @@ class FirestoreService {
   }) {
     return _firestore
         .collection(AppConstants.eventsCollection)
+        .where('visibility', isEqualTo: 'public')
         .where('communityId', isEqualTo: communityId)
         .orderBy('date', descending: false)
         .limit(limit)

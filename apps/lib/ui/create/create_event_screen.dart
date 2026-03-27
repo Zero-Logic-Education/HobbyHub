@@ -226,21 +226,21 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
 
     try {
       final locations = await locationFromAddress(address);
-      if (locations.isEmpty) {
-        throw Exception(
-          'Не удалось определить координаты по адресу. Уточните адрес.',
-        );
+      if (locations.isNotEmpty) {
+        _latitude = locations.first.latitude;
+        _longitude = locations.first.longitude;
+      } else {
+        _latitude = AppConstants.defaultLatitude;
+        _longitude = AppConstants.defaultLongitude;
       }
-
-      _latitude = locations.first.latitude;
-      _longitude = locations.first.longitude;
     } catch (e) {
       if (e.toString().contains('Не удалось определить координаты')) {
-        rethrow;
+        _latitude = AppConstants.defaultLatitude;
+        _longitude = AppConstants.defaultLongitude;
+        return;
       }
-      throw Exception(
-        'Не удалось определить координаты по адресу. Уточните адрес.',
-      );
+      _latitude = AppConstants.defaultLatitude;
+      _longitude = AppConstants.defaultLongitude;
     }
   }
 

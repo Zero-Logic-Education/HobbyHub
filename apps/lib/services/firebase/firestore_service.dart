@@ -108,6 +108,15 @@ class FirestoreService {
         .snapshots();
   }
 
+  /// Stream событий пользователя (созданных им)
+  Stream<QuerySnapshot> userEventsStream(String userId) {
+    return _firestore
+        .collection(AppConstants.eventsCollection)
+        .where('organizerId', isEqualTo: userId)
+        .orderBy('createdAt', descending: true)
+        .snapshots();
+  }
+
   /// Поиск событий по категориям
   Future<QuerySnapshot> searchEventsByCategories(
     List<String> categories,
@@ -249,7 +258,7 @@ class FirestoreService {
         .collection(AppConstants.eventsCollection)
         .where('visibility', isEqualTo: 'public')
         .where('communityId', isEqualTo: communityId)
-        .orderBy('date', descending: false)
+        .orderBy('startTime', descending: false)
         .limit(limit)
         .snapshots();
   }
@@ -276,7 +285,8 @@ class FirestoreService {
       }
 
       final reviewData = {
-        'userId': userId,
+        'authorId': userId,
+        'userId': userId, // Оставляем для совместимости, если где-то используется
         'rating': rating,
         'comment': comment,
         'createdAt': FieldValue.serverTimestamp(),
@@ -353,8 +363,14 @@ class FirestoreService {
 
   /// Сохранить FCM токен
   Future<void> saveFcmToken(String userId, String token) async {
-    await _firestore.collection('users').doc(userId).set({
-      'fcmTokens': FieldValue.arrayUnion([token])
-    }, SetOptions(merge: true));
+    try {
+      await _firestore.collection('users').doc(userId).update({
+        'fcmTokens': FieldValue.arrayUnion([token])
+      });
+    } catch (e) {
+      // Если документ пользователя еще не создан (в процессе регистрации),
+      // update выбросит ошибку. Мы можем проигнорировать её, 
+      // так как при следующем входе токен все равно обновится.
+    }
   }
 }

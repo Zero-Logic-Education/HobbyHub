@@ -248,4 +248,36 @@ class FirestoreService {
         .limit(limit)
         .snapshots();
   }
+
+  // ==================== REVIEWS ====================
+  Future<void> submitEventReview({
+    required String eventId,
+    required String userId,
+    required int rating,
+    required String comment,
+  }) async {
+    final reviewRef = _firestore
+        .collection('events')
+        .doc(eventId)
+        .collection('reviews')
+        .doc(userId);
+
+    final eventRef = _firestore.collection('events').doc(eventId);
+
+    await _firestore.runTransaction((transaction) async {
+      final eventDoc = await transaction.get(eventRef);
+      if (!eventDoc.exists) {
+        throw Exception('Event not found');
+      }
+
+      final reviewData = {
+        'userId': userId,
+        'rating': rating,
+        'comment': comment,
+        'createdAt': FieldValue.serverTimestamp(),
+      };
+
+      transaction.set(reviewRef, reviewData, SetOptions(merge: true));
+    });
+  }
 }

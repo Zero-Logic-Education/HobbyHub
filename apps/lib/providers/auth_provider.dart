@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../services/firebase/auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 
@@ -54,13 +55,59 @@ class AuthNotifier extends StateNotifier<AsyncValue<void>> {
   /// Вход через Google
   Future<void> signInWithGoogle() async {
     state = const AsyncValue.loading();
-    state = await AsyncValue.guard(() => _authService.signInWithGoogle());
+    state = await AsyncValue.guard(() async {
+      final cred = await _authService.signInWithGoogle();
+      if (cred != null) {
+        await _ensureUserDocExists(cred.user);
+      }
+    });
   }
 
   /// Вход через Facebook
   Future<void> signInWithFacebook() async {
     state = const AsyncValue.loading();
-    state = await AsyncValue.guard(() => _authService.signInWithFacebook());
+    state = await AsyncValue.guard(() async {
+      final cred = await _authService.signInWithFacebook();
+      if (cred != null) {
+        await _ensureUserDocExists(cred.user);
+      }
+    });
+  }
+
+  Future<void> _ensureUserDocExists(fb.User? user) async {
+    if (user == null) return;
+    final firestore = FirebaseFirestore.instance;
+    final doc = await firestore.collection('users').doc(user.uid).get();
+    
+    if (!doc.exists) {
+      final email = user.email ?? '';
+      String username = user.displayName?.trim() ?? '';
+      if (username.isEmpty && email.contains('@')) {
+        username = email.split('@').first;
+      }
+      if (username.isEmpty) {
+        username = 'user_${user.uid.substring(0, 5)}';
+      }
+      
+      final now = DateTime.now().toIso8601String();
+      
+      await firestore.collection('users').doc(user.uid).set({
+        'id': user.uid,
+        'email': email,
+        'username': username,
+        'displayName': user.displayName,
+        'photoUrl': user.photoURL,
+        'bio': null,
+        'age': 18, 
+        'interests': <String>[],
+        'privacyLevel': 'public',
+        'latitude': null,
+        'longitude': null,
+        'isVerified': true,
+        'createdAt': now,
+        'updatedAt': now,
+      });
+    }
   }
 
   /// Выход из аккаунта

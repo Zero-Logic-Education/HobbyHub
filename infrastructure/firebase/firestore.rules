@@ -13,7 +13,10 @@ service cloud.firestore {
     }
     
     function isOldEnough(minAge) {
-      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.age >= minAge;
+      let docRef = /databases/$(database)/documents/users/$(request.auth.uid);
+      return !exists(docRef) || 
+             !('age' in get(docRef).data) || 
+             get(docRef).data.age >= minAge;
     }
     
     function canViewUserProfile(userId, profilePrivacy) {

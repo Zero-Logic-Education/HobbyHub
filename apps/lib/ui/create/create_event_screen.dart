@@ -49,6 +49,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   double? _latitude;
   double? _longitude;
   File? _coverImageFile;
+  List<File> _additionalImages = [];
 
   bool _isFree = true;
   bool _requiresApproval = false;
@@ -142,6 +143,25 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     setState(() {
       _coverImageFile = File(image.path);
     });
+  }
+
+  Future<void> _pickAdditionalImages() async {
+    final images = await _imagePicker.pickMultiImage(
+      imageQuality: 80,
+    );
+
+    if (images.isNotEmpty) {
+      if (mounted) {
+        setState(() {
+          _additionalImages.addAll(images.map((x) => File(x.path)));
+          // Limit to 5 images total (for instance)
+          if (_additionalImages.length > 5) {
+            _additionalImages = _additionalImages.sublist(0, 5);
+            _showMessage('Максимум 5 дополнительных фото');
+          }
+        });
+      }
+    }
   }
 
   Future<void> _useCurrentLocation() async {
@@ -305,9 +325,15 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
       await _resolveCoordinatesFromAddress();
 
       String? imageUrl;
+      List<String> additionalImageUrls = [];
       final eventId = _uuid.v4();
+      
       if (_coverImageFile != null) {
         imageUrl = await _storageService.uploadEventImage(eventId, _coverImageFile!);
+      }
+      
+      if (_additionalImages.isNotEmpty) {
+        additionalImageUrls = await _storageService.uploadEventImages(eventId, _additionalImages);
       }
 
       final parsedPrice = _isFree
@@ -326,6 +352,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
         longitude: _longitude ?? AppConstants.defaultLongitude,
         address: _addressController.text.trim(),
         coverImageUrl: imageUrl,
+        images: additionalImageUrls,
         categories: [_categoryLabelById(_selectedCategory)],
         maxParticipants: maxParticipants,
         price: parsedPrice,
@@ -629,6 +656,59 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                       borderRadius: BorderRadius.circular(16),
                       child: Image.file(_coverImageFile!, fit: BoxFit.cover),
                     ),
+            ),
+          ),
+          const SizedBox(height: 24),
+          Text(
+            'Дополнительные фото (до 5 шт)',
+            style: AppTypography.subheadingLarge.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 12),
+          InkWell(
+            onTap: _pickAdditionalImages,
+            borderRadius: BorderRadius.circular(16),
+            child: Container(
+              height: 80,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: const Color(0xFFF0F0F0)),
+              ),
+              child: _additionalImages.isEmpty
+                  ? Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.collections_outlined,
+                          size: 28,
+                          color: AppColors.textSecondary,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Добавить галерею',
+                          style: AppTypography.bodySmall.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                      ],
+                    )
+                  : ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: _additionalImages.length,
+                      padding: const EdgeInsets.all(8),
+                      itemBuilder: (context, index) {
+                        return Padding(
+                          padding: const EdgeInsets.only(right: 8),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.file(_additionalImages[index], height: 64, width: 64, fit: BoxFit.cover),
+                          ),
+                        );
+                      }
+                  ),
             ),
           ),
           const SizedBox(height: 24),

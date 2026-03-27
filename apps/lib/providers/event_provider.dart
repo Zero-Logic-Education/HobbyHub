@@ -249,3 +249,35 @@ final searchedEventsProvider = Provider<List<Event>>((ref) {
            event.description.toLowerCase().contains(query);
   }).toList();
 });
+
+class EventParticipationNotifier extends StateNotifier<AsyncValue<void>> {
+  final FirestoreService _firestoreService;
+  
+  EventParticipationNotifier(this._firestoreService) : super(const AsyncValue.data(null));
+
+  Future<void> toggleParticipation(Event event, String userId) async {
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(() async {
+      final isParticipating = event.participants.contains(userId);
+      final newParticipants = List<String>.from(event.participants);
+      
+      if (isParticipating) {
+        newParticipants.remove(userId);
+      } else {
+        if (event.maxParticipants > 0 && newParticipants.length >= event.maxParticipants) {
+          throw Exception('Событие полностью заполнено');
+        }
+        newParticipants.add(userId);
+      }
+      
+      await _firestoreService.updateEvent(event.id, {
+        'participants': newParticipants,
+      });
+    });
+  }
+}
+
+final eventParticipationProvider = StateNotifierProvider<EventParticipationNotifier, AsyncValue<void>>((ref) {
+  return EventParticipationNotifier(ref.watch(firestoreServiceProvider));
+});
+

@@ -37,6 +37,9 @@ class Event {
 
   /// URL обложки события
   final String? coverImageUrl;
+  
+  /// Дополнительные фотографии
+  final List<String> images;
 
   /// Список категорий/тегов
   final List<String> categories;
@@ -99,6 +102,7 @@ class Event {
     required this.longitude,
     this.address,
     this.coverImageUrl,
+    this.images = const [],
     this.categories = const [],
     this.participants = const [],
     this.maxParticipants = 0,
@@ -131,6 +135,7 @@ class Event {
     double? longitude,
     String? address,
     String? coverImageUrl,
+    List<String>? images,
     List<String>? categories,
     List<String>? participants,
     int? maxParticipants,
@@ -159,6 +164,7 @@ class Event {
       longitude: longitude ?? this.longitude,
       address: address ?? this.address,
       coverImageUrl: coverImageUrl ?? this.coverImageUrl,
+      images: images ?? this.images,
       categories: categories ?? this.categories,
       participants: participants ?? this.participants,
       maxParticipants: maxParticipants ?? this.maxParticipants,

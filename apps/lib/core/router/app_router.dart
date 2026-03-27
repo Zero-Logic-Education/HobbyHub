@@ -17,6 +17,7 @@ import '../../ui/main_shell/main_shell.dart';
 import '../../ui/search/search_screen.dart';
 import '../../ui/create/create_event_screen.dart';
 import '../../ui/communities/communities_screen.dart';
+import '../../ui/profile/edit/edit_profile_screen.dart';
 import '../../providers/auth_provider.dart';
 
 /// Константы путей маршрутов
@@ -214,6 +215,13 @@ final routerProvider = Provider<GoRouter>((ref) {
                 path: AppRoutes.profile,
                 name: 'profile',
                 builder: (context, state) => const ProfileScreen(),
+                routes: [
+                  GoRoute(
+                    path: 'edit',
+                    name: 'edit-profile',
+                    builder: (context, state) => const EditProfileScreen(),
+                  ),
+                ],
               ),
             ],
           ),

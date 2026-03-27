@@ -6,6 +6,8 @@ import '../../core/theme/app_typography.dart';
 import '../../core/router/app_router.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/user_provider.dart';
+import '../../providers/event_provider.dart';
+import '../../providers/community_provider.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
@@ -34,6 +36,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
   Widget build(BuildContext context) {
     final authState = ref.watch(authStateProvider);
     final currentUser = ref.watch(currentUserStreamProvider);
+    final userEvents = ref.watch(userEventsStreamProvider).value ?? [];
+    final userCommunities = ref.watch(userCommunitiesProvider).value ?? [];
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -47,12 +51,17 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
               'Пользователь';
           final email = firestoreUser?.email ?? firebaseUser.email ?? '';
           final photoUrl = firestoreUser?.photoUrl ?? firebaseUser.photoURL;
+          final bio =
+              firestoreUser?.bio ?? 'Расскажите о себе в настройках профиля';
           final interests = firestoreUser?.interests ?? [];
           return _buildProfile(
             displayName: displayName,
             email: email,
             photoUrl: photoUrl,
+            bio: bio,
             interests: interests,
+            eventsCount: userEvents.length,
+            communitiesCount: userCommunities.length,
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
@@ -65,7 +74,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
     required String displayName,
     required String email,
     required String? photoUrl,
+    required String bio,
     required List<dynamic> interests,
+    required int eventsCount,
+    required int communitiesCount,
   }) {
     final initials = displayName
         .trim()
@@ -104,20 +116,23 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                         ),
                       ),
                       const Spacer(),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 9,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.lightCoral,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Text(
-                          'Редактировать',
-                          style: AppTypography.bodySmall.copyWith(
-                            color: AppColors.primary,
-                            fontWeight: FontWeight.w700,
+                      GestureDetector(
+                        onTap: () => context.push(AppRoutes.editProfile),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 9,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.lightCoral,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Text(
+                            'Редактировать',
+                            style: AppTypography.bodySmall.copyWith(
+                              color: AppColors.primary,
+                              fontWeight: FontWeight.w700,
+                            ),
                           ),
                         ),
                       ),
@@ -240,7 +255,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              'Искатель приключений | Любитель музыки | Всегда учусь чему-то новому',
+                              bio,
                               style: AppTypography.bodySmall.copyWith(
                                 color: AppColors.textSecondary,
                                 height: 1.5,
@@ -277,21 +292,21 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                   _StatCell(
                     icon: Icons.event_outlined,
                     iconColor: AppColors.primary,
-                    value: '0',
+                    value: eventsCount.toString(),
                     label: 'События',
                   ),
                   Container(width: 1, height: 40, color: AppColors.border),
                   _StatCell(
                     icon: Icons.groups_2_outlined,
                     iconColor: const Color(0xFF2D9CDB),
-                    value: '8',
+                    value: communitiesCount.toString(),
                     label: 'Группы',
                   ),
                   Container(width: 1, height: 40, color: AppColors.border),
                   _StatCell(
                     icon: Icons.favorite_border_rounded,
                     iconColor: const Color(0xFFE84D8A),
-                    value: '234',
+                    value: '0',
                     label: 'Подписчики',
                   ),
                 ],
@@ -314,9 +329,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
               indicatorWeight: 2.5,
               indicatorSize: TabBarIndicatorSize.label,
               dividerColor: AppColors.border,
-              tabs: const [
-                Tab(text: 'О себе'),
-                Tab(text: 'События (0)'),
+              tabs: [
+                const Tab(text: 'О себе'),
+                Tab(text: 'События ($eventsCount)'),
               ],
             ),
           ),

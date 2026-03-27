@@ -56,9 +56,7 @@ void main() {
       ];
 
       final container = ProviderContainer(
-        overrides: [
-          filteredEventsListProvider.overrideWithValue(testEvents),
-        ],
+        overrides: [filteredEventsListProvider.overrideWithValue(testEvents)],
       );
       addTearDown(container.dispose);
 
@@ -67,12 +65,18 @@ void main() {
 
       // Update query and verify filtered results
       container.read(eventSearchQueryProvider.notifier).state = 'FOOTBALL';
-      
+
       final filteredEvents = container.read(searchedEventsProvider);
-      
+
       expect(filteredEvents.length, 2);
-      expect(filteredEvents.map((e) => e.title), containsAll(['Football Match', 'Football Training']));
-      expect(filteredEvents.map((e) => e.title), isNot(contains('Chess Tournament')));
+      expect(
+        filteredEvents.map((e) => e.title),
+        containsAll(['Football Match', 'Football Training']),
+      );
+      expect(
+        filteredEvents.map((e) => e.title),
+        isNot(contains('Chess Tournament')),
+      );
     });
 
     test('searchedEventsProvider filters by description as well', () {
@@ -101,18 +105,19 @@ void main() {
       ];
 
       final container = ProviderContainer(
-        overrides: [
-          filteredEventsListProvider.overrideWithValue(testEvents),
-        ],
+        overrides: [filteredEventsListProvider.overrideWithValue(testEvents)],
       );
       addTearDown(container.dispose);
 
       container.read(eventSearchQueryProvider.notifier).state = 'park';
-      
+
       final filteredEvents = container.read(searchedEventsProvider);
-      
+
       expect(filteredEvents.length, 2);
-      expect(filteredEvents.map((e) => e.title), containsAll(['Morning Run', 'Yoga Class']));
+      expect(
+        filteredEvents.map((e) => e.title),
+        containsAll(['Morning Run', 'Yoga Class']),
+      );
     });
   });
 }

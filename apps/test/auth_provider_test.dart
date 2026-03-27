@@ -6,6 +6,7 @@ import 'package:hobby_hub/services/firebase/auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class MockAuthService extends Mock implements AuthService {}
+
 class MockUserCredential extends Mock implements UserCredential {}
 
 void main() {
@@ -17,9 +18,7 @@ void main() {
 
   ProviderContainer makeContainer() {
     final container = ProviderContainer(
-      overrides: [
-        authServiceProvider.overrideWithValue(mockAuthService),
-      ],
+      overrides: [authServiceProvider.overrideWithValue(mockAuthService)],
     );
     addTearDown(container.dispose);
     return container;
@@ -34,10 +33,12 @@ void main() {
 
     test('signInWithEmail success sets loading then data', () async {
       final mockCredential = MockUserCredential();
-      when(() => mockAuthService.signInWithEmail(
-            email: 'test@test.com',
-            password: 'password123',
-          )).thenAnswer((_) async => mockCredential);
+      when(
+        () => mockAuthService.signInWithEmail(
+          email: 'test@test.com',
+          password: 'password123',
+        ),
+      ).thenAnswer((_) async => mockCredential);
 
       final container = makeContainer();
       final notifier = container.read(authNotifierProvider.notifier);
@@ -50,18 +51,22 @@ void main() {
 
       final stateAfter = container.read(authNotifierProvider);
       expect(stateAfter, isA<AsyncData<void>>());
-      verify(() => mockAuthService.signInWithEmail(
-            email: 'test@test.com',
-            password: 'password123',
-          )).called(1);
+      verify(
+        () => mockAuthService.signInWithEmail(
+          email: 'test@test.com',
+          password: 'password123',
+        ),
+      ).called(1);
     });
 
     test('signInWithEmail failure sets error state', () async {
       final exception = Exception('Auth failed');
-      when(() => mockAuthService.signInWithEmail(
-            email: 'test@test.com',
-            password: 'wrong',
-          )).thenThrow(exception);
+      when(
+        () => mockAuthService.signInWithEmail(
+          email: 'test@test.com',
+          password: 'wrong',
+        ),
+      ).thenThrow(exception);
 
       final container = makeContainer();
       final notifier = container.read(authNotifierProvider.notifier);

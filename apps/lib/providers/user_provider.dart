@@ -1,6 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import '../../models/user.dart';
+import '../../services/firebase/storage_service.dart';
+
 import '../../services/firebase/firestore_service.dart';
 import '../../core/constants/app_constants.dart';
 import 'auth_provider.dart';
@@ -246,3 +248,5 @@ final userProfileProvider = FutureProvider.family<User?, String>((
 
   return User.fromJson(docSnapshot.data() as Map<String, dynamic>);
 });
+
+final storageServiceProvider = Provider((ref) => StorageService());

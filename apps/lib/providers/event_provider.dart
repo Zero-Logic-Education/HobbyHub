@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../models/event.dart';
 import '../../services/firebase/firestore_service.dart';
 import 'user_provider.dart';
+import 'auth_provider.dart';
 
 /// State notifier для управления списком событий
 class EventsNotifier extends StateNotifier<AsyncValue<List<Event>>> {
@@ -308,3 +309,22 @@ final eventParticipationProvider =
     StateNotifierProvider<EventParticipationNotifier, AsyncValue<void>>((ref) {
       return EventParticipationNotifier(ref.watch(firestoreServiceProvider));
     });
+
+/// Провайдер для отслеживания событий текущего пользователя
+final userEventsStreamProvider = StreamProvider<List<Event>>((ref) {
+  final userId = ref.watch(currentUserIdProvider);
+  if (userId == null) return Stream.value([]);
+
+  final firestoreService = ref.watch(firestoreServiceProvider);
+  return firestoreService.eventsStream().map((querySnapshot) {
+    return querySnapshot.docs
+        .map(
+          (doc) => Event.fromJson({
+            ...doc.data() as Map<String, dynamic>,
+            'id': doc.id,
+          }),
+        )
+        .where((event) => event.organizerId == userId)
+        .toList();
+  });
+});

@@ -107,7 +107,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       // Группа аутентификации и онбординга
       GoRoute(
         path: '/auth',
-        builder: (context, state) => const WelcomeScreen(), // Заглушка
+        builder: (context, state) => const WelcomeScreen(),
         routes: [
           GoRoute(
             path: 'login',
@@ -174,19 +174,6 @@ final routerProvider = Provider<GoRouter>((ref) {
                 path: AppRoutes.home,
                 name: 'home',
                 builder: (context, state) => const HomeScreen(),
-                routes: [
-                  GoRoute(
-                    path: 'event/:id',
-                    name: 'event-detail',
-                    builder: (context, state) {
-                      final id = state.pathParameters['id'];
-                      return Scaffold(
-                        appBar: AppBar(title: const Text('Событие')),
-                        body: Center(child: Text('Event Detail: $id')),
-                      );
-                    },
-                  ),
-                ],
               ),
             ],
           ),
@@ -227,18 +214,6 @@ final routerProvider = Provider<GoRouter>((ref) {
                 path: AppRoutes.profile,
                 name: 'profile',
                 builder: (context, state) => const ProfileScreen(),
-                routes: [
-                  GoRoute(
-                    path: 'edit',
-                    name: 'edit-profile',
-                    builder: (context, state) => Scaffold(
-                      appBar: AppBar(
-                        title: const Text('Редактирование профиля'),
-                      ),
-                      body: const Center(child: Text('Edit Profile Screen')),
-                    ),
-                  ),
-                ],
               ),
             ],
           ),

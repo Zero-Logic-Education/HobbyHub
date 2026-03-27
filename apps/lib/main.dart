@@ -7,6 +7,7 @@ import 'core/theme/app_theme.dart';
 import 'providers/ui_provider.dart';
 import 'core/router/app_router.dart';
 import 'core/di/service_locator.dart';
+import 'providers/error_observer.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,8 +30,12 @@ void main() async {
   // Инициализация Firebase Messaging
   await getIt.messagingService.initialize();
 
-  runApp(const ProviderScope(child: MyApp()));
+  runApp(
+    ProviderScope(observers: [GlobalErrorObserver()], child: const MyApp()),
+  );
 }
+
+final rootScaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
 
 class MyApp extends ConsumerWidget {
   const MyApp({super.key});
@@ -50,6 +55,7 @@ class MyApp extends ConsumerWidget {
       darkTheme: AppTheme.darkTheme,
       themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
       routerConfig: router,
+      scaffoldMessengerKey: rootScaffoldMessengerKey,
     );
   }
 }

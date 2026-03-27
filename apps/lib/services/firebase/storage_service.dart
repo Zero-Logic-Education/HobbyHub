@@ -12,7 +12,8 @@ class StorageService {
   Future<String> uploadProfileImage(String userId, File imageFile) async {
     try {
       final ref = _storage.ref().child(
-          '${AppConstants.profileImagesPath}/$userId/${DateTime.now().millisecondsSinceEpoch}.jpg');
+        '${AppConstants.profileImagesPath}/$userId/${DateTime.now().millisecondsSinceEpoch}.jpg',
+      );
 
       final uploadTask = ref.putFile(
         imageFile,
@@ -42,7 +43,8 @@ class StorageService {
   Future<String> uploadEventImage(String eventId, File imageFile) async {
     try {
       final ref = _storage.ref().child(
-          '${AppConstants.eventImagesPath}/$eventId/${DateTime.now().millisecondsSinceEpoch}.jpg');
+        '${AppConstants.eventImagesPath}/$eventId/${DateTime.now().millisecondsSinceEpoch}.jpg',
+      );
 
       final uploadTask = ref.putFile(
         imageFile,
@@ -58,7 +60,9 @@ class StorageService {
 
   /// Загрузить несколько фото для события
   Future<List<String>> uploadEventImages(
-      String eventId, List<File> imageFiles) async {
+    String eventId,
+    List<File> imageFiles,
+  ) async {
     final urls = <String>[];
 
     for (final file in imageFiles) {
@@ -83,10 +87,13 @@ class StorageService {
 
   /// Загрузить обложку сообщества
   Future<String> uploadCommunityImage(
-      String communityId, File imageFile) async {
+    String communityId,
+    File imageFile,
+  ) async {
     try {
       final ref = _storage.ref().child(
-          '${AppConstants.communityImagesPath}/$communityId/${DateTime.now().millisecondsSinceEpoch}.jpg');
+        '${AppConstants.communityImagesPath}/$communityId/${DateTime.now().millisecondsSinceEpoch}.jpg',
+      );
 
       final uploadTask = ref.putFile(
         imageFile,

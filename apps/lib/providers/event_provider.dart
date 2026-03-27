@@ -7,8 +7,7 @@ import 'user_provider.dart';
 class EventsNotifier extends StateNotifier<AsyncValue<List<Event>>> {
   final FirestoreService _firestoreService;
 
-  EventsNotifier(this._firestoreService)
-      : super(const AsyncValue.loading());
+  EventsNotifier(this._firestoreService) : super(const AsyncValue.loading());
 
   /// Загрузить события
   Future<void> fetchEvents({int limit = 20}) async {
@@ -16,8 +15,12 @@ class EventsNotifier extends StateNotifier<AsyncValue<List<Event>>> {
     state = await AsyncValue.guard(() async {
       final querySnapshot = await _firestoreService.getEvents(limit: limit);
       return querySnapshot.docs
-          .map((doc) =>
-              Event.fromJson({...doc.data() as Map<String, dynamic>, 'id': doc.id}))
+          .map(
+            (doc) => Event.fromJson({
+              ...doc.data() as Map<String, dynamic>,
+              'id': doc.id,
+            }),
+          )
           .toList();
     });
   }
@@ -30,8 +33,12 @@ class EventsNotifier extends StateNotifier<AsyncValue<List<Event>>> {
       // Перезагрузить список событий
       final querySnapshot = await _firestoreService.getEvents(limit: 20);
       return querySnapshot.docs
-          .map((doc) =>
-              Event.fromJson({...doc.data() as Map<String, dynamic>, 'id': doc.id}))
+          .map(
+            (doc) => Event.fromJson({
+              ...doc.data() as Map<String, dynamic>,
+              'id': doc.id,
+            }),
+          )
           .toList();
     });
   }
@@ -44,8 +51,12 @@ class EventsNotifier extends StateNotifier<AsyncValue<List<Event>>> {
       // Перезагрузить список событий
       final querySnapshot = await _firestoreService.getEvents(limit: 20);
       return querySnapshot.docs
-          .map((doc) =>
-              Event.fromJson({...doc.data() as Map<String, dynamic>, 'id': doc.id}))
+          .map(
+            (doc) => Event.fromJson({
+              ...doc.data() as Map<String, dynamic>,
+              'id': doc.id,
+            }),
+          )
           .toList();
     });
   }
@@ -58,8 +69,12 @@ class EventsNotifier extends StateNotifier<AsyncValue<List<Event>>> {
       // Перезагрузить список событий
       final querySnapshot = await _firestoreService.getEvents(limit: 20);
       return querySnapshot.docs
-          .map((doc) =>
-              Event.fromJson({...doc.data() as Map<String, dynamic>, 'id': doc.id}))
+          .map(
+            (doc) => Event.fromJson({
+              ...doc.data() as Map<String, dynamic>,
+              'id': doc.id,
+            }),
+          )
           .toList();
     });
   }
@@ -68,28 +83,31 @@ class EventsNotifier extends StateNotifier<AsyncValue<List<Event>>> {
 /// Провайдер для списка событий
 final eventsProvider =
     StateNotifierProvider<EventsNotifier, AsyncValue<List<Event>>>((ref) {
-  final firestoreService = ref.watch(firestoreServiceProvider);
-  final notifier = EventsNotifier(firestoreService);
-  // Загружаем события при инициализации
-  Future.microtask(() => notifier.fetchEvents());
-  return notifier;
-});
+      final firestoreService = ref.watch(firestoreServiceProvider);
+      final notifier = EventsNotifier(firestoreService);
+      // Загружаем события при инициализации
+      Future.microtask(() => notifier.fetchEvents());
+      return notifier;
+    });
 
 /// Stream провайдер для отслеживания событий в реальном времени
 final eventsStreamProvider = StreamProvider<List<Event>>((ref) {
   final firestoreService = ref.watch(firestoreServiceProvider);
   return firestoreService.eventsStream().map((querySnapshot) {
     return querySnapshot.docs
-        .map((doc) =>
-            Event.fromJson({...doc.data() as Map<String, dynamic>, 'id': doc.id}))
+        .map(
+          (doc) => Event.fromJson({
+            ...doc.data() as Map<String, dynamic>,
+            'id': doc.id,
+          }),
+        )
         .toList();
   });
 });
 
 /// State notifier для фильтрации событий
 class EventFilterNotifier extends StateNotifier<EventFilters> {
-  EventFilterNotifier()
-      : super(const EventFilters());
+  EventFilterNotifier() : super(const EventFilters());
 
   void setDateFilter(DateTime? date) {
     state = state.copyWith(date: date, weekendOnly: false);
@@ -159,8 +177,8 @@ class EventFilters {
 /// Провайдер для фильтров событий
 final eventFilterProvider =
     StateNotifierProvider<EventFilterNotifier, EventFilters>((ref) {
-  return EventFilterNotifier();
-});
+      return EventFilterNotifier();
+    });
 
 /// Провайдер для отфильтрованных событий
 final filteredEventsListProvider = Provider<List<Event>>((ref) {
@@ -182,18 +200,23 @@ final filteredEventsListProvider = Provider<List<Event>>((ref) {
       // Фильтр по дате
       if (filters.date != null) {
         filtered = filtered
-            .where((event) =>
-                event.startTime.year == filters.date!.year &&
-                event.startTime.month == filters.date!.month &&
-                event.startTime.day == filters.date!.day)
+            .where(
+              (event) =>
+                  event.startTime.year == filters.date!.year &&
+                  event.startTime.month == filters.date!.month &&
+                  event.startTime.day == filters.date!.day,
+            )
             .toList();
       }
 
       // Фильтр по категориям
       if (filters.categories.isNotEmpty) {
         filtered = filtered
-            .where((event) =>
-                event.categories.any((cat) => filters.categories.contains(cat)))
+            .where(
+              (event) => event.categories.any(
+                (cat) => filters.categories.contains(cat),
+              ),
+            )
             .toList();
       }
 
@@ -206,7 +229,9 @@ final filteredEventsListProvider = Provider<List<Event>>((ref) {
 
       // Фильтр по цене
       if (filters.isFree != null) {
-        filtered = filtered.where((event) => event.isFree == filters.isFree).toList();
+        filtered = filtered
+            .where((event) => event.isFree == filters.isFree)
+            .toList();
       }
 
       return filtered;
@@ -231,8 +256,8 @@ class SelectedEventNotifier extends StateNotifier<Event?> {
 /// Провайдер для выбранного события
 final selectedEventProvider =
     StateNotifierProvider<SelectedEventNotifier, Event?>((ref) {
-  return SelectedEventNotifier();
-});
+      return SelectedEventNotifier();
+    });
 
 /// Провайдер для строки поиска
 final eventSearchQueryProvider = StateProvider<String>((ref) => '');
@@ -246,30 +271,32 @@ final searchedEventsProvider = Provider<List<Event>>((ref) {
 
   return events.where((event) {
     return event.title.toLowerCase().contains(query) ||
-           event.description.toLowerCase().contains(query);
+        event.description.toLowerCase().contains(query);
   }).toList();
 });
 
 class EventParticipationNotifier extends StateNotifier<AsyncValue<void>> {
   final FirestoreService _firestoreService;
-  
-  EventParticipationNotifier(this._firestoreService) : super(const AsyncValue.data(null));
+
+  EventParticipationNotifier(this._firestoreService)
+    : super(const AsyncValue.data(null));
 
   Future<void> toggleParticipation(Event event, String userId) async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
       final isParticipating = event.participants.contains(userId);
       final newParticipants = List<String>.from(event.participants);
-      
+
       if (isParticipating) {
         newParticipants.remove(userId);
       } else {
-        if (event.maxParticipants > 0 && newParticipants.length >= event.maxParticipants) {
+        if (event.maxParticipants > 0 &&
+            newParticipants.length >= event.maxParticipants) {
           throw Exception('Событие полностью заполнено');
         }
         newParticipants.add(userId);
       }
-      
+
       await _firestoreService.updateEvent(event.id, {
         'participants': newParticipants,
       });
@@ -277,7 +304,7 @@ class EventParticipationNotifier extends StateNotifier<AsyncValue<void>> {
   }
 }
 
-final eventParticipationProvider = StateNotifierProvider<EventParticipationNotifier, AsyncValue<void>>((ref) {
-  return EventParticipationNotifier(ref.watch(firestoreServiceProvider));
-});
-
+final eventParticipationProvider =
+    StateNotifierProvider<EventParticipationNotifier, AsyncValue<void>>((ref) {
+      return EventParticipationNotifier(ref.watch(firestoreServiceProvider));
+    });

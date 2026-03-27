@@ -9,10 +9,7 @@ import '../shared/app_button.dart';
 class AgeVerificationScreen extends ConsumerStatefulWidget {
   final Map<String, dynamic> userData;
 
-  const AgeVerificationScreen({
-    super.key,
-    this.userData = const {},
-  });
+  const AgeVerificationScreen({super.key, this.userData = const {}});
 
   @override
   ConsumerState<AgeVerificationScreen> createState() =>

@@ -6,7 +6,8 @@ import 'app_router.dart';
 
 /// Сервис для управления навигацией из любой точки приложения
 class NavigationService {
-  static final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+  static final GlobalKey<NavigatorState> navigatorKey =
+      GlobalKey<NavigatorState>();
 
   /// Получить текущий context
   static BuildContext? get context => navigatorKey.currentContext;
@@ -27,14 +28,14 @@ class NavigationService {
   }
 
   /// Отправить сообщение пользователю (SnackBar)
-  static void showMessage(String message, {Duration duration = const Duration(seconds: 2)}) {
+  static void showMessage(
+    String message, {
+    Duration duration = const Duration(seconds: 2),
+  }) {
     if (context != null) {
-      ScaffoldMessenger.of(context!).showSnackBar(
-        SnackBar(
-          content: Text(message),
-          duration: duration,
-        ),
-      );
+      ScaffoldMessenger.of(
+        context!,
+      ).showSnackBar(SnackBar(content: Text(message), duration: duration));
     }
   }
 
@@ -139,18 +140,12 @@ class GoRouterErrorHandler {
   /// Получить страницу ошибки
   static Widget errorPage(BuildContext context, GoRouterState state) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Ошибка'),
-      ),
+      appBar: AppBar(title: const Text('Ошибка')),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(
-              Icons.error_outline,
-              color: Colors.red,
-              size: 64,
-            ),
+            const Icon(Icons.error_outline, color: Colors.red, size: 64),
             const SizedBox(height: 16),
             const Text(
               'Страница не найдена',

@@ -31,7 +31,7 @@ class _ParentalConsentScreenState extends ConsumerState<ParentalConsentScreen> {
     if (!_formKey.currentState!.validate()) return;
 
     final parentEmail = _emailController.text.trim();
-    
+
     final updatedData = <String, dynamic>{
       ...widget.userData,
       'parentEmail': parentEmail,

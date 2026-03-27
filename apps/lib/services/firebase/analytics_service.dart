@@ -44,10 +44,7 @@ class AnalyticsService {
 
   /// Установить интересы пользователя
   Future<void> setUserInterests(List<String> interests) async {
-    await setUserProperty(
-      name: 'interests',
-      value: interests.join(','),
-    );
+    await setUserProperty(name: 'interests', value: interests.join(','));
   }
 
   // ==================== EVENT TRACKING ====================
@@ -85,10 +82,7 @@ class AnalyticsService {
   }) async {
     await _analytics.logEvent(
       name: 'join_event',
-      parameters: {
-        'event_id': eventId,
-        'event_title': eventTitle,
-      },
+      parameters: {'event_id': eventId, 'event_title': eventTitle},
     );
   }
 
@@ -121,15 +115,10 @@ class AnalyticsService {
   }
 
   /// Залогировать поиск
-  Future<void> logSearch({
-    required String searchTerm,
-    String? category,
-  }) async {
+  Future<void> logSearch({required String searchTerm, String? category}) async {
     await _analytics.logSearch(
       searchTerm: searchTerm,
-      parameters: {
-        'category': ?category,
-      },
+      parameters: {'category': ?category},
     );
   }
 
@@ -155,10 +144,7 @@ class AnalyticsService {
   }) async {
     await _analytics.logEvent(
       name: 'add_to_favorites',
-      parameters: {
-        'item_type': itemType,
-        'item_id': itemId,
-      },
+      parameters: {'item_type': itemType, 'item_id': itemId},
     );
   }
 
@@ -169,10 +155,7 @@ class AnalyticsService {
   }) async {
     await _analytics.logEvent(
       name: 'send_message',
-      parameters: {
-        'chat_type': chatType,
-        'chat_id': ?chatId,
-      },
+      parameters: {'chat_type': chatType, 'chat_id': ?chatId},
     );
   }
 
@@ -183,10 +166,7 @@ class AnalyticsService {
   }) async {
     await _analytics.logEvent(
       name: 'submit_review',
-      parameters: {
-        'event_id': eventId,
-        'rating': rating,
-      },
+      parameters: {'event_id': eventId, 'rating': rating},
     );
   }
 
@@ -207,9 +187,6 @@ class AnalyticsService {
     required String name,
     Map<String, Object>? parameters,
   }) async {
-    await _analytics.logEvent(
-      name: name,
-      parameters: parameters??{}
-    );
+    await _analytics.logEvent(name: name, parameters: parameters ?? {});
   }
 }

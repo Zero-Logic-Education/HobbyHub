@@ -15,16 +15,19 @@ final interestsProvider = FutureProvider<List<Interest>>((ref) async {
 /// Провайдер для интересов по категории
 final interestsByCategoryProvider =
     FutureProvider.family<List<Interest>, String>((ref, category) async {
-  final firestoreService = ref.watch(firestoreServiceProvider);
-  final querySnapshot = await firestoreService.getInterestsByCategory(category);
-  return querySnapshot.docs
-      .map((doc) => Interest.fromJson(doc.data() as Map<String, dynamic>))
-      .toList();
-});
+      final firestoreService = ref.watch(firestoreServiceProvider);
+      final querySnapshot = await firestoreService.getInterestsByCategory(
+        category,
+      );
+      return querySnapshot.docs
+          .map((doc) => Interest.fromJson(doc.data() as Map<String, dynamic>))
+          .toList();
+    });
 
 /// Stream провайдер для популярных интересов
-final popularInterestsStreamProvider =
-    StreamProvider<List<Interest>>((ref) async* {
+final popularInterestsStreamProvider = StreamProvider<List<Interest>>((
+  ref,
+) async* {
   final firestoreService = ref.watch(firestoreServiceProvider);
   yield* firestoreService.popularInterestsStream().map((querySnapshot) {
     return querySnapshot.docs
@@ -61,12 +64,11 @@ class InterestFilterNotifier extends StateNotifier<List<String>> {
 /// Провайдер для управления фильтрами интересов
 final interestFilterProvider =
     StateNotifierProvider<InterestFilterNotifier, List<String>>((ref) {
-  return InterestFilterNotifier();
-});
+      return InterestFilterNotifier();
+    });
 
 /// Провайдер для событий, отфильтрованных по интересам
-final filteredEventsProvider =
-    FutureProvider<List<Event>>((ref) async {
+final filteredEventsProvider = FutureProvider<List<Event>>((ref) async {
   final filters = ref.watch(interestFilterProvider);
   final firestoreService = ref.watch(firestoreServiceProvider);
 
@@ -74,14 +76,26 @@ final filteredEventsProvider =
     // Если нет фильтров, получить все события
     final querySnapshot = await firestoreService.getEvents();
     return querySnapshot.docs
-        .map((doc) => Event.fromJson({...doc.data() as Map<String, dynamic>, 'id': doc.id}))
+        .map(
+          (doc) => Event.fromJson({
+            ...doc.data() as Map<String, dynamic>,
+            'id': doc.id,
+          }),
+        )
         .toList();
   }
 
   // Получить события по категориям
-  final querySnapshot = await firestoreService.searchEventsByCategories(filters);
+  final querySnapshot = await firestoreService.searchEventsByCategories(
+    filters,
+  );
   return querySnapshot.docs
-      .map((doc) => Event.fromJson({...doc.data() as Map<String, dynamic>, 'id': doc.id}))
+      .map(
+        (doc) => Event.fromJson({
+          ...doc.data() as Map<String, dynamic>,
+          'id': doc.id,
+        }),
+      )
       .toList();
 });
 
@@ -103,12 +117,11 @@ class InterestSearchNotifier extends StateNotifier<String> {
 /// Провайдер для управления поиском интересов
 final interestSearchProvider =
     StateNotifierProvider<InterestSearchNotifier, String>((ref) {
-  return InterestSearchNotifier();
-});
+      return InterestSearchNotifier();
+    });
 
 /// Провайдер для поиска интересов
-final searchedInterestsProvider =
-    FutureProvider<List<Interest>>((ref) async {
+final searchedInterestsProvider = FutureProvider<List<Interest>>((ref) async {
   final searchQuery = ref.watch(interestSearchProvider);
   final allInterests = await ref.watch(interestsProvider.future);
 

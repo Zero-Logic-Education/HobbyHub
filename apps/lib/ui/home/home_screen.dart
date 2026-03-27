@@ -9,6 +9,8 @@ import '../../providers/event_provider.dart';
 import '../chat/chat_list_screen.dart';
 import 'event_detail_screen.dart';
 import 'map_screen.dart';
+import '../notifications/notifications_screen.dart';
+import '../../providers/notification_provider.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -138,10 +140,29 @@ class HomeScreen extends ConsumerWidget {
                       iconSize: 28,
                     ),
                     // Notification icon
-                    IconButton(
-                      onPressed: () {},
-                      icon: const Icon(Icons.notifications_outlined),
-                      iconSize: 28,
+                    Consumer(
+                      builder: (context, ref, child) {
+                        final unreadCount = ref.watch(
+                          unreadNotificationsCountProvider,
+                        );
+                        return Badge(
+                          isLabelVisible: unreadCount > 0,
+                          label: Text(unreadCount.toString()),
+                          child: IconButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const NotificationsScreen(),
+                                ),
+                              );
+                            },
+                            icon: const Icon(Icons.notifications_outlined),
+                            iconSize: 28,
+                          ),
+                        );
+                      },
                     ),
                     // Chats/Messages icon
                     IconButton(

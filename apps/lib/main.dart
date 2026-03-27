@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'firebase_options.dart';
 import 'core/theme/app_theme.dart';
 import 'providers/ui_provider.dart';
+import 'providers/auth_provider.dart';
+import 'providers/user_provider.dart';
 import 'core/router/app_router.dart';
 import 'core/di/service_locator.dart';
 import 'providers/error_observer.dart';
@@ -44,6 +47,25 @@ class MyApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     // Получаем тему из Riverpod провайдера
     final isDarkMode = ref.watch(themeProvider);
+
+    // Подписываемся на изменение текущего пользователя для привязки FCM токена
+    ref.listen(currentUserIdProvider, (previous, next) {
+      if (next != null) {
+        final firestoreService = ref.read(firestoreServiceProvider);
+        final messagingService = getIt.messagingService;
+
+        messagingService.getToken().then((token) {
+          if (token != null) {
+            firestoreService.saveFcmToken(next, token);
+          }
+        });
+
+        // Также слушаем обновление токена
+        FirebaseMessaging.instance.onTokenRefresh.listen((token) {
+          firestoreService.saveFcmToken(next, token);
+        });
+      }
+    });
 
     // Получаем маршрутизатор
     final router = ref.watch(routerProvider);

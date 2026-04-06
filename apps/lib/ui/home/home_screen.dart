@@ -32,18 +32,20 @@ class HomeScreen extends ConsumerWidget {
 
     final userName = userProfileAsync.when(
       data: (user) {
-        String name = user?.displayName ?? authState.value?.displayName ?? '';
+        String name =
+            user?.displayName ?? authState.valueOrNull?.displayName ?? '';
         if (name.trim().isEmpty) {
-          name =
-              user?.username ?? authState.value?.email?.split('@')[0] ?? 'User';
+          name = user?.username ??
+              authState.valueOrNull?.email?.split('@')[0] ??
+              'User';
         }
         return name;
       },
       loading: () => 'Загрузка...',
       error: (e, st) {
-        String name = authState.value?.displayName ?? '';
+        String name = authState.valueOrNull?.displayName ?? '';
         if (name.trim().isEmpty) {
-          name = authState.value?.email?.split('@')[0] ?? 'User';
+          name = authState.valueOrNull?.email?.split('@')[0] ?? 'User';
         }
         return name;
       },
@@ -164,12 +166,18 @@ class HomeScreen extends ConsumerWidget {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Найди своё\nследующее хобби 🎯',
+                        'Найди своё\nследующее хобби',
                         style: AppTypography.headingLarge.copyWith(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
                           height: 1.2,
                         ),
+                      ),
+                      const SizedBox(height: 8),
+                      const Icon(
+                        Icons.track_changes_rounded,
+                        color: Colors.white,
+                        size: 24,
                       ),
                       const SizedBox(height: 16),
                       ElevatedButton(

@@ -35,7 +35,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
 
     // Заполнение текущими данными
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final user = ref.read(currentUserStreamProvider).value;
+      final user = ref.read(currentUserStreamProvider).valueOrNull;
       if (user != null) {
         if (user.displayName != null) {
           _nameController.text = user.displayName!;
@@ -82,7 +82,13 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
 
     try {
       final userId = ref.read(currentUserIdProvider);
-      if (userId == null) throw Exception('Пользователь не найден');
+      if (userId == null) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Требуется авторизация')),
+        );
+        return;
+      }
 
       String? photoUrl;
 
@@ -119,7 +125,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final user = ref.watch(currentUserStreamProvider).value;
+    final user = ref.watch(currentUserStreamProvider).valueOrNull;
     final currentPhotoUrl = user?.photoUrl;
     final initials = user?.displayName?.trim().isNotEmpty == true
         ? user!.displayName!.trim().substring(0, 1).toUpperCase()

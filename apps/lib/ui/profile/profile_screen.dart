@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:url_launcher/url_launcher.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../core/router/app_router.dart';
@@ -382,93 +381,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                     return _InterestTag(label: e.value, fg: c[0], bg: c[1]);
                   }).toList(),
                 ),
-              const SizedBox(height: 28),
-              const _SectionLabel(label: 'НАСТРОЙКИ'),
-              const SizedBox(height: 12),
-              _SettingsTile(
-                icon: Icons.notifications_outlined,
-                iconBg: Color(0xFFFFF5E0),
-                iconColor: Color(0xFFF2994A),
-                title: 'Уведомления',
-                subtitle: 'Push и email-рассылки',
-                onTap: _openNotificationSettings,
-              ),
-              const SizedBox(height: 10),
-              _SettingsTile(
-                icon: Icons.lock_outline_rounded,
-                iconBg: Color(0xFFE8F4FD),
-                iconColor: Color(0xFF2D9CDB),
-                title: 'Конфиденциальность',
-                subtitle: 'Защита аккаунта',
-                onTap: _openPrivacySettings,
-              ),
-              const SizedBox(height: 28),
-              _SettingsTile(
-                icon: Icons.star_outline_rounded,
-                iconBg: Color(0xFFFFFBE6),
-                iconColor: Color(0xFFE8B86D),
-                title: 'Оценить приложение',
-                subtitle: 'Поделитесь мнением',
-                onTap: _rateApp,
-              ),
-              const SizedBox(height: 16),
-              GestureDetector(
-                onTap: () => showDialog(
-                  context: context,
-                  builder: (ctx) => AlertDialog(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    title: const Text('Выйти?'),
-                    content: const Text('Вы уверены, что хотите выйти?'),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(ctx),
-                        child: const Text('Отмена'),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.pop(ctx);
-                          ref.read(authNotifierProvider.notifier).signOut();
-                          context.go(AppRoutes.welcome);
-                        },
-                        child: Text(
-                          'Выйти',
-                          style: TextStyle(color: AppColors.primary),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.04),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text('🚪', style: TextStyle(fontSize: 18)),
-                      const SizedBox(width: 8),
-                      Text(
-                        'Выйти из аккаунта',
-                        style: AppTypography.subheadingSmall.copyWith(
-                          color: AppColors.primary,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
             ],
           ),
           _buildEventsTab(context, userEvents),
@@ -592,49 +504,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
     );
   }
 
-  void _openNotificationSettings() {
-    context.push(AppRoutes.settings);
-  }
-
-  void _openPrivacySettings() {
-    showDialog<void>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Конфиденциальность'),
-        content: const Text(
-          'Настройки приватности доступны в экране настроек. Здесь можно быстро открыть их.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Закрыть'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(dialogContext);
-              context.push(AppRoutes.settings);
-            },
-            child: const Text('Открыть'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Future<void> _rateApp() async {
-    final messenger = ScaffoldMessenger.of(context);
-    final uri = Uri.parse('https://play.google.com/store/search?q=HobbyHub&c=apps');
-    final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
-
-    if (!launched) {
-      messenger.showSnackBar(
-        const SnackBar(
-          content: Text('Не удалось открыть магазин приложений.'),
-        ),
-      );
-    }
-  }
-
   Widget _buildNotLoggedIn() {
     return Center(
       child: Column(
@@ -740,87 +609,6 @@ class _InterestTag extends StatelessWidget {
         style: AppTypography.bodySmall.copyWith(
           color: fg,
           fontWeight: FontWeight.w700,
-        ),
-      ),
-    );
-  }
-}
-
-class _SettingsTile extends StatelessWidget {
-  final IconData icon;
-  final Color iconBg;
-  final Color iconColor;
-  final String title;
-  final String subtitle;
-  final VoidCallback? onTap;
-  const _SettingsTile({
-    required this.icon,
-    required this.iconBg,
-    required this.iconColor,
-    required this.title,
-    required this.subtitle,
-    this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(16),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.04),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: Row(
-            children: [
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: iconBg,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(icon, color: iconColor, size: 20),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: AppTypography.bodyMedium.copyWith(
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      subtitle,
-                      style: AppTypography.bodySmall.copyWith(
-                        color: AppColors.textTertiary,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const Icon(
-                Icons.chevron_right_rounded,
-                color: AppColors.textTertiary,
-                size: 20,
-              ),
-            ],
-          ),
         ),
       ),
     );

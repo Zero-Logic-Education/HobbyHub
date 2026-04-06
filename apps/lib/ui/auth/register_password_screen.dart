@@ -36,6 +36,11 @@ class _RegisterPasswordScreenState
     if (!_formKey.currentState!.validate()) return;
 
     final authNotifier = ref.read(authNotifierProvider.notifier);
+    final verifyAgeNotifier = ref.read(ageVerificationNotifierProvider.notifier);
+    final profileNotifier = ref.read(
+      currentUserProfileNotifierProvider.notifier,
+    );
+
     await authNotifier.signUpWithEmail(
       widget.userData['email'] as String,
       _passwordController.text.trim(),
@@ -45,15 +50,10 @@ class _RegisterPasswordScreenState
     final result = ref.read(authNotifierProvider);
     if (!result.hasError) {
       // Верифицируем возраст, что также создает документ пользователя в Firestore
-      final verifyAgeNotifier = ref.read(
-        ageVerificationNotifierProvider.notifier,
-      );
       await verifyAgeNotifier.verifyAge(age: widget.userData['age'] as int);
+      if (!mounted) return;
 
       // Сохраняем профиль: имя, активности, интересы, родительский email
-      final profileNotifier = ref.read(
-        currentUserProfileNotifierProvider.notifier,
-      );
       await profileNotifier.updateProfile(
         displayName: widget.userData['name'] as String?,
         interests: (widget.userData['interests'] as List?)?.cast<String>(),

@@ -11,6 +11,7 @@ import '../../core/constants/app_constants.dart';
 import '../../core/router/app_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
+import '../../core/utils/category_icons.dart';
 import '../../models/event.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/event_provider.dart';
@@ -62,14 +63,22 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   ];
 
   final List<Map<String, dynamic>> _categories = [
-    {'id': 'sports', 'label': 'Спорт', 'icon': '🏃'},
-    {'id': 'tech', 'label': 'Технологии', 'icon': '💻'},
-    {'id': 'art', 'label': 'Творчество', 'icon': '🎨'},
-    {'id': 'music', 'label': 'Музыка', 'icon': '🎵'},
-    {'id': 'wellness', 'label': 'Здоровье', 'icon': '🧘'},
-    {'id': 'food', 'label': 'Еда и напитки', 'icon': '🍽️'},
-    {'id': 'photo', 'label': 'Фотография', 'icon': '📷'},
-    {'id': 'books', 'label': 'Книги', 'icon': '📚'},
+    {
+      'id': 'sports',
+      'label': 'Спорт',
+      'icon': Icons.directions_run_rounded,
+    },
+    {'id': 'tech', 'label': 'Технологии', 'icon': Icons.computer_rounded},
+    {'id': 'art', 'label': 'Творчество', 'icon': Icons.palette_outlined},
+    {'id': 'music', 'label': 'Музыка', 'icon': Icons.music_note_rounded},
+    {
+      'id': 'wellness',
+      'label': 'Здоровье',
+      'icon': Icons.self_improvement_rounded,
+    },
+    {'id': 'food', 'label': 'Еда и напитки', 'icon': Icons.restaurant_rounded},
+    {'id': 'photo', 'label': 'Фотография', 'icon': Icons.camera_alt_rounded},
+    {'id': 'books', 'label': 'Книги', 'icon': Icons.menu_book_rounded},
   ];
 
   @override
@@ -511,9 +520,13 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        category['icon'],
-                        style: const TextStyle(fontSize: 18),
+                      Icon(
+                        (category['icon'] as IconData?) ??
+                            categoryIcon(category['id'] as String),
+                        size: 18,
+                        color: isSelected
+                            ? AppColors.primary
+                            : AppColors.textSecondary,
                       ),
                       const SizedBox(width: 8),
                       Text(

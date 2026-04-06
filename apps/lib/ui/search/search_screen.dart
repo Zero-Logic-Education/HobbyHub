@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
+import '../../core/utils/category_icons.dart';
 import '../../providers/event_provider.dart';
 import '../../providers/interest_provider.dart';
 import '../shared/event_card.dart';
@@ -232,33 +233,14 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     ];
   }
 
-  String _getIconForCategory(String category) {
-    switch (category.toLowerCase()) {
-      case 'sports':
-        return '🏃';
-      case 'tech':
-        return '💻';
-      case 'art':
-        return '🎨';
-      case 'music':
-        return '🎵';
-      case 'food':
-        return '🍽️';
-      case 'wellness':
-        return '🧘';
-      case 'photo':
-        return '📷';
-      case 'books':
-        return '📚';
-      default:
-        return '🌟';
-    }
+  IconData _getIconForCategory(String category) {
+    return categoryIcon(category);
   }
 }
 
 class _CategoryCard extends StatelessWidget {
   final String title;
-  final String icon;
+  final IconData icon;
   final Color color;
 
   const _CategoryCard({
@@ -291,7 +273,7 @@ class _CategoryCard extends StatelessWidget {
               color: color,
               borderRadius: BorderRadius.circular(20),
             ),
-            child: Text(icon, style: const TextStyle(fontSize: 28)),
+            child: Icon(icon, size: 28, color: AppColors.textPrimary),
           ),
           const SizedBox(height: 12),
           Text(

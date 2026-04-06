@@ -24,7 +24,8 @@ class NotificationModel {
       id: json['id'] as String,
       title: json['title'] as String,
       body: json['body'] as String,
-      createdAt: (json['createdAt'] as Timestamp).toDate(),
+      createdAt:
+          (json['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
       isRead: json['isRead'] as bool? ?? false,
       type: json['type'] as String,
       relatedId: json['relatedId'] as String?,

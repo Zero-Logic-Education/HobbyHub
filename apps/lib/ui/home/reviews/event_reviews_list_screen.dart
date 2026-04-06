@@ -84,10 +84,16 @@ class _EventReviewsListScreenState extends ConsumerState<EventReviewsListScreen>
                 child: Row(
                   children: [
                     Text(
-                      '${averageRating.toStringAsFixed(1)} ★',
+                      averageRating.toStringAsFixed(1),
                       style: AppTypography.bodyLarge.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
+                    ),
+                    const SizedBox(width: 4),
+                    const Icon(
+                      Icons.star_rounded,
+                      color: Colors.amber,
+                      size: 18,
                     ),
                     const SizedBox(width: 8),
                     Text(

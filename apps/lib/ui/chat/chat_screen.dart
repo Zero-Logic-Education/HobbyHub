@@ -77,7 +77,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(otherUserProfileAsync?.value?.username ?? 'Загрузка...'),
+        title: Text(
+          otherUserProfileAsync?.valueOrNull?.username ?? 'Загрузка...',
+        ),
       ),
       body: Column(
         children: [

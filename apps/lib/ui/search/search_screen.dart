@@ -100,35 +100,77 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
   }
 
   Widget _buildSearchResults() {
-    final events = ref.watch(searchedEventsProvider);
+    final query = ref.watch(eventSearchQueryProvider).toLowerCase().trim();
+    final eventsAsync = ref.watch(eventsStreamProvider);
 
-    if (events.isEmpty) {
-      return SliverToBoxAdapter(
+    return eventsAsync.when(
+      loading: () => SliverPadding(
+        padding: const EdgeInsets.all(24),
+        sliver: SliverList(
+          delegate: SliverChildBuilderDelegate((context, index) {
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: Container(
+                height: 180,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: const Color(0xFFF0F0F0)),
+                ),
+              ),
+            );
+          }, childCount: 3),
+        ),
+      ),
+      error: (error, stackTrace) => SliverToBoxAdapter(
         child: Padding(
           padding: const EdgeInsets.all(32),
           child: Center(
             child: Text(
-              'Ничего не найдено',
+              'Ошибка загрузки результатов: $error',
               style: AppTypography.bodyLarge.copyWith(
                 color: AppColors.textSecondary,
               ),
             ),
           ),
         ),
-      );
-    }
-
-    return SliverPadding(
-      padding: const EdgeInsets.all(24),
-      sliver: SliverList(
-        delegate: SliverChildBuilderDelegate(
-          (context, index) => Padding(
-            padding: const EdgeInsets.only(bottom: 16),
-            child: EventCard(event: events[index]),
-          ),
-          childCount: events.length,
-        ),
       ),
+      data: (events) {
+        final filtered = events.where((event) {
+          if (query.isEmpty) return true;
+          return event.title.toLowerCase().contains(query) ||
+              event.description.toLowerCase().contains(query);
+        }).toList();
+
+        if (filtered.isEmpty) {
+          return SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.all(32),
+              child: Center(
+                child: Text(
+                  'Ничего не найдено',
+                  style: AppTypography.bodyLarge.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+              ),
+            ),
+          );
+        }
+
+        return SliverPadding(
+          padding: const EdgeInsets.all(24),
+          sliver: SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (context, index) => Padding(
+                padding: const EdgeInsets.only(bottom: 16),
+                child: EventCard(event: filtered[index]),
+              ),
+              childCount: filtered.length,
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -175,7 +217,6 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                 return _CategoryCard(
                   title: interest.name,
                   icon: _getIconForCategory(interest.category),
-                  count: interest.popularity,
                   color: color,
                 );
               }, childCount: interests.length),
@@ -218,13 +259,11 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
 class _CategoryCard extends StatelessWidget {
   final String title;
   final String icon;
-  final int count;
   final Color color;
 
   const _CategoryCard({
     required this.title,
     required this.icon,
-    required this.count,
     required this.color,
   });
 
@@ -264,13 +303,6 @@ class _CategoryCard extends StatelessWidget {
             textAlign: TextAlign.center,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-          ),
-          const SizedBox(height: 4),
-          Text(
-            'Популярность: $count',
-            style: AppTypography.bodySmall.copyWith(
-              color: AppColors.textTertiary,
-            ),
           ),
         ],
       ),

@@ -65,14 +65,15 @@ class AnalyticsService {
     required String eventType,
     String? category,
   }) async {
-    await _analytics.logEvent(
-      name: 'create_event',
-      parameters: {
-        'event_id': eventId,
-        'event_type': eventType,
-        'category': ?category,
-      },
-    );
+    final parameters = <String, Object>{
+      'event_id': eventId,
+      'event_type': eventType,
+    };
+    if (category != null) {
+      parameters['category'] = category;
+    }
+
+    await _analytics.logEvent(name: 'create_event', parameters: parameters);
   }
 
   /// Залогировать присоединение к событию
@@ -116,10 +117,12 @@ class AnalyticsService {
 
   /// Залогировать поиск
   Future<void> logSearch({required String searchTerm, String? category}) async {
-    await _analytics.logSearch(
-      searchTerm: searchTerm,
-      parameters: {'category': ?category},
-    );
+    final parameters = <String, Object>{};
+    if (category != null) {
+      parameters['category'] = category;
+    }
+
+    await _analytics.logSearch(searchTerm: searchTerm, parameters: parameters);
   }
 
   /// Залогировать шаринг
@@ -153,10 +156,12 @@ class AnalyticsService {
     required String chatType,
     String? chatId,
   }) async {
-    await _analytics.logEvent(
-      name: 'send_message',
-      parameters: {'chat_type': chatType, 'chat_id': ?chatId},
-    );
+    final parameters = <String, Object>{'chat_type': chatType};
+    if (chatId != null) {
+      parameters['chat_id'] = chatId;
+    }
+
+    await _analytics.logEvent(name: 'send_message', parameters: parameters);
   }
 
   /// Залогировать оставление отзыва

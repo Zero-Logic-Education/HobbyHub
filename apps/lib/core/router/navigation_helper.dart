@@ -11,7 +11,7 @@ class NavigationHelper {
 
   /// Переход на экран с поиском
   static void goMap(BuildContext context) {
-    context.go(AppRoutes.search);
+    context.push(AppRoutes.map);
   }
 
   // Переход на экран  сообщества
@@ -55,27 +55,37 @@ class NavigationHelper {
 
   /// Переход на детальную страницу события
   static void goEventDetail(BuildContext context, String eventId) {
-    context.push('${AppRoutes.home}/event/$eventId');
+    context.push('${AppRoutes.eventDetail}/$eventId');
   }
 
   /// Переход на создание события
   static void goCreateEvent(BuildContext context) {
-    context.push('${AppRoutes.home}/create-event');
+    context.push(AppRoutes.createEvent);
   }
 
   /// Переход на детальную страницу сообщества
   static void goCommunityDetail(BuildContext context, String communityId) {
-    context.push('${AppRoutes.home}/communities/$communityId');
+    context.push('/communities/$communityId');
   }
 
   /// Переход на список чатов
   static void goChats(BuildContext context) {
-    context.push('${AppRoutes.home}/chats');
+    context.push(AppRoutes.chats);
   }
 
   /// Переход в конкретный чат
   static void goChatDetail(BuildContext context, String chatId) {
-    context.push('${AppRoutes.home}/chats/$chatId');
+    context.push('${AppRoutes.chats}/$chatId');
+  }
+
+  /// Переход на уведомления
+  static void goNotifications(BuildContext context) {
+    context.push(AppRoutes.notifications);
+  }
+
+  /// Переход в настройки
+  static void goSettings(BuildContext context) {
+    context.push(AppRoutes.settings);
   }
 
   /// Замена всех маршрутов на новый (используется при выходе)

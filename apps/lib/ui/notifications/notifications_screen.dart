@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../providers/notification_provider.dart';
 import '../../core/theme/app_colors.dart';
@@ -95,6 +96,25 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                           .read(firestoreServiceProvider)
                           .markNotificationAsRead(userId, notification.id);
                     }
+                  }
+
+                  final relatedId = notification.relatedId;
+                  switch (notification.type) {
+                    case 'event_invite':
+                    case 'application_approved':
+                    case 'application_rejected':
+                      if (relatedId != null) {
+                        context.push('/home/event/$relatedId');
+                      }
+                      break;
+                    case 'new_message':
+                    case 'chat_message':
+                      if (relatedId != null) {
+                        context.push('/chats/$relatedId');
+                      }
+                      break;
+                    default:
+                      break;
                   }
                 },
               );

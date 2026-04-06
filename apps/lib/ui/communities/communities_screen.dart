@@ -182,7 +182,7 @@ class _CommunityCard extends StatelessWidget {
     final membersCount = item.members.length;
 
     return GestureDetector(
-      onTap: () => context.push('/communities/detail/${item.id}'),
+      onTap: () => context.push('/communities/${item.id}'),
       child: Container(
         margin: const EdgeInsets.only(bottom: 16),
         decoration: BoxDecoration(

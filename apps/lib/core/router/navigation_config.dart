@@ -106,19 +106,19 @@ class DeepLinkHandler {
       switch (path[0]) {
         case 'event':
           if (path.length > 1) {
-            return '${AppRoutes.home}/event/${path[1]}';
+            return '${AppRoutes.eventDetail}/${path[1]}';
           }
           break;
 
         case 'community':
           if (path.length > 1) {
-            return '${AppRoutes.home}/communities/${path[1]}';
+            return '/communities/${path[1]}';
           }
           break;
 
         case 'chat':
           if (path.length > 1) {
-            return '${AppRoutes.home}/chats/${path[1]}';
+            return '${AppRoutes.chats}/${path[1]}';
           }
           break;
 

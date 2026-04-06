@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import '../../providers/notification_provider.dart';
 import '../../core/theme/app_colors.dart';
 
@@ -17,6 +18,41 @@ class NotificationsScreen extends ConsumerStatefulWidget {
 }
 
 class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
+  @override
+  void initState() {
+    super.initState();
+    _notifyIfPushDisabled();
+  }
+
+  Future<void> _notifyIfPushDisabled() async {
+    final messenger = ScaffoldMessenger.of(context);
+    final settings = await FirebaseMessaging.instance.getNotificationSettings();
+    final isDenied =
+        settings.authorizationStatus == AuthorizationStatus.denied ||
+        settings.authorizationStatus == AuthorizationStatus.notDetermined;
+
+    if (!mounted || !isDenied) {
+      return;
+    }
+
+    messenger.showSnackBar(
+      SnackBar(
+        content: const Text(
+          'Push-уведомления отключены. Вы можете пропустить важные сообщения и события.',
+        ),
+        backgroundColor: Colors.orange,
+        duration: const Duration(seconds: 5),
+        action: SnackBarAction(
+          label: 'Настройки',
+          onPressed: () {
+            if (!mounted) return;
+            context.push('/settings');
+          },
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final notificationsAsync = ref.watch(notificationsProvider);
@@ -103,14 +139,23 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                     case 'event_invite':
                     case 'application_approved':
                     case 'application_rejected':
+                    case 'event':
                       if (relatedId != null) {
                         context.push('/home/event/$relatedId');
                       }
                       break;
                     case 'new_message':
                     case 'chat_message':
+                    case 'message':
                       if (relatedId != null) {
                         context.push('/chats/$relatedId');
+                      }
+                      break;
+                    case 'community':
+                    case 'community_invite':
+                    case 'community_update':
+                      if (relatedId != null) {
+                        context.push('/communities/$relatedId');
                       }
                       break;
                     default:
@@ -137,7 +182,13 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
       case 'application_rejected':
         return Colors.red;
       case 'new_message':
+      case 'chat_message':
+      case 'message':
         return Colors.blue;
+      case 'community':
+      case 'community_invite':
+      case 'community_update':
+        return Colors.teal;
       default:
         return Colors.grey;
     }
@@ -152,7 +203,13 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
       case 'application_rejected':
         return Icons.cancel;
       case 'new_message':
+      case 'chat_message':
+      case 'message':
         return Icons.message;
+      case 'community':
+      case 'community_invite':
+      case 'community_update':
+        return Icons.groups;
       case 'system':
       default:
         return Icons.notifications;

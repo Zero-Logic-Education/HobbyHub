@@ -1,42 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../core/router/app_router.dart';
-import '../../core/utils/category_colors.dart';
-import '../../models/event.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/event_provider.dart';
 import '../../providers/notification_provider.dart';
 import '../../providers/user_provider.dart';
+import '../shared/event_card.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
-  String _formatEventDate(DateTime dateTime) {
-    final now = DateTime.now();
-    final eventDate = DateTime(dateTime.year, dateTime.month, dateTime.day);
-    final today = DateTime(now.year, now.month, now.day);
-    final tomorrow = today.add(const Duration(days: 1));
-    final time = DateFormat('HH:mm').format(dateTime);
-
-    if (eventDate == today) return 'Сегодня, $time';
-    if (eventDate == tomorrow) return 'Завтра, $time';
-
-    return DateFormat('dd.MM, HH:mm').format(dateTime);
-  }
-
-  String _formatPrice(double price, bool isFree) {
-    if (isFree || price <= 0) return 'Бесплатно';
-    final hasFraction = price % 1 != 0;
-    return '${price.toStringAsFixed(hasFraction ? 2 : 0)} ₽';
-  }
-
-  String _categoryLabel(List<String> categories) {
-    if (categories.isEmpty) return 'Разное';
-    return categories.first;
+  String _timeGreeting() {
+    final hour = DateTime.now().hour;
+    if (hour < 6) return 'Доброй ночи';
+    if (hour < 12) return 'Доброе утро';
+    if (hour < 18) return 'Добрый день';
+    return 'Добрый вечер';
   }
 
   @override
@@ -107,7 +89,7 @@ class HomeScreen extends ConsumerWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Доброе утро,',
+                            '${_timeGreeting()},',
                             style: AppTypography.bodyMedium.copyWith(
                               color: AppColors.textSecondary,
                             ),
@@ -198,7 +180,7 @@ class HomeScreen extends ConsumerWidget {
                       ),
                       const SizedBox(height: 16),
                       ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () => context.push(AppRoutes.search),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.white.withValues(alpha: 0.3),
                           foregroundColor: Colors.white,
@@ -328,33 +310,12 @@ class HomeScreen extends ConsumerWidget {
                           index < filteredEvents.length;
                           index++
                         ) ...[
-                          _EventCard(
+                          EventCard(
                             event: filteredEvents[index],
-                            imageUrl: filteredEvents[index].coverImageUrl ?? '',
-                            category: _categoryLabel(
-                              filteredEvents[index].categories,
-                            ),
-                            title: filteredEvents[index].title,
-                            date: _formatEventDate(
-                              filteredEvents[index].startTime,
-                            ),
-                            location:
-                                (filteredEvents[index].address ?? '')
-                                    .trim()
-                                    .isNotEmpty
-                                ? filteredEvents[index].address!
-                                : 'Локация не указана',
-                            participants:
-                                filteredEvents[index].participants.length,
-                            price: _formatPrice(
-                              filteredEvents[index].price,
-                              filteredEvents[index].isFree,
-                            ),
-                            ageRestriction: filteredEvents[index].minAge >= 18
-                                ? '${filteredEvents[index].minAge}+'
-                                : null,
-                            categoryColor: getCategoryColor(
-                              _categoryLabel(filteredEvents[index].categories),
+                            imageUrl: filteredEvents[index].coverImageUrl,
+                            onTap: () => context.push(
+                              '/home/event/${filteredEvents[index].id}',
+                              extra: filteredEvents[index],
                             ),
                           ),
                           if (index != filteredEvents.length - 1)
@@ -375,11 +336,23 @@ class HomeScreen extends ConsumerWidget {
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(color: const Color(0xFFF0F0F0)),
                     ),
-                    child: Text(
-                      'Ошибка загрузки событий: $error',
-                      style: AppTypography.bodyMedium.copyWith(
-                        color: AppColors.textSecondary,
-                      ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          'Ошибка загрузки событий: $error',
+                          style: AppTypography.bodyMedium.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        ElevatedButton.icon(
+                          onPressed: () => ref.invalidate(eventsStreamProvider),
+                          icon: const Icon(Icons.refresh),
+                          label: const Text('Повторить'),
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -421,261 +394,6 @@ class _FilterChip extends StatelessWidget {
         ),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      ),
-    );
-  }
-}
-
-class _EventCard extends StatelessWidget {
-  final Event event;
-  final String imageUrl;
-  final String category;
-  final String title;
-  final String date;
-  final String location;
-  final int participants;
-  final String price;
-  final String? ageRestriction;
-  final Color categoryColor;
-
-  const _EventCard({
-    required this.event,
-    required this.imageUrl,
-    required this.category,
-    required this.title,
-    required this.date,
-    required this.location,
-    required this.participants,
-    required this.price,
-    required this.categoryColor,
-    this.ageRestriction,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: InkWell(
-        onTap: () {
-          context.push('/home/event/${event.id}', extra: event);
-        },
-        borderRadius: BorderRadius.circular(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Event image
-            Stack(
-              children: [
-                Container(
-                  height: 200,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    borderRadius: const BorderRadius.vertical(
-                      top: Radius.circular(16),
-                    ),
-                    color: Colors.grey[300],
-                  ),
-                  child: ClipRRect(
-                    borderRadius: const BorderRadius.vertical(
-                      top: Radius.circular(16),
-                    ),
-                    child: Image.network(
-                      imageUrl,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          color: categoryColor.withValues(alpha: 0.3),
-                          child: Icon(
-                            Icons.image,
-                            size: 60,
-                            color: categoryColor,
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ),
-                // Category badge
-                Positioned(
-                  left: 12,
-                  bottom: 12,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 6,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      category,
-                      style: AppTypography.bodySmall.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ),
-                // Price or age badge
-                Positioned(
-                  right: 12,
-                  top: 12,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 6,
-                    ),
-                    decoration: BoxDecoration(
-                      color: ageRestriction != null
-                          ? Colors.black87
-                          : AppColors.primary,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      ageRestriction ?? price,
-                      style: AppTypography.bodySmall.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-
-            // Event details
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          title,
-                          style: AppTypography.headingSmall.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      if (ageRestriction == null)
-                        Text(
-                          price,
-                          style: AppTypography.headingSmall.copyWith(
-                            color: AppColors.primary,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.access_time,
-                        size: 16,
-                        color: AppColors.textSecondary,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        date,
-                        style: AppTypography.bodySmall.copyWith(
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.location_on_outlined,
-                        size: 16,
-                        color: AppColors.textSecondary,
-                      ),
-                      const SizedBox(width: 4),
-                      Expanded(
-                        child: Text(
-                          location,
-                          style: AppTypography.bodySmall.copyWith(
-                            color: AppColors.textSecondary,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  // Participants and arrow
-                  Row(
-                    children: [
-                      // Avatar stack
-                      SizedBox(
-                        width: 80,
-                        height: 28,
-                        child: Stack(
-                          children: [
-                            Positioned(
-                              left: 0,
-                              child: _ParticipantAvatar(
-                                color: AppColors.primary,
-                              ),
-                            ),
-                            Positioned(
-                              left: 20,
-                              child: _ParticipantAvatar(
-                                color: Color(0xFF64B5F6),
-                              ),
-                            ),
-                            Positioned(
-                              left: 40,
-                              child: _ParticipantAvatar(
-                                color: Color(0xFF81C784),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        '$participants идут',
-                        style: AppTypography.bodySmall.copyWith(
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
-                      const Spacer(),
-                      Icon(
-                        Icons.arrow_forward,
-                        color: AppColors.primary,
-                        size: 24,
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _ParticipantAvatar extends StatelessWidget {
-  final Color color;
-
-  const _ParticipantAvatar({required this.color});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 28,
-      height: 28,
-      decoration: BoxDecoration(
-        color: color,
-        shape: BoxShape.circle,
-        border: Border.all(color: Colors.white, width: 2),
       ),
     );
   }

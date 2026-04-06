@@ -117,13 +117,37 @@ class ApplicationCard extends ConsumerWidget {
                 IconButton(
                   icon: const Icon(Icons.check_circle, color: Colors.green),
                   onPressed: () async {
-                    await ref.read(firestoreServiceProvider).approveApplication(eventId, userId);
+                    try {
+                      await ref
+                          .read(firestoreServiceProvider)
+                          .approveApplication(eventId, userId);
+                    } catch (_) {
+                      if (!context.mounted) return;
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Функция модерирования временно недоступна.'),
+                          backgroundColor: Colors.orange,
+                        ),
+                      );
+                    }
                   },
                 ),
                 IconButton(
                   icon: const Icon(Icons.cancel, color: Colors.red),
                   onPressed: () async {
-                    await ref.read(firestoreServiceProvider).rejectApplication(eventId, userId);
+                    try {
+                      await ref
+                          .read(firestoreServiceProvider)
+                          .rejectApplication(eventId, userId);
+                    } catch (_) {
+                      if (!context.mounted) return;
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Функция модерирования временно недоступна.'),
+                          backgroundColor: Colors.orange,
+                        ),
+                      );
+                    }
                   },
                 ),
               ],

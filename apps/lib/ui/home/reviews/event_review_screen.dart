@@ -58,7 +58,10 @@ class _EventReviewScreenState extends ConsumerState<EventReviewScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Ошибка при отправке отзыва: $e')),
+          const SnackBar(
+            content: Text('Функция отзывов временно недоступна.'),
+            backgroundColor: Colors.orange,
+          ),
         );
       }
     } finally {

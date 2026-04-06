@@ -89,4 +89,32 @@ class ChatService {
     await newRef.set(newChat.toJson());
     return newRef.id;
   }
+  
+  Future<void> markMessagesAsRead(String chatId, String userId) async {
+    final unreadSnapshot = await _firestore
+        .collection(AppConstants.chatsCollection)
+        .doc(chatId)
+        .collection(AppConstants.messagesCollection)
+        .where('isRead', isEqualTo: false)
+        .get();
+
+    if (unreadSnapshot.docs.isEmpty) {
+      return;
+    }
+
+    final batch = _firestore.batch();
+    var hasUpdates = false;
+
+    for (final doc in unreadSnapshot.docs) {
+      final data = doc.data();
+      if (data['senderId'] != userId) {
+        batch.update(doc.reference, {'isRead': true});
+        hasUpdates = true;
+      }
+    }
+
+    if (hasUpdates) {
+      await batch.commit();
+    }
+  }
 }

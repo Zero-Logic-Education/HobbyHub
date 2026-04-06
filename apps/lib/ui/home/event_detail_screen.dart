@@ -1,13 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:share_plus/share_plus.dart';
+import '../../core/router/app_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../models/event.dart';
+import '../../providers/auth_provider.dart';
+import '../../providers/event_provider.dart';
+import '../../providers/user_provider.dart';
+import '../../services/chat_service.dart';
 
-class EventDetailScreen extends StatelessWidget {
-  final Event event;
+class EventDetailScreen extends ConsumerWidget {
+  final Event? event;
+  final String? eventId;
 
-  const EventDetailScreen({super.key, required this.event});
+  const EventDetailScreen({super.key, this.event, this.eventId});
 
   String _formatDate(DateTime dateTime) {
     return DateFormat('dd.MM.yyyy, HH:mm').format(dateTime);
@@ -19,13 +28,13 @@ class EventDetailScreen extends StatelessWidget {
     return '${price.toStringAsFixed(hasFraction ? 2 : 0)} ₽';
   }
 
-  String _categoryLabel() {
+  String _categoryLabel(Event event) {
     if (event.categories.isEmpty) return 'Разное';
     return event.categories.first;
   }
 
-  Color _categoryColor() {
-    switch (_categoryLabel().toLowerCase()) {
+  Color _categoryColor(Event event) {
+    switch (_categoryLabel(event).toLowerCase()) {
       case 'спорт':
       case 'sports':
         return const Color(0xFF81C784);
@@ -45,17 +54,40 @@ class EventDetailScreen extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final categoryColor = _categoryColor();
-    final location = (event.address ?? '').trim().isNotEmpty
-        ? event.address!
+  Widget build(BuildContext context, WidgetRef ref) {
+    final resolvedEvent = _resolveEvent(ref) ?? event;
+
+    if (resolvedEvent == null) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('Событие'),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.black),
+            onPressed: () => context.pop(),
+          ),
+        ),
+        body: const Center(child: Text('Событие не найдено')),
+      );
+    }
+
+    final currentUserId = ref.watch(currentUserIdProvider);
+    final participationState = ref.watch(eventParticipationProvider);
+    final organizerAsync = ref.watch(
+      userProfileProvider(resolvedEvent.organizerId),
+    );
+    final categoryColor = _categoryColor(resolvedEvent);
+    final location = (resolvedEvent.address ?? '').trim().isNotEmpty
+        ? resolvedEvent.address!
         : 'Локация не указана';
+    final visibleParticipantIds = resolvedEvent.participants.take(3).toList();
+    final isParticipating =
+        currentUserId != null &&
+        resolvedEvent.participants.contains(currentUserId);
 
     return Scaffold(
       backgroundColor: Colors.white,
       body: CustomScrollView(
         slivers: [
-          // Header with image
           SliverAppBar(
             expandedHeight: 300,
             pinned: true,
@@ -67,7 +99,7 @@ class EventDetailScreen extends StatelessWidget {
                 backgroundColor: Colors.white,
                 child: IconButton(
                   icon: const Icon(Icons.arrow_back, color: Colors.black),
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: () => context.pop(),
                 ),
               ),
             ),
@@ -78,14 +110,14 @@ class EventDetailScreen extends StatelessWidget {
                   backgroundColor: Colors.white,
                   child: IconButton(
                     icon: const Icon(Icons.share_outlined, color: Colors.black),
-                    onPressed: () {},
+                    onPressed: () => _shareEvent(context, resolvedEvent),
                   ),
                 ),
               ),
             ],
             flexibleSpace: FlexibleSpaceBar(
               background: Image.network(
-                event.coverImageUrl ?? '',
+                resolvedEvent.coverImageUrl ?? '',
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) {
                   return Container(
@@ -98,25 +130,19 @@ class EventDetailScreen extends StatelessWidget {
               ),
             ),
           ),
-
-          // Content
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.all(24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Title
                   Text(
-                    event.title,
+                    resolvedEvent.title,
                     style: AppTypography.headingLarge.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-
                   const SizedBox(height: 24),
-
-                  // Date & Time and Price
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -132,7 +158,7 @@ class EventDetailScreen extends StatelessWidget {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              _formatDate(event.startTime),
+                              _formatDate(resolvedEvent.startTime),
                               style: AppTypography.bodyLarge.copyWith(
                                 fontWeight: FontWeight.w600,
                               ),
@@ -151,7 +177,10 @@ class EventDetailScreen extends StatelessWidget {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            _formatPrice(event.price, event.isFree),
+                            _formatPrice(
+                              resolvedEvent.price,
+                              resolvedEvent.isFree,
+                            ),
                             style: AppTypography.headingMedium.copyWith(
                               color: AppColors.primary,
                               fontWeight: FontWeight.bold,
@@ -161,10 +190,7 @@ class EventDetailScreen extends StatelessWidget {
                       ),
                     ],
                   ),
-
                   const SizedBox(height: 24),
-
-                  // Location
                   Row(
                     children: [
                       Container(
@@ -190,9 +216,10 @@ class EventDetailScreen extends StatelessWidget {
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
-                            if (event.latitude != 0 || event.longitude != 0)
+                            if (resolvedEvent.latitude != 0 ||
+                                resolvedEvent.longitude != 0)
                               Text(
-                                '${event.latitude.toStringAsFixed(4)}, ${event.longitude.toStringAsFixed(4)}',
+                                '${resolvedEvent.latitude.toStringAsFixed(4)}, ${resolvedEvent.longitude.toStringAsFixed(4)}',
                                 style: AppTypography.bodySmall.copyWith(
                                   color: AppColors.textSecondary,
                                 ),
@@ -202,14 +229,12 @@ class EventDetailScreen extends StatelessWidget {
                       ),
                     ],
                   ),
-
                   const SizedBox(height: 16),
-
-                  // View Map button
                   SizedBox(
                     width: double.infinity,
                     child: OutlinedButton.icon(
-                      onPressed: () {},
+                      onPressed: () =>
+                          context.push(AppRoutes.map, extra: resolvedEvent),
                       icon: const Icon(Icons.map_outlined),
                       label: const Text('Показать на карте'),
                       style: OutlinedButton.styleFrom(
@@ -222,10 +247,7 @@ class EventDetailScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-
                   const SizedBox(height: 32),
-
-                  // About Event
                   Text(
                     'О событии',
                     style: AppTypography.headingMedium.copyWith(
@@ -234,20 +256,26 @@ class EventDetailScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    event.description,
+                    resolvedEvent.description,
                     style: AppTypography.bodyMedium.copyWith(
                       color: AppColors.textSecondary,
                       height: 1.6,
                     ),
                   ),
-
                   const SizedBox(height: 24),
-
-                  // Join Event button
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed:
+                          currentUserId == null || participationState.isLoading
+                          ? null
+                          : () => _toggleParticipation(
+                              context,
+                              ref,
+                              resolvedEvent,
+                              currentUserId,
+                              isParticipating,
+                            ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primary,
                         foregroundColor: Colors.white,
@@ -257,19 +285,29 @@ class EventDetailScreen extends StatelessWidget {
                         ),
                         elevation: 0,
                       ),
-                      child: Text(
-                        'Присоединиться',
-                        style: AppTypography.bodyLarge.copyWith(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                      child: participationState.isLoading
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  Colors.white,
+                                ),
+                              ),
+                            )
+                          : Text(
+                              isParticipating
+                                  ? 'Покинуть событие'
+                                  : 'Присоединиться',
+                              style: AppTypography.bodyLarge.copyWith(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                     ),
                   ),
-
                   const SizedBox(height: 24),
-
-                  // Category badge
                   Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 16,
@@ -280,17 +318,14 @@ class EventDetailScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
-                      _categoryLabel(),
+                      _categoryLabel(resolvedEvent),
                       style: AppTypography.bodyMedium.copyWith(
                         color: categoryColor,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                   ),
-
                   const SizedBox(height: 32),
-
-                  // Organizer
                   Text(
                     'Организатор',
                     style: AppTypography.headingMedium.copyWith(
@@ -302,14 +337,25 @@ class EventDetailScreen extends StatelessWidget {
                     children: [
                       CircleAvatar(
                         radius: 24,
-                        backgroundColor: AppColors.primary,
-                        child: Text(
-                          'H',
-                          style: AppTypography.headingMedium.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
+                        backgroundColor: AppColors.primary.withValues(
+                          alpha: 0.12,
                         ),
+                        backgroundImage: organizerAsync.value?.photoUrl != null
+                            ? NetworkImage(organizerAsync.value!.photoUrl!)
+                            : null,
+                        child: organizerAsync.value?.photoUrl == null
+                            ? Text(
+                                _avatarLabel(
+                                  organizerAsync.value?.displayName ??
+                                      organizerAsync.value?.username ??
+                                      'HobbyHub',
+                                ),
+                                style: AppTypography.bodyMedium.copyWith(
+                                  color: AppColors.primary,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              )
+                            : null,
                       ),
                       const SizedBox(width: 12),
                       Expanded(
@@ -317,7 +363,13 @@ class EventDetailScreen extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Команда HobbyHub',
+                              organizerAsync.value?.displayName
+                                          ?.trim()
+                                          .isNotEmpty ==
+                                      true
+                                  ? organizerAsync.value!.displayName!
+                                  : organizerAsync.value?.username ??
+                                        'Команда HobbyHub',
                               style: AppTypography.bodyLarge.copyWith(
                                 fontWeight: FontWeight.w600,
                               ),
@@ -334,27 +386,30 @@ class EventDetailScreen extends StatelessWidget {
                       ),
                       IconButton(
                         icon: const Icon(Icons.chat_bubble_outline),
-                        onPressed: () {
-                          // Not passing actual creator logic yet, since this file is stateless without riverpod
-                        },
+                        onPressed: currentUserId == null
+                            ? null
+                            : () => _openOrganizerChat(
+                                context,
+                                ref,
+                                resolvedEvent,
+                                currentUserId,
+                              ),
                       ),
                     ],
                   ),
-
                   const SizedBox(height: 32),
-
-                  // Attendees
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Участники (${event.participants.length})',
+                        'Участники (${resolvedEvent.participants.length})',
                         style: AppTypography.headingMedium.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       TextButton(
-                        onPressed: () {},
+                        onPressed: () =>
+                            _showAttendees(context, ref, resolvedEvent),
                         child: Text(
                           'Смотреть всех →',
                           style: AppTypography.bodySmall.copyWith(
@@ -365,35 +420,34 @@ class EventDetailScreen extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 16),
-
-                  // Attendees avatars
                   Row(
                     children: [
                       SizedBox(
-                        width: 140,
+                        width: 160,
                         height: 40,
                         child: Stack(
                           children: [
-                            Positioned(
-                              left: 0,
-                              child: _AttendeeAvatar(color: Color(0xFFFF8A7A)),
-                            ),
-                            Positioned(
-                              left: 30,
-                              child: _AttendeeAvatar(color: Color(0xFF64B5F6)),
-                            ),
-                            Positioned(
-                              left: 60,
-                              child: _AttendeeAvatar(color: Color(0xFF81C784)),
-                            ),
-                            if (event.participants.length > 3)
+                            for (
+                              var index = 0;
+                              index < visibleParticipantIds.length;
+                              index++
+                            )
                               Positioned(
-                                left: 90,
+                                left: index * 34.0,
+                                child: _buildParticipantAvatar(
+                                  ref: ref,
+                                  userId: visibleParticipantIds[index],
+                                ),
+                              ),
+                            if (resolvedEvent.participants.length >
+                                visibleParticipantIds.length)
+                              Positioned(
+                                left: visibleParticipantIds.length * 34.0,
                                 child: CircleAvatar(
                                   radius: 20,
                                   backgroundColor: AppColors.primary,
                                   child: Text(
-                                    '+${event.participants.length - 3}',
+                                    '+${resolvedEvent.participants.length - visibleParticipantIds.length}',
                                     style: AppTypography.bodySmall.copyWith(
                                       color: Colors.white,
                                       fontWeight: FontWeight.bold,
@@ -406,7 +460,6 @@ class EventDetailScreen extends StatelessWidget {
                       ),
                     ],
                   ),
-
                   const SizedBox(height: 32),
                 ],
               ),
@@ -416,30 +469,211 @@ class EventDetailScreen extends StatelessWidget {
       ),
     );
   }
-}
 
-class _AttendeeAvatar extends StatelessWidget {
-  final Color color;
+  Event? _resolveEvent(WidgetRef ref) {
+    final id = eventId;
+    if (id == null || id.isEmpty) {
+      return null;
+    }
 
-  const _AttendeeAvatar({required this.color});
+    final eventsAsync = ref.watch(eventsStreamProvider);
+    return eventsAsync.maybeWhen(
+      data: (events) {
+        for (final candidate in events) {
+          if (candidate.id == id) {
+            return candidate;
+          }
+        }
+        return null;
+      },
+      orElse: () => null,
+    );
+  }
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 40,
-      height: 40,
-      decoration: BoxDecoration(
-        color: color,
-        shape: BoxShape.circle,
-        border: Border.all(color: Colors.white, width: 2),
-        image: DecorationImage(
-          image: NetworkImage(
-            'https://i.pravatar.cc/150?img=${color.hashCode % 70}',
+  Future<void> _toggleParticipation(
+    BuildContext context,
+    WidgetRef ref,
+    Event event,
+    String userId,
+    bool isParticipating,
+  ) async {
+    try {
+      await ref
+          .read(eventParticipationProvider.notifier)
+          .toggleParticipation(event, userId);
+
+      if (!context.mounted) return;
+
+      _showSnackBar(
+        context,
+        isParticipating ? 'Вы покинули событие' : 'Вы присоединились к событию',
+      );
+    } catch (_) {
+      if (!context.mounted) return;
+      _showSnackBar(context, 'Не удалось обновить участие. Попробуйте позже.');
+    }
+  }
+
+  Future<void> _shareEvent(BuildContext context, Event event) async {
+    final shareText = [
+      event.title,
+      _formatDate(event.startTime),
+      if ((event.address ?? '').trim().isNotEmpty) event.address!,
+      event.description,
+    ].join('\n');
+
+    try {
+      await SharePlus.instance.share(
+        ShareParams(text: shareText, subject: event.title),
+      );
+    } catch (_) {
+      if (!context.mounted) return;
+      _showSnackBar(context, 'Не удалось поделиться событием.');
+    }
+  }
+
+  Future<void> _openOrganizerChat(
+    BuildContext context,
+    WidgetRef ref,
+    Event event,
+    String currentUserId,
+  ) async {
+    try {
+      final chatId = await ref.read(chatServiceProvider).createChat([
+        currentUserId,
+        event.organizerId,
+      ]);
+
+      if (!context.mounted) return;
+
+      context.push('${AppRoutes.chats}/$chatId', extra: event.organizerId);
+    } catch (_) {
+      if (!context.mounted) return;
+      _showSnackBar(context, 'Чат с организатором временно недоступен.');
+    }
+  }
+
+  Future<void> _showAttendees(
+    BuildContext context,
+    WidgetRef ref,
+    Event event,
+  ) async {
+    if (event.participants.isEmpty) {
+      _showSnackBar(context, 'У этого события пока нет участников.');
+      return;
+    }
+
+    final profiles = await Future.wait(
+      event.participants
+          .map(
+            (participantId) =>
+                ref.read(userProfileProvider(participantId).future),
+          )
+          .toList(),
+    );
+
+    if (!context.mounted) return;
+
+    showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      builder: (sheetContext) {
+        return SafeArea(
+          child: ListView.separated(
+            shrinkWrap: true,
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+            itemCount: profiles.length,
+            separatorBuilder: (_, index) => const SizedBox(height: 12),
+            itemBuilder: (_, index) {
+              final profile = profiles[index];
+              final displayName =
+                  profile?.displayName?.trim().isNotEmpty == true
+                  ? profile!.displayName!
+                  : profile?.username ?? 'Участник';
+              final photoUrl = profile?.photoUrl;
+
+              return Row(
+                children: [
+                  CircleAvatar(
+                    radius: 22,
+                    backgroundColor: AppColors.primary.withValues(alpha: 0.12),
+                    backgroundImage: photoUrl != null
+                        ? NetworkImage(photoUrl)
+                        : null,
+                    child: photoUrl == null
+                        ? Text(
+                            _avatarLabel(displayName),
+                            style: AppTypography.bodyMedium.copyWith(
+                              color: AppColors.primary,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          )
+                        : null,
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      displayName,
+                      style: AppTypography.bodyLarge.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            },
           ),
-          fit: BoxFit.cover,
-          onError: (exception, stackTrace) {},
-        ),
-      ),
+        );
+      },
+    );
+  }
+
+  Widget _buildParticipantAvatar({
+    required WidgetRef ref,
+    required String userId,
+  }) {
+    final profileAsync = ref.watch(userProfileProvider(userId));
+    final profile = profileAsync.value;
+    final displayName = profile?.displayName?.trim().isNotEmpty == true
+        ? profile!.displayName!
+        : profile?.username ?? 'Участник';
+    final photoUrl = profile?.photoUrl;
+    final palette = [
+      const Color(0xFFFF8A7A),
+      const Color(0xFF64B5F6),
+      const Color(0xFF81C784),
+    ];
+
+    return CircleAvatar(
+      radius: 20,
+      backgroundColor: palette[userId.hashCode.abs() % palette.length],
+      backgroundImage: photoUrl != null ? NetworkImage(photoUrl) : null,
+      child: photoUrl == null
+          ? Text(
+              _avatarLabel(displayName),
+              style: AppTypography.bodyMedium.copyWith(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            )
+          : null,
+    );
+  }
+
+  String _avatarLabel(String value) {
+    final trimmed = value.trim();
+    if (trimmed.isEmpty) {
+      return '?';
+    }
+
+    final parts = trimmed.split(RegExp(r'\s+'));
+    final initials = parts.take(2).map((part) => part[0]).join();
+    return initials.toUpperCase();
+  }
+
+  void _showSnackBar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message), behavior: SnackBarBehavior.floating),
     );
   }
 }

@@ -47,6 +47,15 @@ final isAgeVerifiedProvider = Provider<bool>((ref) {
   );
 });
 
+/// Провайдер для количества подписчиков текущего пользователя
+final followersCountProvider = Provider<int>((ref) {
+  final userAsync = ref.watch(currentUserStreamProvider);
+  return userAsync.maybeWhen(
+    data: (user) => user?.friends.length ?? 0,
+    orElse: () => 0,
+  );
+});
+
 /// State notifier для управления профилем пользователя
 class UserProfileNotifier extends StateNotifier<AsyncValue<void>> {
   final FirestoreService _firestoreService;

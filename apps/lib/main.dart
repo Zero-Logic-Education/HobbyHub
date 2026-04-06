@@ -5,6 +5,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'firebase_options.dart';
 import 'core/theme/app_theme.dart';
+import 'services/firebase/messaging_service.dart';
 import 'providers/ui_provider.dart';
 import 'providers/auth_provider.dart';
 import 'providers/user_provider.dart';
@@ -32,6 +33,8 @@ void main() async {
 
   // Инициализация Firebase Messaging
   await getIt.messagingService.initialize();
+
+  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
 
   runApp(
     ProviderScope(observers: [GlobalErrorObserver()], child: const MyApp()),

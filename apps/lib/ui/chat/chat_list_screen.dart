@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../providers/chat_providers.dart';
 import '../../providers/user_provider.dart';
-import 'chat_screen.dart';
 
 class ChatListScreen extends ConsumerWidget {
   const ChatListScreen({super.key});
@@ -57,12 +57,7 @@ class ChatListScreen extends ConsumerWidget {
                   ),
                 ),
                 onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          ChatScreen(chatId: chat.id, otherUserId: otherUserId),
-                    ),
-                  );
+                  context.push('/chats/${chat.id}');
                 },
               );
             },

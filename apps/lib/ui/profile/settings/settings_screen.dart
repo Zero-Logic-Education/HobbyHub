@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import '../../../core/router/app_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../providers/auth_provider.dart';
@@ -61,7 +63,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             child: TextButton.icon(
               onPressed: () {
                 ref.read(authNotifierProvider.notifier).signOut();
-                Navigator.of(context).pop(); // Go back from settings
+                context.go(AppRoutes.welcome);
               },
               icon: const Icon(Icons.logout, color: Colors.red),
               label: const Text(

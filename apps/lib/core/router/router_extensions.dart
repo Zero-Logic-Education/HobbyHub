@@ -9,6 +9,9 @@ extension GoRouterExtensions on GoRouter {
   /// Навигация на экран поиска
   void goSearch() => go(AppRoutes.search);
 
+  /// Навигация на карту
+  void goMap() => push(AppRoutes.map);
+
   /// Навигация на экран сообществ
   void goCommunities() => go(AppRoutes.communities);
 
@@ -29,18 +32,27 @@ extension GoRouterExtensions on GoRouter {
 
   /// Навигация на детальную страницу события
   void goEventDetail(String eventId) =>
-      push('${AppRoutes.home}/event/$eventId');
+      push('${AppRoutes.eventDetail}/$eventId');
 
   /// Навигация на создание события
-  void goCreateEvent() => push('${AppRoutes.home}/create-event');
+  void goCreateEvent() => push(AppRoutes.createEvent);
 
   /// Навигация на детальную страницу сообщества
   void goCommunityDetail(String communityId) {
-    push('${AppRoutes.home}/communities/$communityId');
+    push('/communities/$communityId');
   }
 
+  /// Навигация в список чатов
+  void goChats() => push(AppRoutes.chats);
+
   /// Навигация в чат
-  void goChatDetail(String chatId) => push('${AppRoutes.home}/chats/$chatId');
+  void goChatDetail(String chatId) => push('${AppRoutes.chats}/$chatId');
+
+  /// Навигация к уведомлениям
+  void goNotifications() => push(AppRoutes.notifications);
+
+  /// Навигация к настройкам
+  void goSettings() => push(AppRoutes.settings);
 }
 
 /// Расширения для BuildContext для удобной навигации

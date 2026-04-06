@@ -24,6 +24,10 @@
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>HobbyHub uses your location to find events and communities nearby.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>HobbyHub needs location access to notify you about nearby events even when the app is in background.</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UIApplicationSceneManifest</key>

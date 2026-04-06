@@ -6,13 +6,9 @@ import '../../services/chat_service.dart';
 
 class ChatScreen extends ConsumerStatefulWidget {
   final String chatId;
-  final String otherUserId;
+  final String? otherUserId;
 
-  const ChatScreen({
-    super.key,
-    required this.chatId,
-    required this.otherUserId,
-  });
+  const ChatScreen({super.key, required this.chatId, this.otherUserId});
 
   @override
   ConsumerState<ChatScreen> createState() => _ChatScreenState();
@@ -36,13 +32,33 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   Widget build(BuildContext context) {
     final messagesAsync = ref.watch(chatMessagesStreamProvider(widget.chatId));
     final currentUserId = ref.watch(authUserIdProvider);
-    final otherUserProfileAsync = ref.watch(
-      userProfileProvider(widget.otherUserId),
-    );
+    final chatsAsync = ref.watch(userChatsStreamProvider);
+
+    final resolvedOtherUserId =
+        widget.otherUserId ??
+        chatsAsync.maybeWhen(
+          data: (chats) {
+            for (final chat in chats) {
+              if (chat.id == widget.chatId) {
+                for (final participantId in chat.participants) {
+                  if (participantId != currentUserId) {
+                    return participantId;
+                  }
+                }
+              }
+            }
+            return null;
+          },
+          orElse: () => null,
+        );
+
+    final otherUserProfileAsync = resolvedOtherUserId == null
+        ? null
+        : ref.watch(userProfileProvider(resolvedOtherUserId));
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(otherUserProfileAsync.value?.username ?? 'Загрузка...'),
+        title: Text(otherUserProfileAsync?.value?.username ?? 'Загрузка...'),
       ),
       body: Column(
         children: [

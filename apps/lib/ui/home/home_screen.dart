@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
+import '../../core/router/app_router.dart';
 import '../../models/event.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/event_provider.dart';
-import '../chat/chat_list_screen.dart';
-import 'event_detail_screen.dart';
-import 'map_screen.dart';
-import '../notifications/notifications_screen.dart';
 import '../../providers/notification_provider.dart';
 import '../../providers/user_provider.dart';
 
@@ -80,7 +78,8 @@ class HomeScreen extends ConsumerWidget {
       data: (user) {
         String name = user?.displayName ?? authState.value?.displayName ?? '';
         if (name.trim().isEmpty) {
-          name = user?.username ?? authState.value?.email?.split('@')[0] ?? 'User';
+          name =
+              user?.username ?? authState.value?.email?.split('@')[0] ?? 'User';
         }
         return name;
       },
@@ -144,12 +143,7 @@ class HomeScreen extends ConsumerWidget {
                     // Map icon
                     IconButton(
                       onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const MapScreen(),
-                          ),
-                        );
+                        context.push(AppRoutes.map);
                       },
                       icon: const Icon(Icons.map_outlined),
                       iconSize: 28,
@@ -165,13 +159,7 @@ class HomeScreen extends ConsumerWidget {
                           label: Text(unreadCount.toString()),
                           child: IconButton(
                             onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      const NotificationsScreen(),
-                                ),
-                              );
+                              context.push(AppRoutes.notifications);
                             },
                             icon: const Icon(Icons.notifications_outlined),
                             iconSize: 28,
@@ -182,12 +170,7 @@ class HomeScreen extends ConsumerWidget {
                     // Chats/Messages icon
                     IconButton(
                       onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const ChatListScreen(),
-                          ),
-                        );
+                        context.push(AppRoutes.chats);
                       },
                       icon: const Icon(Icons.chat_bubble_outline),
                       iconSize: 28,
@@ -494,12 +477,7 @@ class _EventCard extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: InkWell(
         onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => EventDetailScreen(event: event),
-            ),
-          );
+          context.push('/home/event/${event.id}', extra: event);
         },
         borderRadius: BorderRadius.circular(16),
         child: Column(

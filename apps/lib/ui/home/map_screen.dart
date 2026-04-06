@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import '../../models/event.dart';
 import '../../providers/event_provider.dart';
-import 'event_detail_screen.dart';
 
 class MapScreen extends ConsumerStatefulWidget {
-  const MapScreen({super.key});
+  final Event? initialEvent;
+
+  const MapScreen({super.key, this.initialEvent});
 
   @override
   ConsumerState<MapScreen> createState() => _MapScreenState();
@@ -15,10 +18,14 @@ class _MapScreenState extends ConsumerState<MapScreen> {
   GoogleMapController? _mapController;
   Set<Marker> _markers = {};
 
-  final LatLng _initialPosition = const LatLng(
-    55.751244,
-    37.618423,
-  ); // Пример: Москва
+  LatLng get _initialPosition {
+    final event = widget.initialEvent;
+    if (event != null && event.latitude != 0 && event.longitude != 0) {
+      return LatLng(event.latitude, event.longitude);
+    }
+
+    return const LatLng(55.751244, 37.618423); // Пример: Москва
+  }
 
   void _onMapCreated(GoogleMapController controller) {
     _mapController = controller;
@@ -37,12 +44,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
               title: event.title,
               snippet: event.address,
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => EventDetailScreen(event: event),
-                  ),
-                );
+                context.push('/home/event/${event.id}', extra: event);
               },
             ),
           );
@@ -77,7 +79,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
         onMapCreated: _onMapCreated,
         initialCameraPosition: CameraPosition(
           target: _initialPosition,
-          zoom: 11.0,
+          zoom: widget.initialEvent == null ? 11.0 : 13.5,
         ),
         markers: _markers,
         myLocationEnabled: true,

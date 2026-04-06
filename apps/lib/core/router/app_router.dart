@@ -5,6 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../ui/welcome/splash_screen.dart';
 import '../../ui/welcome/welcome_screen.dart';
 import '../../ui/home/home_screen.dart';
+import '../../ui/home/event_detail_screen.dart';
+import '../../ui/home/map_screen.dart';
 import '../../ui/auth/age_verification_screen.dart';
 import '../../ui/auth/login_screen.dart';
 import '../../ui/auth/register_screen.dart';
@@ -19,7 +21,12 @@ import '../../ui/create/create_event_screen.dart';
 import '../../ui/communities/communities_screen.dart';
 import '../../ui/communities/create/create_community_screen.dart';
 import '../../ui/communities/detail/community_detail_screen.dart';
+import '../../ui/chat/chat_list_screen.dart';
+import '../../ui/chat/chat_screen.dart';
+import '../../ui/notifications/notifications_screen.dart';
+import '../../ui/profile/settings/settings_screen.dart';
 import '../../ui/profile/edit/edit_profile_screen.dart';
+import '../../models/event.dart';
 import '../../providers/auth_provider.dart';
 
 /// Константы путей маршрутов
@@ -39,11 +46,15 @@ class AppRoutes {
   static const String home = '/home';
   static const String search = '/search';
   static const String createEvent = '/create';
+  static const String eventDetail = '/home/event';
   static const String communities = '/communities';
   static const String createCommunity = '/communities/create';
   static const String communityDetail = '/communities/detail';
 
   static const String chats = '/chats';
+  static const String notifications = '/notifications';
+  static const String map = '/map';
+  static const String settings = '/settings';
   static const String profile = '/profile';
   static const String editProfile = '/profile/edit';
 }
@@ -246,6 +257,50 @@ final routerProvider = Provider<GoRouter>((ref) {
             ],
           ),
         ],
+      ),
+
+      GoRoute(
+        path: '${AppRoutes.eventDetail}/:id',
+        name: 'event-detail',
+        builder: (context, state) {
+          final eventId = state.pathParameters['id']!;
+          final event = state.extra as Event?;
+          return EventDetailScreen(eventId: eventId, event: event);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.chats,
+        name: 'chats',
+        builder: (context, state) => const ChatListScreen(),
+        routes: [
+          GoRoute(
+            path: ':id',
+            name: 'chat-detail',
+            builder: (context, state) {
+              final chatId = state.pathParameters['id']!;
+              final otherUserId = state.extra as String?;
+              return ChatScreen(chatId: chatId, otherUserId: otherUserId);
+            },
+          ),
+        ],
+      ),
+      GoRoute(
+        path: AppRoutes.notifications,
+        name: 'notifications',
+        builder: (context, state) => const NotificationsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.map,
+        name: 'map',
+        builder: (context, state) {
+          final initialEvent = state.extra as Event?;
+          return MapScreen(initialEvent: initialEvent);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.settings,
+        name: 'settings',
+        builder: (context, state) => const SettingsScreen(),
       ),
     ],
 

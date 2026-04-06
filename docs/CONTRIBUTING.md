@@ -94,6 +94,13 @@ git fetch upstream
 git rebase upstream/main
 ```
 
+Если вам нужен быстрый локальный прогон Android после изменений, используйте:
+
+```bash
+cd apps
+flutter run --no-pub -d emulator-5554
+```
+
 ---
 
 ## Требования к изменениям
@@ -127,6 +134,13 @@ git rebase upstream/main
 - `flutter test` проходит без ошибок;
 - новый код покрыт тестами на уровне, достаточном для регрессий.
 
+Для Android-проверки перед PR также полезно выполнить:
+
+```bash
+cd apps/android
+./gradlew :app:assembleDebug
+```
+
 ---
 
 ## Pull Requests
@@ -138,6 +152,7 @@ git rebase upstream/main
 - [ ] Добавлены или обновлены тесты
 - [ ] Обновлена документация при изменении поведения
 - [ ] `flutter analyze` и `flutter test` проходят локально
+- [ ] Android debug-сборка проходит при необходимости (`./gradlew :app:assembleDebug`)
 
 ### Шаблон описания PR
 

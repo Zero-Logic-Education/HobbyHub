@@ -4,8 +4,8 @@
 
 **Flutter-приложение платформы HobbyHub**
 
-[![Flutter](https://img.shields.io/badge/Flutter-3.x-02569B?logo=flutter)](https://flutter.dev/)
-[![Dart](https://img.shields.io/badge/Dart-3.10-0175C2?logo=dart)](https://dart.dev/)
+[![Flutter](https://img.shields.io/badge/Flutter-3.41.1-02569B?logo=flutter)](https://flutter.dev/)
+[![Dart](https://img.shields.io/badge/Dart-3.11.0-0175C2?logo=dart)](https://dart.dev/)
 [![Riverpod](https://img.shields.io/badge/Riverpod-2.x-blue)](https://riverpod.dev/)
 [![Firebase](https://img.shields.io/badge/Firebase-Backend-FFCA28?logo=firebase&logoColor=black)](https://firebase.google.com/)
 
@@ -17,6 +17,7 @@
 
 - [Назначение](#назначение)
 - [Структура модулей](#структура-модулей)
+- [Что уже есть](#что-уже-есть)
 - [Команды приложения](#команды-приложения)
 - [Конфигурация](#конфигурация)
 
@@ -32,6 +33,17 @@
 - создание событий и участие в комьюнити;
 - push-уведомления и аналитику пользовательских действий.
 
+### Что уже есть
+
+- `lib/ui/home/` — главная лента, карта, детализация события, модерация и отзывы.
+- `lib/ui/search/` — поиск событий и категорий.
+- `lib/ui/communities/` — список, создание и детали сообществ.
+- `lib/ui/create/` — создание событий.
+- `lib/ui/chat/` — список чатов и экран переписки.
+- `lib/ui/profile/` — профиль, редактирование и настройки.
+- `lib/ui/notifications/` — экран уведомлений.
+- `lib/ui/onboarding/` и `lib/ui/auth/` — онбординг и вход.
+
 ---
 
 ## Структура модулей
@@ -40,7 +52,7 @@
 
 | **Директория** | **Назначение** |
 |:---|:---|
-| `lib/core/config/` | Конфигурация окружений (dev/staging/prod) |
+| `lib/core/config/` | Конфигурация приложения и окружений |
 | `lib/core/constants/` | Глобальные константы |
 | `lib/core/di/` | Dependency Injection и инициализация сервисов (GetIt) |
 | `lib/core/router/` | Маршрутизация, guards и навигационные утилиты (Go Router) |
@@ -51,11 +63,12 @@
 | `lib/ui/welcome/` | Экран приветствия |
 | `lib/ui/onboarding/` | Онбординг нового пользователя |
 | `lib/ui/auth/` | Авторизация (Email, Google, Facebook) |
-| `lib/ui/home/` | Главный экран |
+| `lib/ui/home/` | Главный экран, карта, детализация события, модерация, отзывы |
 | `lib/ui/search/` | Поиск по интересам и геолокации |
 | `lib/ui/communities/` | Список и детали сообществ |
 | `lib/ui/create/` | Создание мероприятия |
-| `lib/ui/profile/` | Профиль пользователя |
+| `lib/ui/profile/` | Профиль пользователя, редактирование и настройки |
+| `lib/ui/notifications/` | Уведомления пользователя |
 | `lib/ui/main_shell/` | Корневой shell с навигацией |
 | `lib/ui/shared/` | Переиспользуемые виджеты |
 
@@ -75,6 +88,9 @@ flutter pub get
 # Запуск на устройстве / эмуляторе
 flutter run
 
+# Быстрый запуск после первого pub get
+flutter run --no-pub
+
 # Список доступных устройств
 flutter devices
 
@@ -83,6 +99,9 @@ flutter run -d <device_id>
 
 # Сборка debug APK (Android)
 flutter build apk --debug
+
+# Сборка debug APK через Gradle
+cd android && ./gradlew :app:assembleDebug
 
 # Сборка release APK (Android)
 flutter build apk --release
@@ -122,3 +141,19 @@ flutter clean
 | `ios/Runner/GoogleService-Info.plist` | Конфигурация Google Services для iOS |
 
 </div>
+
+## Практика запуска
+
+Для повседневной разработки обычно хватает:
+
+```bash
+cd apps
+flutter run --no-pub -d emulator-5554
+```
+
+Если нужно только проверить сборку Android без запуска приложения:
+
+```bash
+cd apps/android
+./gradlew :app:assembleDebug
+```

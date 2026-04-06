@@ -38,7 +38,7 @@
 | **Путь** | **Назначение** |
 |:---|:---|
 | `firebase/firebase.json` | Конфигурация Firebase CLI: сервисы, пути, hosting rewrites |
-| `firebase/firestore.rules` | Политики доступа к коллекциям users, communities, events, messages |
+| `firebase/firestore.rules` | Политики доступа к коллекциям users, communities, events, chats, messages |
 | `firebase/firestore.indexes.json` | Составные индексы для Firestore-запросов |
 | `firebase/storage.rules` | Правила чтения и записи файлов в Cloud Storage |
 
@@ -58,3 +58,8 @@
 | Cloud Storage Security | `firebase/storage.rules` | Доступ к медиафайлам пользователей, событий и сообществ |
 
 </div>
+
+## Примечания
+
+- Hosting нацелен на сборку из `apps/build/web`.
+- Команды Firebase запускаются из директории `infrastructure/firebase`.

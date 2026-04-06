@@ -4,8 +4,8 @@
 
 **Мобильная социальная платформа для поиска людей, сообществ и событий по интересам**
 
-[![Flutter](https://img.shields.io/badge/Flutter-3.x-02569B?logo=flutter)](https://flutter.dev/)
-[![Dart](https://img.shields.io/badge/Dart-3.10-0175C2?logo=dart)](https://dart.dev/)
+[![Flutter](https://img.shields.io/badge/Flutter-3.41.1-02569B?logo=flutter)](https://flutter.dev/)
+[![Dart](https://img.shields.io/badge/Dart-3.11.0-0175C2?logo=dart)](https://dart.dev/)
 [![Firebase](https://img.shields.io/badge/Firebase-Backend-FFCA28?logo=firebase&logoColor=black)](https://firebase.google.com/)
 
 </div>
@@ -16,9 +16,11 @@
 
 - [О проекте](#о-проекте)
 - [Технологический стек](#технологический-стек)
+- [Текущие сценарии](#текущие-сценарии)
 - [Архитектура](#архитектура)
 - [Быстрый старт](#быстрый-старт)
 - [Команды](#команды)
+- [Документация](#документация)
 
 ---
 
@@ -30,7 +32,20 @@
 
 ### Решение: HobbyHub
 
-**HobbyHub** — мобильное Flutter-приложение, объединяющее профиль пользователя, поиск по геолокации, сообщества, события и коммуникацию. Проект использует Firebase как backend-платформу (Auth, Firestore, Storage, Messaging, Analytics) и реализует пользовательские сценарии от онбординга до участия в мероприятиях.
+**HobbyHub** — мобильное Flutter-приложение для поиска людей, сообществ и событий по интересам. В текущей реализации есть полный пользовательский путь: авторизация и онбординг, лента и поиск, карта, создание событий, сообщества, чаты, уведомления, профиль и настройки, а также модерация и отзывы.
+
+Проект использует Firebase как backend-платформу: Auth, Firestore, Storage, Messaging и Analytics.
+
+### Текущие сценарии
+
+- Email / Google / Facebook вход и создание профиля.
+- Онбординг с возрастом, интересами и геолокацией.
+- Главная лента с событиями и быстрый переход в карту и поиск.
+- Поиск по интересам и категориям.
+- Создание событий и сообществ.
+- Чаты и непрочитанные сообщения.
+- Отзывы на события и экраны модерации.
+- Уведомления, профиль, редактирование профиля и настройки.
 
 ---
 
@@ -40,7 +55,7 @@
 
 | **Категория** | **Технологии** | **Версия / Детали** |
 |:---:|:---:|:---:|
-| Mobile App | Flutter, Dart, Material 3 | Flutter 3.x, Dart 3.10 |
+| Mobile App | Flutter, Dart, Material 3 | Flutter 3.41.1, Dart 3.11.0 |
 | State & Navigation | Riverpod, Go Router, GetIt | flutter_riverpod 2.6, go_router 14.6 |
 | Backend Platform | Firebase Auth, Firestore, Storage, Messaging, Analytics | Firebase SDK для Flutter |
 | Geo & Maps | Google Maps Flutter, Geolocator, Geocoding | Поиск и отображение активностей на карте |
@@ -111,7 +126,7 @@ flowchart LR
 | Компонент | Минимум | Рекомендуется |
 |:---:|:---:|:---:|
 | Flutter SDK | 3.0+ | Latest stable |
-| Dart SDK | 3.0+ | 3.10+ |
+| Dart SDK | 3.0+ | 3.11+ |
 | Xcode (iOS) | 15+ | Latest |
 | Android Studio / SDK | API 24+ | Latest |
 | Firebase CLI | 13+ | Latest |
@@ -120,7 +135,7 @@ flowchart LR
 ### Клонирование репозитория
 
 ```bash
-git clone https://github.com/your-org/hobby_hub.git
+git clone https://github.com/Zero-Logic-Education/HobbyHub.git
 
 cd hobby_hub
 ```
@@ -143,6 +158,9 @@ flutter pub get
 
 # запустить на выбранном устройстве/эмуляторе
 flutter run
+
+# быстрый запуск после первого pub get
+flutter run --no-pub
 ```
 
 ---
@@ -161,6 +179,9 @@ flutter pub get
 # Запуск приложения
 flutter run
 
+# Быстрый debug-запуск после первого flutter pub get
+flutter run --no-pub
+
 # Статический анализ
 flutter analyze
 
@@ -172,6 +193,9 @@ flutter pub run build_runner build --delete-conflicting-outputs
 
 # Сборка Android APK
 flutter build apk --release
+
+# Debug-сборка Android через Gradle
+cd android && ./gradlew :app:assembleDebug
 
 # Сборка iOS
 flutter build ios --release
@@ -198,3 +222,11 @@ firebase deploy --only firestore:indexes
 # Деплой Storage правил
 firebase deploy --only storage
 ```
+
+## Документация
+
+- [apps/README.md](apps/README.md) — подробности по Flutter-приложению.
+- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) — актуальная архитектура и потоки.
+- [docs/FIRESTORE.md](docs/FIRESTORE.md) — текущая модель данных Firestore.
+- [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) — правила вклада и проверки.
+- [infrastructure/README.md](infrastructure/README.md) — инфраструктура Firebase и hosting.

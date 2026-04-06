@@ -350,14 +350,17 @@ class EventDetailScreen extends ConsumerWidget {
                         backgroundColor: AppColors.primary.withValues(
                           alpha: 0.12,
                         ),
-                        backgroundImage: organizerAsync.value?.photoUrl != null
-                            ? NetworkImage(organizerAsync.value!.photoUrl!)
+                        backgroundImage:
+                            organizerAsync.valueOrNull?.photoUrl != null
+                            ? NetworkImage(
+                                organizerAsync.valueOrNull!.photoUrl!,
+                              )
                             : null,
-                        child: organizerAsync.value?.photoUrl == null
+                        child: organizerAsync.valueOrNull?.photoUrl == null
                             ? Text(
                                 _avatarLabel(
-                                  organizerAsync.value?.displayName ??
-                                      organizerAsync.value?.username ??
+                                  organizerAsync.valueOrNull?.displayName ??
+                                      organizerAsync.valueOrNull?.username ??
                                       'HobbyHub',
                                 ),
                                 style: AppTypography.bodyMedium.copyWith(
@@ -373,12 +376,12 @@ class EventDetailScreen extends ConsumerWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              organizerAsync.value?.displayName
+                              organizerAsync.valueOrNull?.displayName
                                           ?.trim()
                                           .isNotEmpty ==
                                       true
-                                  ? organizerAsync.value!.displayName!
-                                  : organizerAsync.value?.username ??
+                                  ? organizerAsync.valueOrNull!.displayName!
+                                  : organizerAsync.valueOrNull?.username ??
                                         'Команда HobbyHub',
                               style: AppTypography.bodyLarge.copyWith(
                                 fontWeight: FontWeight.w600,

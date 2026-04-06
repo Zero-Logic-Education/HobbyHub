@@ -124,7 +124,8 @@ class _MapScreenState extends ConsumerState<MapScreen> {
   }
 
   void _updateMarkers() {
-    final events = ref.read(eventsStreamProvider).value ?? const <Event>[];
+    final events =
+        ref.read(eventsStreamProvider).valueOrNull ?? const <Event>[];
     final signature = _buildMarkersSignature(events);
     if (signature == _lastMarkersSignature) {
       return;

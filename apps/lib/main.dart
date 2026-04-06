@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'firebase_options.dart';
 import 'core/theme/app_theme.dart';
 import 'services/firebase/messaging_service.dart';
@@ -67,6 +68,9 @@ void main() async {
 
   // Инициализация Firebase
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  // Инициализация локальных данных intl (месяцы/даты на русском и др.)
+  await initializeDateFormatting();
 
   // Инициализация GetIt (Dependency Injection)
   await setupServiceLocator();

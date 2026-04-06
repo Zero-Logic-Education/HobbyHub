@@ -283,7 +283,10 @@ class EventCard extends ConsumerWidget {
   }
 
   String _formatDate(DateTime dateTime) {
-    return DateFormat('d MMMM', 'ru').format(dateTime);
+    if (DateFormat.localeExists('ru')) {
+      return DateFormat('d MMMM', 'ru').format(dateTime);
+    }
+    return DateFormat('dd.MM').format(dateTime);
   }
 
   String _formatTime(DateTime dateTime) {
@@ -489,6 +492,9 @@ class CompactEventCard extends StatelessWidget {
   }
 
   String _formatDate(DateTime dateTime) {
-    return DateFormat('d MMMM', 'ru').format(dateTime);
+    if (DateFormat.localeExists('ru')) {
+      return DateFormat('d MMMM', 'ru').format(dateTime);
+    }
+    return DateFormat('dd.MM').format(dateTime);
   }
 }

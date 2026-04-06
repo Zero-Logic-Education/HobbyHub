@@ -37,11 +37,18 @@ class _EventReviewScreenState extends ConsumerState<EventReviewScreen> {
     setState(() => _isSubmitting = true);
 
     try {
-      final userId = ref.read(authStateProvider).value?.uid;
-      if (userId == null) return;
-      
+      final userId = ref.read(authStateProvider).valueOrNull?.uid;
+      if (userId == null) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Требуется авторизация')),
+          );
+        }
+        return;
+      }
+
       final firestoreService = ref.read(firestoreServiceProvider);
-      
+
       await firestoreService.submitEventReview(
         eventId: widget.eventId,
         userId: userId,

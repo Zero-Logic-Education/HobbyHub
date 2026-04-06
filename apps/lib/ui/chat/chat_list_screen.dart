@@ -72,8 +72,8 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
                     );
 
                     final username =
-                        otherProfileAsync.value?.username ??
-                        otherProfileAsync.value?.displayName ??
+                        otherProfileAsync.valueOrNull?.username ??
+                        otherProfileAsync.valueOrNull?.displayName ??
                         '';
                     final searchableText = username.toLowerCase();
                     if (_searchQuery.isNotEmpty &&
@@ -88,10 +88,13 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
 
                     return ListTile(
                       leading: CircleAvatar(
-                        backgroundImage: otherProfileAsync.value?.photoUrl != null
-                            ? NetworkImage(otherProfileAsync.value!.photoUrl!)
+                        backgroundImage:
+                            otherProfileAsync.valueOrNull?.photoUrl != null
+                            ? NetworkImage(
+                                otherProfileAsync.valueOrNull!.photoUrl!,
+                              )
                             : null,
-                        child: otherProfileAsync.value?.photoUrl == null
+                        child: otherProfileAsync.valueOrNull?.photoUrl == null
                             ? const Icon(Icons.person)
                             : null,
                       ),

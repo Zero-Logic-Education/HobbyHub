@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../core/utils/category_colors.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
+import '../../providers/auth_provider.dart';
 import '../../providers/community_provider.dart';
+import '../../providers/user_provider.dart';
 import '../../models/community.dart';
 
 class CommunitiesScreen extends ConsumerStatefulWidget {
@@ -16,15 +19,21 @@ class CommunitiesScreen extends ConsumerStatefulWidget {
 class _CommunitiesScreenState extends ConsumerState<CommunitiesScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  late TextEditingController _searchController;
+  String _discoverQuery = '';
+  String _selectedCategoryKey = 'all';
+  final Set<String> _membershipPendingIds = <String>{};
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    _searchController = TextEditingController();
   }
 
   @override
   void dispose() {
+    _searchController.dispose();
     _tabController.dispose();
     super.dispose();
   }
@@ -163,13 +172,226 @@ class _CommunitiesScreenState extends ConsumerState<CommunitiesScreen>
   }
 
   Widget _buildDiscover() {
-    return const Center(child: Text('Найти сообщества'));
+    final allCommunitiesAsync = ref.watch(allCommunitiesProvider);
+    final currentUserId = ref.watch(currentUserIdProvider);
+
+    return allCommunitiesAsync.when(
+      data: (communities) {
+        final categoryKeys = <String>{
+          for (final community in communities)
+            ...community.categories.map(normalizeCategoryKey),
+        }..remove('other');
+        final sortedCategoryKeys = categoryKeys.toList()
+          ..sort(
+            (a, b) => getCategoryDisplayLabelByKey(
+              a,
+            ).compareTo(getCategoryDisplayLabelByKey(b)),
+          );
+
+        final query = _discoverQuery.trim().toLowerCase();
+        final filtered = communities.where((community) {
+          final matchesQuery =
+              query.isEmpty ||
+              community.name.toLowerCase().contains(query) ||
+              community.description.toLowerCase().contains(query);
+          final matchesCategory =
+              _selectedCategoryKey == 'all' ||
+              community.categories.any(
+                (category) =>
+                    normalizeCategoryKey(category) == _selectedCategoryKey,
+              );
+
+          return matchesQuery && matchesCategory;
+        }).toList();
+
+        return ListView(
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+          children: [
+            TextField(
+              controller: _searchController,
+              onChanged: (value) {
+                setState(() {
+                  _discoverQuery = value;
+                });
+              },
+              textInputAction: TextInputAction.search,
+              decoration: InputDecoration(
+                hintText: 'Поиск сообществ',
+                prefixIcon: const Icon(Icons.search_rounded),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: BorderSide(color: AppColors.border),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: BorderSide(color: AppColors.border),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: BorderSide(color: AppColors.primary, width: 1.4),
+                ),
+                filled: true,
+                fillColor: Colors.white,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: AppColors.border),
+              ),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<String>(
+                  value: _selectedCategoryKey,
+                  isExpanded: true,
+                  icon: const Icon(Icons.keyboard_arrow_down_rounded),
+                  items: [
+                    const DropdownMenuItem<String>(
+                      value: 'all',
+                      child: Text('Все категории'),
+                    ),
+                    ...sortedCategoryKeys.map(
+                      (key) => DropdownMenuItem<String>(
+                        value: key,
+                        child: Text(getCategoryDisplayLabelByKey(key)),
+                      ),
+                    ),
+                  ],
+                  onChanged: (value) {
+                    if (value == null) return;
+                    setState(() {
+                      _selectedCategoryKey = value;
+                    });
+                  },
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            if (filtered.isEmpty)
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: AppColors.border),
+                ),
+                child: Text(
+                  'Сообщества не найдены. Попробуйте изменить фильтры.',
+                  textAlign: TextAlign.center,
+                  style: AppTypography.bodyMedium.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+              )
+            else
+              ...filtered.map((item) {
+                final isMember =
+                    currentUserId != null && item.members.contains(currentUserId);
+                final isPending = _membershipPendingIds.contains(item.id);
+
+                return _CommunityCard(
+                  item: item,
+                  showDescription: true,
+                  action: SizedBox(
+                    height: 34,
+                    child: FilledButton(
+                      onPressed: isPending
+                          ? null
+                          : () => _toggleMembership(item, isMember),
+                      style: FilledButton.styleFrom(
+                        backgroundColor: isMember
+                            ? AppColors.surfaceSecondary
+                            : AppColors.primary,
+                        foregroundColor: isMember
+                            ? AppColors.textSecondary
+                            : Colors.white,
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      child: isPending
+                          ? SizedBox(
+                              width: 14,
+                              height: 14,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: isMember
+                                    ? AppColors.primary
+                                    : Colors.white,
+                              ),
+                            )
+                          : Text(isMember ? 'В группе' : 'Вступить'),
+                    ),
+                  ),
+                );
+              }),
+          ],
+        );
+      },
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (err, stack) => Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Text('Ошибка загрузки сообществ: $err'),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _toggleMembership(Community item, bool isMember) async {
+    final userId = ref.read(currentUserIdProvider);
+    if (userId == null) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Войдите в аккаунт, чтобы вступать в группы.')),
+      );
+      return;
+    }
+
+    setState(() {
+      _membershipPendingIds.add(item.id);
+    });
+
+    try {
+      final firestoreService = ref.read(firestoreServiceProvider);
+      if (isMember) {
+        await firestoreService.leaveCommunity(item.id, userId);
+      } else {
+        await firestoreService.joinCommunity(item.id, userId);
+      }
+
+      ref.invalidate(allCommunitiesProvider);
+      ref.invalidate(userCommunitiesProvider);
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Не удалось обновить участие в сообществе. Попробуйте позже.'),
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _membershipPendingIds.remove(item.id);
+        });
+      }
+    }
   }
 }
 
 class _CommunityCard extends StatelessWidget {
   final Community item;
-  const _CommunityCard({required this.item});
+  final Widget? action;
+  final bool showDescription;
+
+  const _CommunityCard({
+    required this.item,
+    this.action,
+    this.showDescription = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -177,7 +399,7 @@ class _CommunityCard extends StatelessWidget {
     final category = item.categories.isNotEmpty
         ? item.categories.first
         : 'Разное';
-    final categoryColor = _getCategoryColor(category);
+    final categoryColor = getCategoryColor(category);
     final categoryBg = categoryColor.withValues(alpha: 0.1);
     final membersCount = item.members.length;
 
@@ -206,24 +428,7 @@ class _CommunityCard extends StatelessWidget {
                   borderRadius: const BorderRadius.vertical(
                     top: Radius.circular(20),
                   ),
-                  child: Image.network(
-                    item.coverImageUrl ??
-                        'https://via.placeholder.com/800x400?text=${item.name}',
-                    height: 160,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, _, _) => Container(
-                      height: 160,
-                      color: AppColors.surfaceSecondary,
-                      child: const Center(
-                        child: Icon(
-                          Icons.image_outlined,
-                          size: 40,
-                          color: AppColors.textTertiary,
-                        ),
-                      ),
-                    ),
-                  ),
+                  child: _buildCover(item),
                 ),
               ],
             ),
@@ -242,6 +447,17 @@ class _CommunityCard extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
+                  if (showDescription) ...[
+                    const SizedBox(height: 6),
+                    Text(
+                      item.description,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTypography.bodySmall.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                  ],
                   const SizedBox(height: 8),
                   Row(
                     children: [
@@ -256,7 +472,7 @@ class _CommunityCard extends StatelessWidget {
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
-                          category,
+                          getCategoryDisplayLabel(category),
                           style: AppTypography.bodySmall.copyWith(
                             color: categoryColor,
                             fontWeight: FontWeight.w700,
@@ -278,6 +494,10 @@ class _CommunityCard extends StatelessWidget {
                           fontWeight: FontWeight.w600,
                         ),
                       ),
+                      if (action != null) ...[
+                        const SizedBox(width: 10),
+                        action!,
+                      ],
                     ],
                   ),
                 ],
@@ -289,18 +509,48 @@ class _CommunityCard extends StatelessWidget {
     );
   }
 
-  Color _getCategoryColor(String category) {
-    switch (category.toLowerCase()) {
-      case 'здоровье':
-        return const Color(0xFF27AE60);
-      case 'технологии':
-        return const Color(0xFF2D9CDB);
-      case 'творчество':
-        return const Color(0xFFF2994A);
-      case 'спорт':
-        return const Color(0xFFF17A5D);
-      default:
-        return AppColors.primary;
+  Widget _buildCover(Community item) {
+    final imageUrl = item.coverImageUrl;
+    if (imageUrl != null && imageUrl.trim().isNotEmpty) {
+      return Image.network(
+        imageUrl,
+        height: 160,
+        width: double.infinity,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) => _buildFallbackCover(item),
+      );
     }
+    return _buildFallbackCover(item);
+  }
+
+  Widget _buildFallbackCover(Community item) {
+    final category = item.categories.isNotEmpty ? item.categories.first : 'Разное';
+    final color = getCategoryColor(category);
+    final trimmedName = item.name.trim();
+    final firstLetter = trimmedName.isEmpty ? 'C' : trimmedName[0].toUpperCase();
+
+    return Container(
+      height: 160,
+      width: double.infinity,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            color.withValues(alpha: 0.85),
+            color.withValues(alpha: 0.55),
+          ],
+        ),
+      ),
+      child: Center(
+        child: Text(
+          firstLetter,
+          style: AppTypography.headingLarge.copyWith(
+            color: Colors.white,
+            fontWeight: FontWeight.w800,
+          ),
+        ),
+      ),
+    );
   }
 }

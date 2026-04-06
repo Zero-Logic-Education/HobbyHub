@@ -503,7 +503,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
     return ListView.separated(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
       itemCount: userEvents.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 12),
+      separatorBuilder: (context, index) => const SizedBox(height: 12),
       itemBuilder: (context, index) {
         final event = userEvents[index];
         final imageUrl = event.coverImageUrl;
@@ -536,7 +536,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                         ? Image.network(
                             imageUrl,
                             fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => Container(
+                            errorBuilder: (context, error, stackTrace) => Container(
                               color: AppColors.surfaceSecondary,
                               child: const Icon(Icons.image_outlined),
                             ),
@@ -622,11 +622,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
   }
 
   Future<void> _rateApp() async {
+    final messenger = ScaffoldMessenger.of(context);
     final uri = Uri.parse('https://play.google.com/store/search?q=HobbyHub&c=apps');
     final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
 
-    if (!launched && context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
+    if (!launched) {
+      messenger.showSnackBar(
         const SnackBar(
           content: Text('Не удалось открыть магазин приложений.'),
         ),

@@ -29,9 +29,10 @@ class _LocationPermissionScreenState
       }
 
       if (permission == LocationPermission.deniedForever) {
-        throw Exception(
-          'Location permissions are permanently denied, we cannot request permissions.',
-        );
+        if (mounted) {
+          await _showOpenSettingsDialog();
+        }
+        return;
       }
 
       if (permission == LocationPermission.whileInUse ||
@@ -49,11 +50,43 @@ class _LocationPermissionScreenState
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Error: $e')));
+        ).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Геолокация недоступна. Функции карты и поиска рядом могут не работать.',
+            ),
+            backgroundColor: Colors.orange,
+          ),
+        );
       }
     } finally {
       if (mounted) setState(() => _isRequesting = false);
     }
+  }
+
+  Future<void> _showOpenSettingsDialog() async {
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Геолокация отключена'),
+        content: const Text(
+          'Для функций карты и поиска рядом включите геолокацию в настройках устройства.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Отмена'),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(dialogContext);
+              await Geolocator.openAppSettings();
+            },
+            child: const Text('Настройки'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override

@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:geolocator/geolocator.dart';
 import '../../models/event.dart';
 import '../../providers/event_provider.dart';
 
@@ -17,6 +20,10 @@ class MapScreen extends ConsumerStatefulWidget {
 class _MapScreenState extends ConsumerState<MapScreen> {
   GoogleMapController? _mapController;
   Set<Marker> _markers = {};
+  LatLng? _userPosition;
+  bool _locationWarningShown = false;
+  Timer? _markersDebounce;
+  String _lastMarkersSignature = '';
 
   LatLng get _initialPosition {
     final event = widget.initialEvent;
@@ -24,16 +31,107 @@ class _MapScreenState extends ConsumerState<MapScreen> {
       return LatLng(event.latitude, event.longitude);
     }
 
-    return const LatLng(55.751244, 37.618423); // Пример: Москва
+    if (_userPosition != null) {
+      return _userPosition!;
+    }
+
+    return const LatLng(55.751244, 37.618423);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _resolveUserLocation();
+  }
+
+  @override
+  void dispose() {
+    _markersDebounce?.cancel();
+    super.dispose();
+  }
+
+  Future<void> _resolveUserLocation() async {
+    if (widget.initialEvent != null) return;
+
+    try {
+      var permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+      }
+
+      final serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled || permission == LocationPermission.deniedForever) {
+        _showLocationUnavailableWarning();
+        return;
+      }
+
+      if (permission == LocationPermission.whileInUse ||
+          permission == LocationPermission.always) {
+        final position = await Geolocator.getCurrentPosition();
+        if (!mounted) return;
+
+        final target = LatLng(position.latitude, position.longitude);
+        setState(() {
+          _userPosition = target;
+        });
+
+        await _mapController?.animateCamera(CameraUpdate.newLatLng(target));
+      } else {
+        _showLocationUnavailableWarning();
+      }
+    } catch (_) {
+      _showLocationUnavailableWarning();
+    }
+  }
+
+  void _showLocationUnavailableWarning() {
+    if (!mounted || _locationWarningShown || widget.initialEvent != null) {
+      return;
+    }
+
+    _locationWarningShown = true;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text(
+          'Геолокация недоступна. Карта показывает события по умолчанию.',
+        ),
+        backgroundColor: Colors.orange,
+      ),
+    );
   }
 
   void _onMapCreated(GoogleMapController controller) {
     _mapController = controller;
-    _updateMarkers();
+    _scheduleMarkersUpdate();
+
+    if (_userPosition != null && widget.initialEvent == null) {
+      controller.animateCamera(CameraUpdate.newLatLng(_userPosition!));
+    }
+  }
+
+  String _buildMarkersSignature(List<Event> events) {
+    final prepared = events
+        .where((e) => e.latitude != 0 && e.longitude != 0)
+        .map((e) => '${e.id}:${e.latitude}:${e.longitude}')
+        .toList()
+      ..sort();
+    return prepared.join('|');
+  }
+
+  void _scheduleMarkersUpdate() {
+    _markersDebounce?.cancel();
+    _markersDebounce = Timer(const Duration(milliseconds: 220), _updateMarkers);
   }
 
   void _updateMarkers() {
-    final events = ref.read(eventsStreamProvider).value ?? [];
+    final events = ref.read(eventsStreamProvider).value ?? const <Event>[];
+    final signature = _buildMarkersSignature(events);
+    if (signature == _lastMarkersSignature) {
+      return;
+    }
+
+    _lastMarkersSignature = signature;
+
     final markers = events
         .where((e) => e.latitude != 0 && e.longitude != 0)
         .map((event) {
@@ -58,10 +156,10 @@ class _MapScreenState extends ConsumerState<MapScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Слушаем изменения со стрима, чтобы обновлять маркеры
+    // Слушаем изменения списка событий и обновляем маркеры с дебаунсом.
     ref.listen(eventsStreamProvider, (previous, next) {
       if (_mapController != null) {
-        _updateMarkers();
+        _scheduleMarkersUpdate();
       }
     });
 

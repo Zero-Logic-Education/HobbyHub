@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'app_router.dart';
+import '../utils/show_snackbar.dart';
 
 /// Сервис для управления навигацией из любой точки приложения
 class NavigationService {
@@ -33,9 +34,11 @@ class NavigationService {
     Duration duration = const Duration(seconds: 2),
   }) {
     if (context != null) {
-      ScaffoldMessenger.of(
+      showAppSnackBar(
         context!,
-      ).showSnackBar(SnackBar(content: Text(message), duration: duration));
+        message,
+        duration: duration,
+      );
     }
   }
 

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../core/router/app_router.dart';
+import '../../core/utils/greetings.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/event_provider.dart';
 import '../../providers/notification_provider.dart';
@@ -12,14 +13,6 @@ import '../shared/event_card.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
-
-  String _timeGreeting() {
-    final hour = DateTime.now().hour;
-    if (hour < 6) return 'Доброй ночи';
-    if (hour < 12) return 'Доброе утро';
-    if (hour < 18) return 'Добрый день';
-    return 'Добрый вечер';
-  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -89,7 +82,7 @@ class HomeScreen extends ConsumerWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            '${_timeGreeting()},',
+                            '${timeGreeting()},',
                             style: AppTypography.bodyMedium.copyWith(
                               color: AppColors.textSecondary,
                             ),

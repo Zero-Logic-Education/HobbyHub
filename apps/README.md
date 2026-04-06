@@ -157,3 +157,19 @@ flutter run --no-pub -d emulator-5554
 cd apps/android
 ./gradlew :app:assembleDebug
 ```
+
+## Android release readiness
+
+Для production release-сборки требуется указать package id и ключ подписи.
+
+Можно задать через `apps/android/gradle.properties` или переменные окружения:
+
+```text
+HH_APPLICATION_ID=com.zerologiceducation.hobbyhub
+HH_RELEASE_STORE_FILE=/absolute/path/to/release-keystore.jks
+HH_RELEASE_STORE_PASSWORD=***
+HH_RELEASE_KEY_ALIAS=***
+HH_RELEASE_KEY_PASSWORD=***
+```
+
+Шаблон: [apps/android/keystore.properties.example](android/keystore.properties.example)

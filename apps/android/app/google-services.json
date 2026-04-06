@@ -48,6 +48,42 @@
           ]
         }
       }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:924214570624:android:38e76508e4d02b73f6c065",
+        "android_client_info": {
+          "package_name": "com.zerologiceducation.hobbyhub"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "924214570624-rkdo42g7ugbjg7ft3c89ue9d340sgo16.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDL_MUbgacEvig9TQh8v5NxIccnV1F_5YU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "924214570624-rkdo42g7ugbjg7ft3c89ue9d340sgo16.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "924214570624-s7mitsd6m05st5qr5qhpcnbhv6s77m6t.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.hobbyHub"
+              }
+            }
+          ]
+        }
+      }
     }
   ],
   "configuration_version": "1"

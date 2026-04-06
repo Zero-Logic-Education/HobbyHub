@@ -54,3 +54,7 @@ app.*.map.json
 /apps/android/app/debug
 /apps/android/app/profile
 /apps/android/app/release
+
+# Local Android release signing secrets
+/apps/android/keystore.properties
+/apps/android/release-keystore.jks

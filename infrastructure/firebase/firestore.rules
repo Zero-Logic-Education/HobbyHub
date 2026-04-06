@@ -78,7 +78,7 @@ service cloud.firestore {
       
       match /notifications/{notificationId} {
         allow read: if isUser(userId);
-        allow create: if isAuthenticated();
+        allow create: if isUser(userId) || isAdmin();
         allow update: if isUser(userId);
         allow delete: if isUser(userId) || isAdmin();
       }
@@ -179,7 +179,7 @@ service cloud.firestore {
     // === ACTIVITY HISTORY COLLECTION ===
     match /activityHistory/{historyId} {
       allow read: if isUser(resource.data.userId);
-      allow create: if isAuthenticated();
+      allow create: if isAuthenticated() && isUser(request.resource.data.userId);
       allow update: if isUser(resource.data.userId);
       allow delete: if isUser(resource.data.userId) || isAdmin();
     }

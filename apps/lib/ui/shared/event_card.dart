@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hobby_hub/core/theme/app_colors.dart';
 import 'package:hobby_hub/core/theme/app_spacing.dart';
 import 'package:hobby_hub/core/theme/app_styles.dart';
 import 'package:hobby_hub/core/theme/app_typography.dart';
+import 'package:hobby_hub/core/utils/category_colors.dart';
 import 'package:hobby_hub/models/event.dart';
+import 'package:hobby_hub/models/user.dart';
+import 'package:hobby_hub/providers/user_provider.dart';
 import 'package:intl/intl.dart';
 
 /// Карточка события для отображения в списке
-class EventCard extends StatelessWidget {
+class EventCard extends ConsumerWidget {
   final Event event;
   final VoidCallback? onTap;
   final VoidCallback? onFavoriteTap;
@@ -24,7 +28,13 @@ class EventCard extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final participantIds = event.participants.take(3).toList();
+    final category = event.categories.isNotEmpty
+        ? event.categories.first
+        : 'Разное';
+    final categoryColor = getCategoryColor(category);
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -114,6 +124,27 @@ class EventCard extends StatelessWidget {
                       ),
                     ),
                   ),
+                Positioned(
+                  bottom: AppSpacing.md,
+                  left: AppSpacing.md,
+                  child: Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: AppSpacing.sm,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+                    ),
+                    child: Text(
+                      getCategoryDisplayLabel(category),
+                      style: AppTypography.labelSmall.copyWith(
+                        color: categoryColor,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ),
               ],
             ),
 
@@ -187,12 +218,8 @@ class EventCard extends StatelessWidget {
                       // Participants count
                       Row(
                         children: [
-                          Icon(
-                            Icons.group_outlined,
-                            size: 16,
-                            color: AppColors.textSecondary,
-                          ),
-                          SizedBox(width: 4),
+                          _ParticipantsPreview(participantIds: participantIds),
+                          SizedBox(width: AppSpacing.xs),
                           Text(
                             '${event.participants.length}/${event.maxParticipants}',
                             style: AppTypography.labelSmall.copyWith(
@@ -276,6 +303,90 @@ class EventCard extends StatelessWidget {
       default:
         return AppColors.textSecondary;
     }
+  }
+}
+
+class _ParticipantsPreview extends ConsumerWidget {
+  final List<String> participantIds;
+
+  const _ParticipantsPreview({required this.participantIds});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    if (participantIds.isEmpty) {
+      return Icon(Icons.group_outlined, size: 16, color: AppColors.textSecondary);
+    }
+
+    final avatars = <Widget>[];
+    for (int index = 0; index < participantIds.length; index++) {
+      final userAsync = ref.watch(userProfileProvider(participantIds[index]));
+      avatars.add(
+        Positioned(
+          left: index * 14,
+          child: _ParticipantCircle(userAsync: userAsync),
+        ),
+      );
+    }
+
+    return SizedBox(
+      width: (participantIds.length - 1) * 14 + 20,
+      height: 20,
+      child: Stack(children: avatars),
+    );
+  }
+}
+
+class _ParticipantCircle extends StatelessWidget {
+  final AsyncValue<User?> userAsync;
+
+  const _ParticipantCircle({required this.userAsync});
+
+  @override
+  Widget build(BuildContext context) {
+    return userAsync.when(
+      data: (user) {
+        final photoUrl = user?.photoUrl;
+        final displayName = user?.displayName ?? user?.username ?? '';
+        final initial = displayName.trim().isEmpty ? '?' : displayName.trim()[0].toUpperCase();
+
+        if (photoUrl != null && photoUrl.isNotEmpty) {
+          return CircleAvatar(
+            radius: 10,
+            backgroundColor: Colors.white,
+            child: CircleAvatar(
+              radius: 9,
+              backgroundImage: NetworkImage(photoUrl),
+            ),
+          );
+        }
+
+        return CircleAvatar(
+          radius: 10,
+          backgroundColor: Colors.white,
+          child: CircleAvatar(
+            radius: 9,
+            backgroundColor: AppColors.lightCoral,
+            child: Text(
+              initial,
+              style: AppTypography.labelSmall.copyWith(
+                color: AppColors.primary,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+        );
+      },
+      loading: () => CircleAvatar(
+        radius: 10,
+        backgroundColor: Colors.white,
+        child: CircleAvatar(radius: 9, backgroundColor: AppColors.surfaceSecondary),
+      ),
+      error: (error, stackTrace) => CircleAvatar(
+        radius: 10,
+        backgroundColor: Colors.white,
+        child: CircleAvatar(radius: 9, backgroundColor: AppColors.surfaceSecondary),
+      ),
+    );
   }
 }
 

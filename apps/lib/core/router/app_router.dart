@@ -7,6 +7,9 @@ import '../../ui/welcome/welcome_screen.dart';
 import '../../ui/home/home_screen.dart';
 import '../../ui/home/event_detail_screen.dart';
 import '../../ui/home/map_screen.dart';
+import '../../ui/home/moderation/event_moderation_screen.dart';
+import '../../ui/home/reviews/event_review_screen.dart';
+import '../../ui/home/reviews/event_reviews_list_screen.dart';
 import '../../ui/auth/age_verification_screen.dart';
 import '../../ui/auth/login_screen.dart';
 import '../../ui/auth/register_screen.dart';
@@ -57,6 +60,9 @@ class AppRoutes {
   static const String settings = '/settings';
   static const String profile = '/profile';
   static const String editProfile = '/profile/edit';
+  static const String eventModeration = '/events/moderation';
+  static const String eventReview = '/events/review';
+  static const String eventReviews = '/events/reviews';
 }
 
 /// Провайдер GoRouter
@@ -266,6 +272,30 @@ final routerProvider = Provider<GoRouter>((ref) {
           final eventId = state.pathParameters['id']!;
           final event = state.extra as Event?;
           return EventDetailScreen(eventId: eventId, event: event);
+        },
+      ),
+      GoRoute(
+        path: '/events/:id/moderation',
+        name: 'event-moderation',
+        builder: (context, state) {
+          final eventId = state.pathParameters['id']!;
+          return EventModerationScreen(eventId: eventId);
+        },
+      ),
+      GoRoute(
+        path: '/events/:id/review',
+        name: 'event-review',
+        builder: (context, state) {
+          final eventId = state.pathParameters['id']!;
+          return EventReviewScreen(eventId: eventId);
+        },
+      ),
+      GoRoute(
+        path: '/events/:id/reviews',
+        name: 'event-reviews',
+        builder: (context, state) {
+          final eventId = state.pathParameters['id']!;
+          return EventReviewsListScreen(eventId: eventId);
         },
       ),
       GoRoute(

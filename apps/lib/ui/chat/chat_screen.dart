@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../models/chat.dart';
 import '../../providers/chat_providers.dart';
 import '../../providers/user_provider.dart';
 import '../../services/chat_service.dart';
@@ -16,6 +17,7 @@ class ChatScreen extends ConsumerStatefulWidget {
 
 class _ChatScreenState extends ConsumerState<ChatScreen> {
   final TextEditingController _messageController = TextEditingController();
+  bool _isMarkingRead = false;
 
   void _sendMessage() {
     final text = _messageController.text.trim();
@@ -26,6 +28,23 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
     ref.read(chatServiceProvider).sendMessage(widget.chatId, userId, text);
     _messageController.clear();
+  }
+
+  Future<void> _markIncomingAsRead(List<Message> messages, String? userId) async {
+    if (userId == null || _isMarkingRead) return;
+
+    final hasUnreadIncoming = messages.any(
+      (message) => message.senderId != userId && !message.isRead,
+    );
+
+    if (!hasUnreadIncoming) return;
+
+    _isMarkingRead = true;
+    try {
+      await ref.read(chatServiceProvider).markMessagesAsRead(widget.chatId, userId);
+    } finally {
+      _isMarkingRead = false;
+    }
   }
 
   @override
@@ -65,6 +84,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           Expanded(
             child: messagesAsync.when(
               data: (messages) {
+                _markIncomingAsRead(messages, currentUserId);
                 if (messages.isEmpty) {
                   return const Center(child: Text('Нет сообщений'));
                 }

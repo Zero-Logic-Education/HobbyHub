@@ -64,6 +64,12 @@ class EventDetailScreen extends ConsumerWidget {
     final isParticipating =
         currentUserId != null &&
         resolvedEvent.participants.contains(currentUserId);
+    final isOrganizer = currentUserId == resolvedEvent.organizerId;
+    final eventFinished =
+        (resolvedEvent.endTime ?? resolvedEvent.startTime).isBefore(
+          DateTime.now(),
+        ) ||
+        resolvedEvent.status == 'completed';
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -287,6 +293,34 @@ class EventDetailScreen extends ConsumerWidget {
                               ),
                             ),
                     ),
+                  ),
+                  const SizedBox(height: 12),
+                  Wrap(
+                    spacing: 10,
+                    runSpacing: 10,
+                    children: [
+                      OutlinedButton.icon(
+                        onPressed: () =>
+                            context.push('/events/${resolvedEvent.id}/reviews'),
+                        icon: const Icon(Icons.reviews_outlined),
+                        label: const Text('Все отзывы'),
+                      ),
+                      if (eventFinished && isParticipating)
+                        FilledButton.icon(
+                          onPressed: () =>
+                              context.push('/events/${resolvedEvent.id}/review'),
+                          icon: const Icon(Icons.star_outline),
+                          label: const Text('Оставить отзыв'),
+                        ),
+                      if (resolvedEvent.requiresApproval && isOrganizer)
+                        OutlinedButton.icon(
+                          onPressed: () => context.push(
+                            '/events/${resolvedEvent.id}/moderation',
+                          ),
+                          icon: const Icon(Icons.verified_user_outlined),
+                          label: const Text('Модерация заявок'),
+                        ),
+                    ],
                   ),
                   const SizedBox(height: 24),
                   Container(

@@ -296,6 +296,26 @@ class FirestoreService {
     });
   }
 
+  Stream<QuerySnapshot> getEventReviewsStream(
+    String eventId, {
+    String sort = 'newest',
+  }) {
+    final reviewsRef = _firestore
+        .collection('events')
+        .doc(eventId)
+        .collection('reviews');
+
+    switch (sort) {
+      case 'highest':
+        return reviewsRef.orderBy('rating', descending: true).snapshots();
+      case 'lowest':
+        return reviewsRef.orderBy('rating').snapshots();
+      case 'newest':
+      default:
+        return reviewsRef.orderBy('createdAt', descending: true).snapshots();
+    }
+  }
+
   // ==================== EVENT APPLICATIONS ====================
 
   /// Получить стрим заявок на событие

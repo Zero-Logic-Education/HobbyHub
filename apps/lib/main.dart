@@ -12,9 +12,49 @@ import 'providers/user_provider.dart';
 import 'core/router/app_router.dart';
 import 'core/di/service_locator.dart';
 import 'providers/error_observer.dart';
+import 'core/theme/app_colors.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  ErrorWidget.builder = (FlutterErrorDetails details) {
+    return Material(
+      color: Colors.white,
+      child: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                Icons.error_outline,
+                color: AppColors.error,
+                size: 56,
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'Что-то пошло не так',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Попробуйте перезапустить приложение.',
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () {
+                  SystemNavigator.pop();
+                },
+                child: const Text('Закрыть приложение'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  };
 
   // Настройка прозрачного статус-бара
   SystemChrome.setSystemUIOverlayStyle(

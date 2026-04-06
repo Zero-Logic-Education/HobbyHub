@@ -7,6 +7,7 @@ import '../../core/router/app_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../core/utils/category_colors.dart';
+import '../../core/utils/formatters.dart';
 import '../../models/event.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/event_provider.dart';
@@ -21,12 +22,6 @@ class EventDetailScreen extends ConsumerWidget {
 
   String _formatDate(DateTime dateTime) {
     return DateFormat('dd.MM.yyyy, HH:mm').format(dateTime);
-  }
-
-  String _formatPrice(double price, bool isFree) {
-    if (isFree || price <= 0) return 'Бесплатно';
-    final hasFraction = price % 1 != 0;
-    return '${price.toStringAsFixed(hasFraction ? 2 : 0)} ₽';
   }
 
   String _categoryLabel(Event event) {
@@ -164,7 +159,7 @@ class EventDetailScreen extends ConsumerWidget {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            _formatPrice(
+                            formatEventPrice(
                               resolvedEvent.price,
                               resolvedEvent.isFree,
                             ),

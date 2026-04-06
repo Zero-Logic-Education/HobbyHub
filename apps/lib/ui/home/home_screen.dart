@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../core/router/app_router.dart';
+import '../../core/utils/category_colors.dart';
 import '../../models/event.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/event_provider.dart';
@@ -36,26 +37,6 @@ class HomeScreen extends ConsumerWidget {
   String _categoryLabel(List<String> categories) {
     if (categories.isEmpty) return 'Разное';
     return categories.first;
-  }
-
-  Color _categoryColor(String category) {
-    switch (category.toLowerCase()) {
-      case 'спорт':
-      case 'sports':
-        return const Color(0xFF81C784);
-      case 'технологии':
-      case 'tech':
-        return const Color(0xFF64B5F6);
-      case 'творчество':
-      case 'искусство':
-      case 'art':
-        return const Color(0xFFBA68C8);
-      case 'музыка':
-      case 'music':
-        return const Color(0xFFFFB74D);
-      default:
-        return AppColors.primary;
-    }
   }
 
   @override
@@ -372,7 +353,7 @@ class HomeScreen extends ConsumerWidget {
                             ageRestriction: filteredEvents[index].minAge >= 18
                                 ? '${filteredEvents[index].minAge}+'
                                 : null,
-                            categoryColor: _categoryColor(
+                            categoryColor: getCategoryColor(
                               _categoryLabel(filteredEvents[index].categories),
                             ),
                           ),

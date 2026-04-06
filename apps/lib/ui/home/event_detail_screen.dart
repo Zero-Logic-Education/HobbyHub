@@ -6,6 +6,7 @@ import 'package:share_plus/share_plus.dart';
 import '../../core/router/app_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
+import '../../core/utils/category_colors.dart';
 import '../../models/event.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/event_provider.dart';
@@ -33,26 +34,6 @@ class EventDetailScreen extends ConsumerWidget {
     return event.categories.first;
   }
 
-  Color _categoryColor(Event event) {
-    switch (_categoryLabel(event).toLowerCase()) {
-      case 'спорт':
-      case 'sports':
-        return const Color(0xFF81C784);
-      case 'технологии':
-      case 'tech':
-        return const Color(0xFF64B5F6);
-      case 'творчество':
-      case 'искусство':
-      case 'art':
-        return const Color(0xFFBA68C8);
-      case 'музыка':
-      case 'music':
-        return const Color(0xFFFFB74D);
-      default:
-        return AppColors.primary;
-    }
-  }
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final resolvedEvent = _resolveEvent(ref) ?? event;
@@ -75,7 +56,7 @@ class EventDetailScreen extends ConsumerWidget {
     final organizerAsync = ref.watch(
       userProfileProvider(resolvedEvent.organizerId),
     );
-    final categoryColor = _categoryColor(resolvedEvent);
+    final categoryColor = getCategoryColor(_categoryLabel(resolvedEvent));
     final location = (resolvedEvent.address ?? '').trim().isNotEmpty
         ? resolvedEvent.address!
         : 'Локация не указана';

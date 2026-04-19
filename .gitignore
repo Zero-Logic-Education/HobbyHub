@@ -42,6 +42,10 @@ vs.code/
 .env.*
 **/.DS_Store
 ~/
+
+# Firebase credentials
+**/serviceAccountKey.json
+
 # Symbolication related
 app.*.symbols
 

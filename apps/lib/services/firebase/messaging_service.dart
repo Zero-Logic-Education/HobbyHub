@@ -1,9 +1,13 @@
+import 'dart:async';
+
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 
 /// Сервис для работы с Firebase Cloud Messaging (Push-уведомления)
 class MessagingService {
   final FirebaseMessaging _messaging = FirebaseMessaging.instance;
+  StreamSubscription<RemoteMessage>? _foregroundSubscription;
+  StreamSubscription<RemoteMessage>? _openedAppSubscription;
 
   /// Инициализация FCM
   Future<void> initialize() async {
@@ -12,21 +16,27 @@ class MessagingService {
 
     // Получить FCM токен
     final token = await getToken();
-    if (kDebugMode) {
-      print('FCM Token: $token');
-    }
+    debugPrint('FCM Token: $token');
 
     // Слушаем foreground сообщения
-    FirebaseMessaging.onMessage.listen(_handleForegroundMessage);
+    _foregroundSubscription =
+        FirebaseMessaging.onMessage.listen(_handleForegroundMessage);
 
     // Слушаем клики по уведомлениям
-    FirebaseMessaging.onMessageOpenedApp.listen(_handleMessageOpenedApp);
+    _openedAppSubscription =
+        FirebaseMessaging.onMessageOpenedApp.listen(_handleMessageOpenedApp);
 
     // Проверяем, было ли приложение открыто из уведомления
     final initialMessage = await _messaging.getInitialMessage();
     if (initialMessage != null) {
       _handleMessageOpenedApp(initialMessage);
     }
+  }
+
+  /// Освобождение ресурсов
+  void dispose() {
+    _foregroundSubscription?.cancel();
+    _openedAppSubscription?.cancel();
   }
 
   /// Запросить разрешение на уведомления
@@ -64,21 +74,17 @@ class MessagingService {
 
   /// Обработка foreground сообщений
   void _handleForegroundMessage(RemoteMessage message) {
-    if (kDebugMode) {
-      print('Foreground сообщение: ${message.notification?.title}');
-      print('Body: ${message.notification?.body}');
-      print('Data: ${message.data}');
-    }
+    debugPrint('Foreground сообщение: ${message.notification?.title}');
+    debugPrint('Body: ${message.notification?.body}');
+    debugPrint('Data: ${message.data}');
   }
 
   /// Обработка клика по уведомлению
   void _handleMessageOpenedApp(RemoteMessage message) {
-    if (kDebugMode) {
-      print(
-        'Пользователь кликнул на уведомление: ${message.notification?.title}',
-      );
-      print('Data: ${message.data}');
-    }
+    debugPrint(
+      'Пользователь кликнул на уведомление: ${message.notification?.title}',
+    );
+    debugPrint('Data: ${message.data}');
 
     final data = message.data;
 
@@ -132,7 +138,5 @@ class MessagingService {
 /// Background message handler (должен быть top-level функцией)
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  if (kDebugMode) {
-    print('Background сообщение: ${message.notification?.title}');
-  }
+  debugPrint('Background сообщение: ${message.notification?.title}');
 }

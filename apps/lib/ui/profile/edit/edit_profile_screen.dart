@@ -125,11 +125,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final user = ref.watch(currentUserStreamProvider).valueOrNull;
-    final currentPhotoUrl = user?.photoUrl;
-    final initials = user?.displayName?.trim().isNotEmpty == true
-        ? user!.displayName!.trim().substring(0, 1).toUpperCase()
-        : 'U';
+    final userAsync = ref.watch(currentUserStreamProvider);
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -138,45 +134,56 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
         backgroundColor: AppColors.background,
         elevation: 0,
       ),
-      body: user == null
-          ? const Center(child: CircularProgressIndicator())
-          : SafeArea(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(24),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      GestureDetector(
-                        onTap: _pickImage,
-                        child: Stack(
-                          children: [
-                            CircleAvatar(
-                              radius: 50,
-                              backgroundColor: AppColors.primary.withValues(
-                                alpha: 0.15,
-                              ),
-                              backgroundImage: _imageFile != null
-                                  ? FileImage(_imageFile!) as ImageProvider
-                                  : (currentPhotoUrl != null
-                                        ? NetworkImage(currentPhotoUrl)
-                                        : null),
-                              child:
-                                  _imageFile == null && currentPhotoUrl == null
-                                  ? Text(
-                                      initials,
-                                      style: AppTypography.headingMedium
-                                          .copyWith(color: AppColors.primary),
-                                    )
-                                  : null,
+      body: userAsync.when(
+        data: (user) {
+          if (user == null) {
+            return const Center(
+              child: Text('Пользователь не найден'),
+            );
+          }
+
+          final currentPhotoUrl = user.photoUrl;
+          final initials = user.displayName?.trim().isNotEmpty == true
+              ? user.displayName!.trim().substring(0, 1).toUpperCase()
+              : 'U';
+
+          return SafeArea(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(24),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    GestureDetector(
+                      onTap: _pickImage,
+                      child: Stack(
+                        children: [
+                          CircleAvatar(
+                            radius: 50,
+                            backgroundColor: AppColors.primary.withValues(
+                              alpha: 0.15,
                             ),
-                            Positioned(
-                              bottom: 0,
-                              right: 0,
-                              child: Container(
-                                padding: const EdgeInsets.all(4),
-                                decoration: BoxDecoration(
+                            backgroundImage: _imageFile != null
+                                ? FileImage(_imageFile!) as ImageProvider
+                                : (currentPhotoUrl != null
+                                      ? NetworkImage(currentPhotoUrl)
+                                      : null),
+                            child:
+                                _imageFile == null && currentPhotoUrl == null
+                                ? Text(
+                                    initials,
+                                    style: AppTypography.headingMedium
+                                        .copyWith(color: AppColors.primary),
+                                  )
+                                : null,
+                          ),
+                          Positioned(
+                            bottom: 0,
+                            right: 0,
+                            child: Container(
+                              padding: const EdgeInsets.all(4),
+                              decoration: BoxDecoration(
                                   color: AppColors.primary,
                                   shape: BoxShape.circle,
                                   border: Border.all(

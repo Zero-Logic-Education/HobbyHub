@@ -45,7 +45,12 @@ class EventsNotifier extends StateNotifier<AsyncValue<List<Event>>> {
   }
 
   /// Обновить событие
-  Future<void> updateEvent(String eventId, Event event) async {
+  Future<void> updateEvent(String eventId, Event event, String currentUserId) async {
+    // Проверка прав: только организатор может обновить событие
+    if (event.organizerId != currentUserId) {
+      throw Exception('У вас нет прав на редактирование этого события');
+    }
+
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
       await _firestoreService.updateEvent(eventId, event.toJson());
@@ -63,7 +68,12 @@ class EventsNotifier extends StateNotifier<AsyncValue<List<Event>>> {
   }
 
   /// Удалить событие
-  Future<void> deleteEvent(String eventId) async {
+  Future<void> deleteEvent(String eventId, String organizerId, String currentUserId) async {
+    // Проверка прав: только организатор может удалить событие
+    if (organizerId != currentUserId) {
+      throw Exception('У вас нет прав на удаление этого события');
+    }
+
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
       await _firestoreService.deleteEvent(eventId);
@@ -224,7 +234,7 @@ final filteredEventsListProvider = Provider<List<Event>>((ref) {
       // Фильтр по возрасту
       if (filters.minAge != null) {
         filtered = filtered
-            .where((event) => event.minAge >= filters.minAge!)
+            .where((event) => event.minAge <= filters.minAge!)
             .toList();
       }
 
@@ -282,25 +292,43 @@ class EventParticipationNotifier extends StateNotifier<AsyncValue<void>> {
   EventParticipationNotifier(this._firestoreService)
     : super(const AsyncValue.data(null));
 
-  Future<void> toggleParticipation(Event event, String userId) async {
+  Future<void> toggleParticipation(Event event, String userId, int userAge) async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
       final isParticipating = event.participants.contains(userId);
-      final newParticipants = List<String>.from(event.participants);
 
-      if (isParticipating) {
-        newParticipants.remove(userId);
-      } else {
-        if (event.maxParticipants > 0 &&
-            newParticipants.length >= event.maxParticipants) {
-          throw Exception('Событие полностью заполнено');
+      if (!isParticipating) {
+        // Проверка возраста
+        if (userAge < event.minAge) {
+          throw Exception('Вы не соответствуете возрастным требованиям события (минимум ${event.minAge} лет)');
         }
-        newParticipants.add(userId);
-      }
 
-      await _firestoreService.updateEvent(event.id, {
-        'participants': newParticipants,
-      });
+        // Используем транзакцию для атомарной проверки и обновления
+        await _firestoreService.runEventTransaction(event.id, (eventData) {
+          final participants = List<String>.from(eventData['participants'] ?? []);
+
+          // Проверка лимита участников
+          if (event.maxParticipants > 0 && participants.length >= event.maxParticipants) {
+            throw Exception('Событие полностью заполнено');
+          }
+
+          // Проверка что пользователь еще не участник
+          if (participants.contains(userId)) {
+            throw Exception('Вы уже участник этого события');
+          }
+
+          participants.add(userId);
+          return {'participants': participants};
+        });
+      } else {
+        // Выход из события - простое обновление
+        final newParticipants = List<String>.from(event.participants);
+        newParticipants.remove(userId);
+
+        await _firestoreService.updateEvent(event.id, {
+          'participants': newParticipants,
+        });
+      }
     });
   }
 }

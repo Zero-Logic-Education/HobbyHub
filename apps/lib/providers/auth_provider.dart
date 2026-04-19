@@ -78,7 +78,7 @@ class AuthNotifier extends StateNotifier<AsyncValue<void>> {
     if (user == null) return;
     final firestore = FirebaseFirestore.instance;
     final doc = await firestore.collection('users').doc(user.uid).get();
-    
+
     if (!doc.exists) {
       final email = user.email ?? '';
       String username = user.displayName?.trim() ?? '';
@@ -88,9 +88,9 @@ class AuthNotifier extends StateNotifier<AsyncValue<void>> {
       if (username.isEmpty) {
         username = 'user_${user.uid.substring(0, 5)}';
       }
-      
+
       final now = DateTime.now().toIso8601String();
-      
+
       await firestore.collection('users').doc(user.uid).set({
         'id': user.uid,
         'email': email,
@@ -98,12 +98,12 @@ class AuthNotifier extends StateNotifier<AsyncValue<void>> {
         'displayName': user.displayName,
         'photoUrl': user.photoURL,
         'bio': null,
-        'age': 18, 
+        'age': null, // НЕ устанавливаем возраст автоматически
         'interests': <String>[],
         'privacyLevel': 'public',
         'latitude': null,
         'longitude': null,
-        'isVerified': true,
+        'isVerified': false, // Требуется верификация возраста
         'createdAt': now,
         'updatedAt': now,
       });

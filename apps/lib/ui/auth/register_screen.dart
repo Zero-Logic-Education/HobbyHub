@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../core/router/app_router.dart';
+import '../../core/utils/safe_navigation.dart';
 import '../shared/app_button.dart';
 import '../shared/app_text_field.dart';
 
@@ -64,7 +65,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                         Padding(
                           padding: const EdgeInsets.only(top: 16),
                           child: InkWell(
-                            onTap: () => context.pop(),
+                            onTap: () => safeGoBack(context),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [

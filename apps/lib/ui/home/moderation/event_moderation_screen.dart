@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../providers/auth_provider.dart';
 import '../../../providers/user_provider.dart';
 import '../../../models/user.dart' as model;
 
@@ -118,15 +119,18 @@ class ApplicationCard extends ConsumerWidget {
                   icon: const Icon(Icons.check_circle, color: Colors.green),
                   onPressed: () async {
                     try {
+                      final currentUserId = ref.read(currentUserIdProvider);
+                      if (currentUserId == null) return;
+
                       await ref
                           .read(firestoreServiceProvider)
-                          .approveApplication(eventId, userId);
-                    } catch (_) {
+                          .approveApplication(eventId, userId, currentUserId);
+                    } catch (e) {
                       if (!context.mounted) return;
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Функция модерирования временно недоступна.'),
-                          backgroundColor: Colors.orange,
+                        SnackBar(
+                          content: Text(e.toString()),
+                          backgroundColor: Colors.red,
                         ),
                       );
                     }
@@ -136,10 +140,13 @@ class ApplicationCard extends ConsumerWidget {
                   icon: const Icon(Icons.cancel, color: Colors.red),
                   onPressed: () async {
                     try {
+                      final currentUserId = ref.read(currentUserIdProvider);
+                      if (currentUserId == null) return;
+
                       await ref
                           .read(firestoreServiceProvider)
-                          .rejectApplication(eventId, userId);
-                    } catch (_) {
+                          .rejectApplication(eventId, userId, currentUserId);
+                    } catch (e) {
                       if (!context.mounted) return;
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(

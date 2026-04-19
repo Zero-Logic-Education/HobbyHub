@@ -511,9 +511,14 @@ class EventDetailScreen extends ConsumerWidget {
     bool isParticipating,
   ) async {
     try {
+      // Получаем возраст пользователя
+      final userDoc = await ref.read(firestoreServiceProvider).getUser(userId);
+      final userData = userDoc.data() as Map<String, dynamic>?;
+      final userAge = userData?['age'] as int? ?? 0;
+
       await ref
           .read(eventParticipationProvider.notifier)
-          .toggleParticipation(event, userId);
+          .toggleParticipation(event, userId, userAge);
 
       if (!context.mounted) return;
 
@@ -521,9 +526,9 @@ class EventDetailScreen extends ConsumerWidget {
         context,
         isParticipating ? 'Вы покинули событие' : 'Вы присоединились к событию',
       );
-    } catch (_) {
+    } catch (e) {
       if (!context.mounted) return;
-      _showSnackBar(context, 'Не удалось обновить участие. Попробуйте позже.');
+      _showSnackBar(context, e.toString());
     }
   }
 
@@ -536,8 +541,9 @@ class EventDetailScreen extends ConsumerWidget {
     ].join('\n');
 
     try {
-      await SharePlus.instance.share(
-        ShareParams(text: shareText, subject: event.title),
+      await Share.share(
+        shareText,
+        subject: event.title,
       );
     } catch (_) {
       if (!context.mounted) return;

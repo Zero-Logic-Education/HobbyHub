@@ -80,6 +80,29 @@ class FirestoreService {
         .delete();
   }
 
+  /// Выполнить транзакцию для события (для атомарных операций)
+  Future<void> runEventTransaction(
+    String eventId,
+    Map<String, dynamic> Function(Map<String, dynamic>) updateFunction,
+  ) async {
+    final eventRef = _firestore
+        .collection(AppConstants.eventsCollection)
+        .doc(eventId);
+
+    await _firestore.runTransaction((transaction) async {
+      final eventDoc = await transaction.get(eventRef);
+
+      if (!eventDoc.exists) {
+        throw Exception('Событие не найдено');
+      }
+
+      final eventData = eventDoc.data() as Map<String, dynamic>;
+      final updates = updateFunction(eventData);
+
+      transaction.update(eventRef, updates);
+    });
+  }
+
   /// Получить список событий с пагинацией
   Future<QuerySnapshot> getEvents({
     DocumentSnapshot? startAfter,
@@ -329,16 +352,27 @@ class FirestoreService {
   }
 
   /// Одобрить заявку
-  Future<void> approveApplication(String eventId, String userId) async {
+  Future<void> approveApplication(String eventId, String userId, String currentUserId) async {
+    // Проверка прав: только организатор может одобрять заявки
+    final eventDoc = await _firestore.collection('events').doc(eventId).get();
+    if (!eventDoc.exists) {
+      throw Exception('Событие не найдено');
+    }
+
+    final eventData = eventDoc.data() as Map<String, dynamic>;
+    if (eventData['organizerId'] != currentUserId) {
+      throw Exception('У вас нет прав на модерацию заявок этого события');
+    }
+
     final batch = _firestore.batch();
-    
+
     final appRef = _firestore
         .collection('events')
         .doc(eventId)
         .collection('applications')
         .doc(userId);
     batch.update(appRef, {'status': 'approved'});
-    
+
     final eventRef = _firestore.collection('events').doc(eventId);
     batch.update(eventRef, {
       'participants': FieldValue.arrayUnion([userId])
@@ -348,7 +382,18 @@ class FirestoreService {
   }
 
   /// Отклонить заявку
-  Future<void> rejectApplication(String eventId, String userId) async {
+  Future<void> rejectApplication(String eventId, String userId, String currentUserId) async {
+    // Проверка прав: только организатор может отклонять заявки
+    final eventDoc = await _firestore.collection('events').doc(eventId).get();
+    if (!eventDoc.exists) {
+      throw Exception('Событие не найдено');
+    }
+
+    final eventData = eventDoc.data() as Map<String, dynamic>;
+    if (eventData['organizerId'] != currentUserId) {
+      throw Exception('У вас нет прав на модерацию заявок этого события');
+    }
+
     final appRef = _firestore
         .collection('events')
         .doc(eventId)

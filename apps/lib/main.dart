@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -87,11 +89,24 @@ void main() async {
 
 final rootScaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
 
-class MyApp extends ConsumerWidget {
+class MyApp extends ConsumerStatefulWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends ConsumerState<MyApp> {
+  StreamSubscription<String>? _tokenRefreshSubscription;
+
+  @override
+  void dispose() {
+    _tokenRefreshSubscription?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     // Получаем тему из Riverpod провайдера
     final isDarkMode = ref.watch(themeProvider);
 
@@ -107,10 +122,17 @@ class MyApp extends ConsumerWidget {
           }
         });
 
+        // Отписываемся от предыдущей подписки
+        _tokenRefreshSubscription?.cancel();
+
         // Также слушаем обновление токена
-        FirebaseMessaging.instance.onTokenRefresh.listen((token) {
+        _tokenRefreshSubscription =
+            FirebaseMessaging.instance.onTokenRefresh.listen((token) {
           firestoreService.saveFcmToken(next, token);
         });
+      } else {
+        // Если пользователь вышел, отписываемся
+        _tokenRefreshSubscription?.cancel();
       }
     });
 

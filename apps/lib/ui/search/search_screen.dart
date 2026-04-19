@@ -205,20 +205,20 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
             sliver: SliverGrid(
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
-                mainAxisSpacing: 16,
-                crossAxisSpacing: 16,
-                childAspectRatio: 0.85,
+                mainAxisSpacing: 12,
+                crossAxisSpacing: 12,
+                childAspectRatio: 2.5,
               ),
               delegate: SliverChildBuilderDelegate((context, index) {
                 final interest = interests[index];
-                // Random-ish color based on index
-                final hue = (index * 137.5) % 360;
-                final color = HSLColor.fromAHSL(1.0, hue, 0.7, 0.9).toColor();
 
                 return _CategoryCard(
                   title: interest.name,
                   icon: _getIconForCategory(interest.category),
-                  color: color,
+                  onTap: () {
+                    ref.read(eventFilterProvider.notifier).setCategoryFilter([interest.name]);
+                    Navigator.pop(context);
+                  },
                 );
               }, childCount: interests.length),
             ),
@@ -234,59 +234,90 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
   }
 
   IconData _getIconForCategory(String category) {
-    return categoryIcon(category);
+    switch (category.toLowerCase()) {
+      case 'sports':
+        return Icons.directions_run_rounded;
+      case 'technology':
+        return Icons.computer_rounded;
+      case 'art':
+        return Icons.palette_outlined;
+      case 'music':
+        return Icons.music_note_rounded;
+      case 'yoga':
+      case 'wellness':
+        return Icons.self_improvement_rounded;
+      case 'cooking':
+        return Icons.restaurant_rounded;
+      case 'photography':
+        return Icons.camera_alt_rounded;
+      case 'reading':
+        return Icons.menu_book_rounded;
+      case 'gaming':
+        return Icons.sports_esports_rounded;
+      case 'dance':
+        return Icons.music_note_rounded;
+      case 'movies':
+        return Icons.movie_rounded;
+      case 'fashion':
+        return Icons.checkroom_rounded;
+      case 'gardening':
+        return Icons.yard_rounded;
+      case 'crafts':
+        return Icons.brush_rounded;
+      case 'travel':
+        return Icons.flight_rounded;
+      default:
+        return categoryIcon(category);
+    }
   }
 }
 
 class _CategoryCard extends StatelessWidget {
   final String title;
   final IconData icon;
-  final Color color;
+  final VoidCallback? onTap;
 
   const _CategoryCard({
     required this.title,
     required this.icon,
-    required this.color,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: const Color(0xFFF0F0F0), width: 1),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: const Color(0xFFF0F0F0),
+            width: 1,
           ),
-        ],
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: color,
-              borderRadius: BorderRadius.circular(20),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              icon,
+              size: 18,
+              color: AppColors.textSecondary,
             ),
-            child: Icon(icon, size: 28, color: AppColors.textPrimary),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            title,
-            style: AppTypography.bodyLarge.copyWith(
-              color: AppColors.textPrimary,
-              fontWeight: FontWeight.w700,
+            const SizedBox(width: 8),
+            Flexible(
+              child: Text(
+                title,
+                style: AppTypography.bodyMedium.copyWith(
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.textPrimary,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
-            textAlign: TextAlign.center,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

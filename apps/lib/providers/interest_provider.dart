@@ -8,7 +8,10 @@ final interestsProvider = FutureProvider<List<Interest>>((ref) async {
   final firestoreService = ref.watch(firestoreServiceProvider);
   final querySnapshot = await firestoreService.getInterests();
   return querySnapshot.docs
-      .map((doc) => Interest.fromJson(doc.data() as Map<String, dynamic>))
+      .map((doc) => Interest.fromJson({
+            ...doc.data() as Map<String, dynamic>,
+            'id': doc.id,
+          }))
       .toList();
 });
 
@@ -20,7 +23,10 @@ final interestsByCategoryProvider =
         category,
       );
       return querySnapshot.docs
-          .map((doc) => Interest.fromJson(doc.data() as Map<String, dynamic>))
+          .map((doc) => Interest.fromJson({
+                ...doc.data() as Map<String, dynamic>,
+                'id': doc.id,
+              }))
           .toList();
     });
 
@@ -31,7 +37,10 @@ final popularInterestsStreamProvider = StreamProvider<List<Interest>>((
   final firestoreService = ref.watch(firestoreServiceProvider);
   yield* firestoreService.popularInterestsStream().map((querySnapshot) {
     return querySnapshot.docs
-        .map((doc) => Interest.fromJson(doc.data() as Map<String, dynamic>))
+        .map((doc) => Interest.fromJson({
+              ...doc.data() as Map<String, dynamic>,
+              'id': doc.id,
+            }))
         .toList();
   });
 });

@@ -131,11 +131,11 @@ class FirestoreService {
         .snapshots();
   }
 
-  /// Stream событий пользователя (созданных им)
+  /// Stream событий пользователя (где он участник)
   Stream<QuerySnapshot> userEventsStream(String userId) {
     return _firestore
         .collection(AppConstants.eventsCollection)
-        .where('organizerId', isEqualTo: userId)
+        .where('participants', arrayContains: userId)
         .orderBy('createdAt', descending: true)
         .snapshots();
   }

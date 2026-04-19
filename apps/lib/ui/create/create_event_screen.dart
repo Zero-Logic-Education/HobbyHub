@@ -375,6 +375,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
         coverImageUrl: imageUrl,
         images: additionalImageUrls,
         categories: [_categoryLabelById(_selectedCategory)],
+        participants: [userId],
         maxParticipants: maxParticipants,
         price: parsedPrice,
         isFree: _isFree,

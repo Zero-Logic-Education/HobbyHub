@@ -7,6 +7,79 @@ import '../../services/firebase/firestore_service.dart';
 import '../../core/constants/app_constants.dart';
 import 'auth_provider.dart';
 
+String _deriveUsername({
+  required String userId,
+  String? email,
+  String? displayName,
+}) {
+  final normalizedDisplayName = displayName?.trim();
+  if (normalizedDisplayName != null && normalizedDisplayName.isNotEmpty) {
+    return normalizedDisplayName;
+  }
+
+  if (email != null && email.contains('@')) {
+    return email.split('@').first;
+  }
+
+  return 'user_${userId.substring(0, 6)}';
+}
+
+Map<String, dynamic> _buildFallbackUserData({
+  required String userId,
+  required fb.User authUser,
+}) {
+  final email = authUser.email ?? '';
+  final now = DateTime.now().toIso8601String();
+
+  return {
+    'id': userId,
+    'email': email,
+    'username': _deriveUsername(
+      userId: userId,
+      email: email,
+      displayName: authUser.displayName,
+    ),
+    'displayName': authUser.displayName,
+    'photoUrl': authUser.photoURL,
+    'bio': null,
+    'age': 12,
+    'interests': <String>[],
+    'privacyLevel': AppConstants.privacyPublic,
+    'latitude': null,
+    'longitude': null,
+    'isVerified': false,
+    'createdAt': now,
+    'updatedAt': now,
+    'friends': <String>[],
+    'eventsAttended': 0,
+    'organizerRating': 0.0,
+    'eventsCreated': 0,
+    'phoneNumber': authUser.phoneNumber,
+  };
+}
+
+Map<String, dynamic> _normalizeUserData(
+  Map<String, dynamic> source, {
+  required String userId,
+  fb.User? authUser,
+}) {
+  final normalized = Map<String, dynamic>.from(source);
+
+  final email = normalized['email'] as String? ?? authUser?.email ?? '';
+  normalized['id'] ??= userId;
+  normalized['email'] = email;
+  normalized['username'] ??= _deriveUsername(
+    userId: userId,
+    email: email,
+    displayName: authUser?.displayName,
+  );
+
+  final age = normalized['age'];
+  normalized['age'] = age is num ? age.toInt() : 0;
+
+  return normalized;
+}
+
 /// Провайдер для Firestore Service
 final firestoreServiceProvider = Provider((ref) => FirestoreService());
 
@@ -16,11 +89,23 @@ final currentUserProvider = FutureProvider<User?>((ref) async {
   if (userId == null) return null;
 
   final firestoreService = ref.watch(firestoreServiceProvider);
+  final authUser = fb.FirebaseAuth.instance.currentUser;
   final docSnapshot = await firestoreService.getUser(userId);
 
-  if (!docSnapshot.exists) return null;
+  if (!docSnapshot.exists) {
+    if (authUser == null) return null;
 
-  return User.fromJson(docSnapshot.data() as Map<String, dynamic>);
+    final fallbackData = _buildFallbackUserData(userId: userId, authUser: authUser);
+    return User.fromJson(fallbackData);
+  }
+
+  final normalizedData = _normalizeUserData(
+    docSnapshot.data() as Map<String, dynamic>,
+    userId: userId,
+    authUser: authUser,
+  );
+
+  return User.fromJson(normalizedData);
 });
 
 /// Stream провайдер для отслеживания изменений текущего пользователя в реальном времени
@@ -31,9 +116,24 @@ final currentUserStreamProvider = StreamProvider<User?>((ref) {
   }
 
   final firestoreService = ref.watch(firestoreServiceProvider);
-  return firestoreService.userStream(userId).map((docSnapshot) {
-    if (!docSnapshot.exists) return null;
-    return User.fromJson(docSnapshot.data() as Map<String, dynamic>);
+  return firestoreService.userStream(userId).asyncMap((docSnapshot) async {
+    final authUser = fb.FirebaseAuth.instance.currentUser;
+
+    if (!docSnapshot.exists) {
+      if (authUser == null) return null;
+
+      final fallbackData = _buildFallbackUserData(userId: userId, authUser: authUser);
+      await firestoreService.createUser(userId, fallbackData);
+      return User.fromJson(fallbackData);
+    }
+
+    final normalizedData = _normalizeUserData(
+      docSnapshot.data() as Map<String, dynamic>,
+      userId: userId,
+      authUser: authUser,
+    );
+
+    return User.fromJson(normalizedData);
   });
 });
 

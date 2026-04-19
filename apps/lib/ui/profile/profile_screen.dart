@@ -5,6 +5,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../core/router/app_router.dart';
 import '../../models/event.dart';
+import '../../models/community.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/user_provider.dart';
 import '../../providers/event_provider.dart';
@@ -47,8 +48,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
         data: (firebaseUser) {
           if (firebaseUser == null) return _buildNotLoggedIn();
           final firestoreUser = currentUser.value;
-          final userEvents = userEventsAsync.value ?? [];
-          final userCommunities = userCommunitiesAsync.value ?? [];
+
+          final userEvents = userEventsAsync.maybeWhen(
+            data: (events) => events,
+            orElse: () => <Event>[],
+          );
+          final userCommunities = userCommunitiesAsync.maybeWhen(
+            data: (communities) => communities,
+            orElse: () => <Community>[],
+          );
 
           String displayName =
               firestoreUser?.displayName ?? firebaseUser.displayName ?? '';

@@ -98,7 +98,11 @@ service cloud.firestore {
               request.resource.data.visibility in ['public', 'private'] &&
               request.resource.data.minAge in [12, 18, 25];
       
-      allow update: if isUser(resource.data.organizerId);
+      allow update: if isUser(resource.data.organizerId) ||
+                    (isAuthenticated() &&
+                     request.resource.data.diff(resource.data).changedKeys().hasOnly(['participants']) &&
+                     request.resource.data.participants.size() <= resource.data.participants.size() + 1 &&
+                     request.auth.uid in request.resource.data.participants);
       allow delete: if isUser(resource.data.organizerId) || isAdmin();
       
       match /participants/{userId} {
@@ -123,14 +127,18 @@ service cloud.firestore {
                        resource.data.creatorId == request.auth.uid ||
                        request.auth.uid in resource.data.members
                      ));
-      
+
       allow create: if isAuthenticated() &&
               isOldEnough(12) &&
               request.resource.data.creatorId == request.auth.uid &&
               request.resource.data.privacyLevel in ['public', 'private'] &&
               request.resource.data.minAge in [12, 18, 25];
-      
-      allow update: if isUser(resource.data.creatorId);
+
+      allow update: if isUser(resource.data.creatorId) ||
+                    (isAuthenticated() &&
+                     request.resource.data.diff(resource.data).changedKeys().hasOnly(['members']) &&
+                     (request.auth.uid in request.resource.data.members ||
+                      request.auth.uid in resource.data.members));
       allow delete: if isUser(resource.data.creatorId) || isAdmin();
       
       match /members/{userId} {

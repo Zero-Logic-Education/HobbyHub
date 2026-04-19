@@ -98,7 +98,7 @@ class AuthNotifier extends StateNotifier<AsyncValue<void>> {
         'displayName': user.displayName,
         'photoUrl': user.photoURL,
         'bio': null,
-        'age': null, // НЕ устанавливаем возраст автоматически
+        'age': 12,
         'interests': <String>[],
         'privacyLevel': 'public',
         'latitude': null,

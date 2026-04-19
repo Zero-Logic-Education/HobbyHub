@@ -184,53 +184,71 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                             child: Container(
                               padding: const EdgeInsets.all(4),
                               decoration: BoxDecoration(
-                                  color: AppColors.primary,
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: Colors.white,
-                                    width: 2,
-                                  ),
-                                ),
-                                child: const Icon(
-                                  Icons.camera_alt_rounded,
+                                color: AppColors.primary,
+                                shape: BoxShape.circle,
+                                border: Border.all(
                                   color: Colors.white,
-                                  size: 20,
+                                  width: 2,
                                 ),
                               ),
+                              child: const Icon(
+                                Icons.camera_alt_rounded,
+                                color: Colors.white,
+                                size: 20,
+                              ),
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 32),
-                      AppTextField(
-                        label: 'Имя',
-                        controller: _nameController,
-                        hint: 'Введите ваше имя',
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return 'Имя не может быть пустым';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 16),
-                      AppTextField(
-                        label: 'О себе',
-                        controller: _bioController,
-                        hint: 'Расскажите немного о себе...',
-                        maxLines: 4,
-                      ),
-                      const SizedBox(height: 48),
-                      PrimaryButton(
-                        label: 'Сохранить',
-                        isLoading: _isLoading,
-                        onPressed: _saveProfile,
-                      ),
-                    ],
-                  ),
+                    ),
+                    const SizedBox(height: 32),
+                    AppTextField(
+                      label: 'Имя',
+                      controller: _nameController,
+                      hint: 'Введите ваше имя',
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Имя не может быть пустым';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    AppTextField(
+                      label: 'О себе',
+                      controller: _bioController,
+                      hint: 'Расскажите немного о себе...',
+                      maxLines: 4,
+                    ),
+                    const SizedBox(height: 48),
+                    PrimaryButton(
+                      label: 'Сохранить',
+                      isLoading: _isLoading,
+                      onPressed: _saveProfile,
+                    ),
+                  ],
                 ),
               ),
             ),
+          );
+        },
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stack) => Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.error_outline, size: 48, color: AppColors.error),
+              const SizedBox(height: 16),
+              Text('Ошибка загрузки профиля: $error'),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () => context.pop(),
+                child: const Text('Назад'),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

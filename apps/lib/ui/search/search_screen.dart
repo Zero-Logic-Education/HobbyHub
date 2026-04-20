@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import '../../core/router/app_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../core/utils/category_icons.dart';
@@ -216,8 +218,14 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                   title: interest.name,
                   icon: _getIconForCategory(interest.category),
                   onTap: () {
-                    ref.read(eventFilterProvider.notifier).setCategoryFilter([interest.name]);
-                    Navigator.pop(context);
+                    ref.read(eventFilterProvider.notifier).setCategoryFilter([
+                      interest.name,
+                    ]);
+                    if (context.canPop()) {
+                      context.pop();
+                    } else {
+                      context.go(AppRoutes.home);
+                    }
                   },
                 );
               }, childCount: interests.length),
@@ -277,11 +285,7 @@ class _CategoryCard extends StatelessWidget {
   final IconData icon;
   final VoidCallback? onTap;
 
-  const _CategoryCard({
-    required this.title,
-    required this.icon,
-    this.onTap,
-  });
+  const _CategoryCard({required this.title, required this.icon, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -291,19 +295,12 @@ class _CategoryCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: const Color(0xFFF0F0F0),
-            width: 1,
-          ),
+          border: Border.all(color: const Color(0xFFF0F0F0), width: 1),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              icon,
-              size: 18,
-              color: AppColors.textSecondary,
-            ),
+            Icon(icon, size: 18, color: AppColors.textSecondary),
             const SizedBox(width: 8),
             Flexible(
               child: Text(

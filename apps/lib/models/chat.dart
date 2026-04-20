@@ -7,6 +7,11 @@ part 'chat.g.dart';
 class Chat {
   final String id;
   final List<String> participants;
+  @JsonKey(defaultValue: 'direct')
+  final String type;
+  final String? communityId;
+  final String? title;
+  final String? avatarUrl;
   final String? lastMessage;
   @JsonKey(fromJson: _timestampFromJsonNullable, toJson: _timestampToJson)
   final DateTime? lastMessageAt;
@@ -15,6 +20,10 @@ class Chat {
   Chat({
     required this.id,
     required this.participants,
+    this.type = 'direct',
+    this.communityId,
+    this.title,
+    this.avatarUrl,
     this.lastMessage,
     this.lastMessageAt,
     this.lastMessageSenderId,

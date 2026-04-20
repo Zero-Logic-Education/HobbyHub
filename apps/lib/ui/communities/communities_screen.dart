@@ -177,10 +177,23 @@ class _CommunitiesScreenState extends ConsumerState<CommunitiesScreen>
 
     return allCommunitiesAsync.when(
       data: (communities) {
+        const defaultCategoryKeys = <String>{
+          'sports',
+          'tech',
+          'arts',
+          'music',
+          'health',
+          'gaming',
+          'cooking',
+          'travel',
+          'other',
+        };
+
         final categoryKeys = <String>{
+          ...defaultCategoryKeys,
           for (final community in communities)
             ...community.categories.map(normalizeCategoryKey),
-        }..remove('other');
+        };
         final sortedCategoryKeys = categoryKeys.toList()
           ..sort(
             (a, b) => getCategoryDisplayLabelByKey(
@@ -288,7 +301,8 @@ class _CommunitiesScreenState extends ConsumerState<CommunitiesScreen>
             else
               ...filtered.map((item) {
                 final isMember =
-                    currentUserId != null && item.members.contains(currentUserId);
+                    currentUserId != null &&
+                    item.members.contains(currentUserId);
                 final isPending = _membershipPendingIds.contains(item.id);
 
                 return _CommunityCard(
@@ -346,7 +360,9 @@ class _CommunitiesScreenState extends ConsumerState<CommunitiesScreen>
     if (userId == null) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Войдите в аккаунт, чтобы вступать в группы.')),
+        const SnackBar(
+          content: Text('Войдите в аккаунт, чтобы вступать в группы.'),
+        ),
       );
       return;
     }
@@ -369,7 +385,9 @@ class _CommunitiesScreenState extends ConsumerState<CommunitiesScreen>
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Не удалось обновить участие в сообществе. Попробуйте позже.'),
+          content: Text(
+            'Не удалось обновить участие в сообществе. Попробуйте позже.',
+          ),
         ),
       );
     } finally {
@@ -524,10 +542,14 @@ class _CommunityCard extends StatelessWidget {
   }
 
   Widget _buildFallbackCover(Community item) {
-    final category = item.categories.isNotEmpty ? item.categories.first : 'Разное';
+    final category = item.categories.isNotEmpty
+        ? item.categories.first
+        : 'Разное';
     final color = getCategoryColor(category);
     final trimmedName = item.name.trim();
-    final firstLetter = trimmedName.isEmpty ? 'C' : trimmedName[0].toUpperCase();
+    final firstLetter = trimmedName.isEmpty
+        ? 'C'
+        : trimmedName[0].toUpperCase();
 
     return Container(
       height: 160,

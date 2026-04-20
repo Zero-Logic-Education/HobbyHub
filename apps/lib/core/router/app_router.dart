@@ -216,7 +216,17 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: AppRoutes.createEvent,
                 name: 'create-event',
-                builder: (context, state) => const CreateEventScreen(),
+                builder: (context, state) {
+                  final extra = state.extra;
+                  final payload = extra is Map<String, dynamic>
+                      ? extra
+                      : const <String, dynamic>{};
+
+                  return CreateEventScreen(
+                    initialCommunityId: payload['communityId'] as String?,
+                    initialCategoryKey: payload['communityCategory'] as String?,
+                  );
+                },
               ),
             ],
           ),

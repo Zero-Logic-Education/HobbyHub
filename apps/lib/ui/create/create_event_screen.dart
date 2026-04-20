@@ -20,7 +20,14 @@ import '../shared/app_text_field.dart';
 import '../../services/firebase/storage_service.dart';
 
 class CreateEventScreen extends ConsumerStatefulWidget {
-  const CreateEventScreen({super.key});
+  final String? initialCommunityId;
+  final String? initialCategoryKey;
+
+  const CreateEventScreen({
+    super.key,
+    this.initialCommunityId,
+    this.initialCategoryKey,
+  });
 
   @override
   ConsumerState<CreateEventScreen> createState() => _CreateEventScreenState();
@@ -47,6 +54,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   final Uuid _uuid = const Uuid();
 
   DateTime? _startDateTime;
+  String? _communityId;
   double? _latitude;
   double? _longitude;
   File? _coverImageFile;
@@ -63,11 +71,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   ];
 
   final List<Map<String, dynamic>> _categories = [
-    {
-      'id': 'sports',
-      'label': 'Спорт',
-      'icon': Icons.directions_run_rounded,
-    },
+    {'id': 'sports', 'label': 'Спорт', 'icon': Icons.directions_run_rounded},
     {'id': 'tech', 'label': 'Технологии', 'icon': Icons.computer_rounded},
     {'id': 'art', 'label': 'Творчество', 'icon': Icons.palette_outlined},
     {'id': 'music', 'label': 'Музыка', 'icon': Icons.music_note_rounded},
@@ -80,6 +84,15 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     {'id': 'photo', 'label': 'Фотография', 'icon': Icons.camera_alt_rounded},
     {'id': 'books', 'label': 'Книги', 'icon': Icons.menu_book_rounded},
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _communityId = widget.initialCommunityId;
+    _selectedCategory = _mapCommunityCategoryToEventCategory(
+      widget.initialCategoryKey,
+    );
+  }
 
   @override
   void dispose() {
@@ -110,6 +123,47 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
       orElse: () => {'label': id},
     );
     return category['label'] as String;
+  }
+
+  String? _mapCommunityCategoryToEventCategory(String? category) {
+    if (category == null) return null;
+
+    switch (category.trim().toLowerCase()) {
+      case 'sports':
+      case 'спорт':
+        return 'sports';
+      case 'tech':
+      case 'технологии':
+      case 'тех':
+        return 'tech';
+      case 'arts':
+      case 'art':
+      case 'творчество':
+      case 'искусство':
+        return 'art';
+      case 'music':
+      case 'музыка':
+        return 'music';
+      case 'health':
+      case 'wellness':
+      case 'здоровье':
+        return 'wellness';
+      case 'cooking':
+      case 'food':
+      case 'кулинария':
+      case 'еда':
+        return 'food';
+      case 'photo':
+      case 'photography':
+      case 'фотография':
+        return 'photo';
+      case 'books':
+      case 'reading':
+      case 'книги':
+        return 'books';
+      default:
+        return null;
+    }
   }
 
   Future<void> _pickDateTime() async {
@@ -384,6 +438,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
         requiresApproval: _requiresApproval,
         eventType: _mapEventType(_selectedType),
         createdAt: DateTime.now(),
+        communityId: _communityId,
         status: 'published',
       );
 
@@ -391,7 +446,11 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
 
       if (!mounted) return;
       _showMessage('Событие создано');
-      context.go(AppRoutes.home);
+      if (_communityId != null && _communityId!.isNotEmpty) {
+        context.go('/communities/${_communityId!}');
+      } else {
+        context.go(AppRoutes.home);
+      }
     } catch (e) {
       String errorMessage = e.toString();
       if (e is Exception) {

@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../core/router/app_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_typography.dart';
+import '../../../models/community.dart';
 import '../../../providers/community_provider.dart';
 import '../../../providers/event_provider.dart';
 import '../../../providers/user_provider.dart';
 import '../../../providers/auth_provider.dart';
+import '../../../services/chat_service.dart';
 import '../../shared/app_button.dart';
 import '../../shared/event_card.dart';
 
@@ -14,6 +17,89 @@ class CommunityDetailScreen extends ConsumerWidget {
   final String communityId;
 
   const CommunityDetailScreen({super.key, required this.communityId});
+
+  Future<void> _toggleMembership({
+    required BuildContext context,
+    required WidgetRef ref,
+    required Community community,
+    required String currentUserId,
+    required bool isMember,
+  }) async {
+    final firestoreService = ref.read(firestoreServiceProvider);
+    final chatService = ref.read(chatServiceProvider);
+    late final List<String> updatedMembers;
+
+    try {
+      if (isMember) {
+        await firestoreService.leaveCommunity(community.id, currentUserId);
+        updatedMembers = community.members
+            .where((id) => id != currentUserId)
+            .toList();
+      } else {
+        await firestoreService.joinCommunity(community.id, currentUserId);
+        updatedMembers = <String>{...community.members, currentUserId}.toList();
+      }
+    } catch (_) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Не удалось обновить участие в сообществе.'),
+        ),
+      );
+      return;
+    }
+
+    try {
+      await chatService.syncCommunityChatParticipants(
+        community.id,
+        updatedMembers,
+      );
+    } catch (_) {
+      // Не блокируем вступление/выход, если синхронизация участников чата временно недоступна.
+    }
+  }
+
+  Future<void> _openCommunityChat({
+    required BuildContext context,
+    required WidgetRef ref,
+    required Community community,
+    required String? currentUserId,
+  }) async {
+    if (currentUserId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Войдите в аккаунт, чтобы открыть чат.')),
+      );
+      return;
+    }
+
+    if (!community.members.contains(currentUserId)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Сначала вступите в сообщество, чтобы писать в чат.'),
+        ),
+      );
+      return;
+    }
+
+    try {
+      final chatId = await ref
+          .read(chatServiceProvider)
+          .getOrCreateCommunityChat(
+            communityId: community.id,
+            communityName: community.name,
+            communityCoverUrl: community.coverImageUrl,
+            memberIds: community.members,
+          );
+
+      if (!context.mounted) return;
+      context.push('${AppRoutes.chats}/$chatId');
+    } catch (_) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Не удалось открыть чат сообщества.')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -63,11 +149,7 @@ class CommunityDetailScreen extends ConsumerWidget {
                 ),
                 actions: [
                   if (isModerator)
-                    IconButton(
-                      icon: const Icon(Icons.edit),
-                      onPressed: () {
-                      },
-                    ),
+                    IconButton(icon: const Icon(Icons.edit), onPressed: () {}),
                 ],
               ),
               SliverToBoxAdapter(
@@ -90,26 +172,33 @@ class CommunityDetailScreen extends ConsumerWidget {
                               width: 120,
                               child: PrimaryButton(
                                 onPressed: () async {
-                                  final firestoreService = ref.read(
-                                    firestoreServiceProvider,
+                                  await _toggleMembership(
+                                    context: context,
+                                    ref: ref,
+                                    community: community,
+                                    currentUserId: currentUserId,
+                                    isMember: isMember,
                                   );
-                                  if (isMember) {
-                                    await firestoreService.leaveCommunity(
-                                      communityId,
-                                      currentUserId,
-                                    );
-                                  } else {
-                                    await firestoreService.joinCommunity(
-                                      communityId,
-                                      currentUserId,
-                                    );
-                                  }
                                 },
                                 label: isMember ? 'Покинуть' : 'Вступить',
                               ),
                             ),
                         ],
                       ),
+                      if (isMember) ...[
+                        const SizedBox(height: 12),
+                        PrimaryButton(
+                          onPressed: () {
+                            _openCommunityChat(
+                              context: context,
+                              ref: ref,
+                              community: community,
+                              currentUserId: currentUserId,
+                            );
+                          },
+                          label: 'Открыть чат группы',
+                        ),
+                      ],
                       const SizedBox(height: 16),
                       Text('О сообществе', style: AppTypography.headingSmall),
                       const SizedBox(height: 8),
@@ -128,7 +217,16 @@ class CommunityDetailScreen extends ConsumerWidget {
                           if (isModerator)
                             TextButton(
                               onPressed: () {
-                                context.push('/create');
+                                context.push(
+                                  AppRoutes.createEvent,
+                                  extra: {
+                                    'communityId': community.id,
+                                    'communityCategory':
+                                        community.categories.isNotEmpty
+                                        ? community.categories.first
+                                        : null,
+                                  },
+                                );
                               },
                               child: const Text('Создать'),
                             ),

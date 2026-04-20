@@ -164,26 +164,32 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFFF8F9FA),
       appBar: AppBar(
-        title: const Text('Настройки', style: AppTypography.headingMedium),
+        title: const Text(
+          'Настройки',
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         backgroundColor: Colors.white,
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.black),
       ),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 28),
+        padding: const EdgeInsets.fromLTRB(16, 24, 16, 28),
         children: [
-          _buildSectionHeader('НАСТРОЙКИ'),
           _buildSettingsTile(
             icon: Icons.notifications_outlined,
             iconBg: const Color(0xFFFFF5E0),
-            iconColor: const Color(0xFFF2994A),
+            iconColor: const Color(0xFFFF6B35),
             title: 'Уведомления',
             subtitle: 'Push и email-рассылки',
             onTap: _openNotificationPreferences,
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 12),
           _buildSettingsTile(
             icon: Icons.lock_outline_rounded,
             iconBg: const Color(0xFFE8F4FD),
@@ -192,7 +198,28 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             subtitle: 'Защита аккаунта',
             onTap: _openPrivacyPreferences,
           ),
-          const SizedBox(height: 28),
+          const SizedBox(height: 12),
+          _buildSettingsTile(
+            icon: Icons.language_outlined,
+            iconBg: const Color(0xFFE8F8EF),
+            iconColor: const Color(0xFF27AE60),
+            title: 'Язык',
+            subtitle: 'Русский',
+            onTap: () {},
+          ),
+          const SizedBox(height: 32),
+          const Padding(
+            padding: EdgeInsets.only(left: 4, bottom: 12),
+            child: Text(
+              'ДОПОЛНИТЕЛЬНО',
+              style: TextStyle(
+                fontSize: 12,
+                color: Colors.grey,
+                letterSpacing: 1.2,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
           _buildSettingsTile(
             icon: Icons.star_outline_rounded,
             iconBg: const Color(0xFFFFFBE6),
@@ -201,7 +228,25 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             subtitle: 'Поделитесь мнением',
             onTap: _rateApp,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
+          _buildSettingsTile(
+            icon: Icons.help_outline_rounded,
+            iconBg: const Color(0xFFF3E8FF),
+            iconColor: const Color(0xFF9B51E0),
+            title: 'Помощь и поддержка',
+            subtitle: 'FAQ и контакты',
+            onTap: () {},
+          ),
+          const SizedBox(height: 12),
+          _buildSettingsTile(
+            icon: Icons.info_outline_rounded,
+            iconBg: const Color(0xFFE8F4FD),
+            iconColor: const Color(0xFF2D9CDB),
+            title: 'О приложении',
+            subtitle: 'Версия 1.0.0',
+            onTap: () {},
+          ),
+          const SizedBox(height: 32),
           _buildSettingsTile(
             icon: Icons.logout_rounded,
             iconBg: const Color(0xFFFFECE8),
@@ -216,16 +261,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     );
   }
 
-  Widget _buildSectionHeader(String title) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16, top: 8),
-      child: Text(
-        title,
-        style: AppTypography.headingSmall.copyWith(color: AppColors.primary),
-      ),
-    );
-  }
-
   Widget _buildSettingsTile({
     required IconData icon,
     required Color iconBg,
@@ -235,63 +270,67 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     required VoidCallback onTap,
     Color? titleColor,
   }) {
-    return Material(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(16),
-      child: InkWell(
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.04),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
-              ),
-            ],
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
           ),
-          child: Row(
-            children: [
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: iconBg,
-                  borderRadius: BorderRadius.circular(12),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16),
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            child: Row(
+              children: [
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: iconBg,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(icon, color: iconColor, size: 20),
                 ),
-                child: Icon(icon, color: iconColor, size: 20),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: AppTypography.bodyMedium.copyWith(
-                        fontWeight: FontWeight.w700,
-                        color: titleColor ?? AppColors.textPrimary,
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: titleColor ?? Colors.black87,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      subtitle,
-                      style: AppTypography.bodySmall.copyWith(
-                        color: AppColors.textTertiary,
+                      const SizedBox(height: 4),
+                      Text(
+                        subtitle,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          color: Colors.grey,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              const Icon(
-                Icons.chevron_right_rounded,
-                color: AppColors.textTertiary,
-                size: 20,
-              ),
-            ],
+                Icon(
+                  Icons.chevron_right_rounded,
+                  color: Colors.grey[400],
+                  size: 22,
+                ),
+              ],
+            ),
           ),
         ),
       ),

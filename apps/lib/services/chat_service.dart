@@ -8,6 +8,28 @@ final chatServiceProvider = Provider((ref) => ChatService());
 class ChatService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  List<String> _normalizeParticipants(List<String> participants) {
+    return participants
+        .map((id) => id.trim())
+        .where((id) => id.isNotEmpty)
+        .toSet()
+        .toList();
+  }
+
+  bool _sameParticipants(List<String> first, List<String> second) {
+    if (first.length != second.length) {
+      return false;
+    }
+
+    for (final id in first) {
+      if (!second.contains(id)) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
   Stream<List<Chat>> getChatsStream(String userId) {
     return _firestore
         .collection(AppConstants.chatsCollection)
@@ -70,26 +92,111 @@ class ChatService {
   }
 
   Future<String> createChat(List<String> participants) async {
+    final normalizedParticipants = _normalizeParticipants(participants);
+    if (normalizedParticipants.length < 2) {
+      throw Exception('Для личного чата требуется минимум два участника.');
+    }
+
     // Check if chat already exists
     final existingChatQuery = await _firestore
         .collection(AppConstants.chatsCollection)
-        .where('participants', arrayContains: participants[0])
+        .where('participants', arrayContains: normalizedParticipants[0])
         .get();
 
     for (var doc in existingChatQuery.docs) {
-      List<dynamic> existingParticipants = doc.data()['participants'] ?? [];
-      if (existingParticipants.length == participants.length &&
-          participants.every((p) => existingParticipants.contains(p))) {
+      final existingParticipants = doc.data()['participants'] ?? [];
+      if (existingParticipants.length == normalizedParticipants.length &&
+          normalizedParticipants.every(
+            (p) => existingParticipants.contains(p),
+          )) {
         return doc.id;
       }
     }
 
     final newRef = _firestore.collection(AppConstants.chatsCollection).doc();
-    final newChat = Chat(id: newRef.id, participants: participants);
+    final newChat = Chat(
+      id: newRef.id,
+      participants: normalizedParticipants,
+      type: 'direct',
+    );
     await newRef.set(newChat.toJson());
     return newRef.id;
   }
-  
+
+  Future<String> getOrCreateCommunityChat({
+    required String communityId,
+    required String communityName,
+    required List<String> memberIds,
+    String? communityCoverUrl,
+  }) async {
+    final participants = _normalizeParticipants(memberIds);
+    if (participants.isEmpty) {
+      throw Exception('Для группового чата нет участников.');
+    }
+
+    final existingChatQuery = await _firestore
+        .collection(AppConstants.chatsCollection)
+        .where('type', isEqualTo: 'community')
+        .where('communityId', isEqualTo: communityId)
+        .limit(1)
+        .get();
+
+    if (existingChatQuery.docs.isNotEmpty) {
+      final existingDoc = existingChatQuery.docs.first;
+      final existingData = existingDoc.data();
+      final existingParticipants = List<String>.from(
+        existingData['participants'] ?? const <String>[],
+      );
+
+      final updates = <String, dynamic>{
+        'title': communityName,
+        'avatarUrl': communityCoverUrl,
+      };
+
+      if (!_sameParticipants(existingParticipants, participants)) {
+        updates['participants'] = participants;
+      }
+
+      await existingDoc.reference.set(updates, SetOptions(merge: true));
+      return existingDoc.id;
+    }
+
+    final newRef = _firestore.collection(AppConstants.chatsCollection).doc();
+    final newChat = Chat(
+      id: newRef.id,
+      participants: participants,
+      type: 'community',
+      communityId: communityId,
+      title: communityName,
+      avatarUrl: communityCoverUrl,
+    );
+
+    await newRef.set(newChat.toJson());
+    return newRef.id;
+  }
+
+  Future<void> syncCommunityChatParticipants(
+    String communityId,
+    List<String> memberIds,
+  ) async {
+    final participants = _normalizeParticipants(memberIds);
+
+    final existingChatQuery = await _firestore
+        .collection(AppConstants.chatsCollection)
+        .where('type', isEqualTo: 'community')
+        .where('communityId', isEqualTo: communityId)
+        .limit(1)
+        .get();
+
+    if (existingChatQuery.docs.isEmpty) {
+      return;
+    }
+
+    await existingChatQuery.docs.first.reference.update({
+      'participants': participants,
+    });
+  }
+
   Future<void> markMessagesAsRead(String chatId, String userId) async {
     final unreadSnapshot = await _firestore
         .collection(AppConstants.chatsCollection)

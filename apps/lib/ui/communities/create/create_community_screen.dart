@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/category_colors.dart';
 import '../../shared/app_button.dart';
 import '../../../providers/user_provider.dart';
 import '../../../providers/auth_provider.dart';
@@ -18,12 +19,25 @@ class CreateCommunityScreen extends ConsumerStatefulWidget {
 }
 
 class _CreateCommunityScreenState extends ConsumerState<CreateCommunityScreen> {
+  static const List<String> _availableCategoryKeys = <String>[
+    'sports',
+    'tech',
+    'arts',
+    'music',
+    'health',
+    'gaming',
+    'cooking',
+    'travel',
+    'other',
+  ];
+
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _descriptionController = TextEditingController();
 
   File? _coverImage;
   bool _isLoading = false;
+  String? _selectedCategoryKey;
   String _privacyLevel = 'public';
   bool _requiresApproval = false;
 
@@ -66,7 +80,9 @@ class _CreateCommunityScreenState extends ConsumerState<CreateCommunityScreen> {
         creatorId: userId,
         members: [userId],
         moderators: [userId],
-        categories: [],
+        categories: _selectedCategoryKey == null
+            ? const []
+            : <String>[_selectedCategoryKey!],
         privacyLevel: _privacyLevel,
         requiresApproval: _requiresApproval,
         createdAt: DateTime.now(),
@@ -167,6 +183,33 @@ class _CreateCommunityScreenState extends ConsumerState<CreateCommunityScreen> {
                       maxLines: 3,
                       validator: (v) =>
                           (v == null || v.isEmpty) ? 'Введите описание' : null,
+                    ),
+                    const SizedBox(height: 16),
+                    DropdownButtonFormField<String>(
+                      initialValue: _selectedCategoryKey,
+                      decoration: const InputDecoration(
+                        labelText: 'Категория',
+                        border: OutlineInputBorder(),
+                      ),
+                      items: _availableCategoryKeys
+                          .map(
+                            (key) => DropdownMenuItem<String>(
+                              value: key,
+                              child: Text(getCategoryDisplayLabelByKey(key)),
+                            ),
+                          )
+                          .toList(),
+                      onChanged: (value) {
+                        setState(() {
+                          _selectedCategoryKey = value;
+                        });
+                      },
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Выберите категорию';
+                        }
+                        return null;
+                      },
                     ),
                     const SizedBox(height: 16),
                     DropdownButtonFormField<String>(

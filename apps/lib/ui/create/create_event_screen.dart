@@ -825,7 +825,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
           if (!_isFree) ...[
             const SizedBox(height: 12),
             AppTextField(
-              label: 'Цена, ₽ *',
+              label: 'Цена, ₸ *',
               controller: _priceController,
               hint: 'Например, 500',
               keyboardType: const TextInputType.numberWithOptions(

@@ -52,28 +52,27 @@ class EventCard extends ConsumerWidget {
                   child: Container(
                     height: 180,
                     width: double.infinity,
-                    color: AppColors.lightPink,
+                    decoration: imageUrl != null
+                        ? null
+                        : BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [
+                                categoryColor.withValues(alpha: 0.3),
+                                categoryColor.withValues(alpha: 0.1),
+                              ],
+                            ),
+                          ),
                     child: imageUrl != null
                         ? Image.network(
                             imageUrl!,
                             fit: BoxFit.cover,
                             errorBuilder: (context, error, stackTrace) {
-                              return Center(
-                                child: Icon(
-                                  Icons.image_not_supported,
-                                  color: AppColors.textHint,
-                                  size: 48,
-                                ),
-                              );
+                              return _buildPlaceholder(categoryColor);
                             },
                           )
-                        : Center(
-                            child: Icon(
-                              Icons.event,
-                              color: AppColors.textHint,
-                              size: 48,
-                            ),
-                          ),
+                        : _buildPlaceholder(categoryColor),
                   ),
                 ),
                 // Favorite button
@@ -205,7 +204,7 @@ class EventCard extends ConsumerWidget {
                           ),
                         ),
                         child: Text(
-                          event.price > 0 ? '${event.price}₽' : 'Бесплатно',
+                          event.price > 0 ? '${event.price}₸' : 'Бесплатно',
                           style: AppTypography.labelSmall.copyWith(
                             color: event.price > 0
                                 ? AppColors.primary
@@ -291,6 +290,39 @@ class EventCard extends ConsumerWidget {
 
   String _formatTime(DateTime dateTime) {
     return DateFormat('HH:mm').format(dateTime);
+  }
+
+  Widget _buildPlaceholder(Color categoryColor) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            padding: EdgeInsets.all(AppSpacing.lg),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.9),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.celebration_outlined,
+              color: categoryColor,
+              size: 48,
+            ),
+          ),
+          SizedBox(height: AppSpacing.md),
+          Text(
+            event.title,
+            style: AppTypography.labelLarge.copyWith(
+              color: categoryColor,
+              fontWeight: FontWeight.w600,
+            ),
+            maxLines: 2,
+            textAlign: TextAlign.center,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
+      ),
+    );
   }
 
   Color _getStatusColor(String status) {
@@ -416,7 +448,20 @@ class CompactEventCard extends StatelessWidget {
           children: [
             // Background image
             Container(
-              color: AppColors.lightPink,
+              decoration: imageUrl != null
+                  ? null
+                  : BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          getCategoryColor(event.categories.isNotEmpty ? event.categories.first : 'Разное')
+                              .withValues(alpha: 0.3),
+                          getCategoryColor(event.categories.isNotEmpty ? event.categories.first : 'Разное')
+                              .withValues(alpha: 0.1),
+                        ],
+                      ),
+                    ),
               child: imageUrl != null
                   ? Image.network(
                       imageUrl!,
@@ -424,8 +469,8 @@ class CompactEventCard extends StatelessWidget {
                       errorBuilder: (context, error, stackTrace) {
                         return Center(
                           child: Icon(
-                            Icons.event,
-                            color: AppColors.textHint,
+                            Icons.celebration_outlined,
+                            color: getCategoryColor(event.categories.isNotEmpty ? event.categories.first : 'Разное'),
                             size: 32,
                           ),
                         );
@@ -433,8 +478,8 @@ class CompactEventCard extends StatelessWidget {
                     )
                   : Center(
                       child: Icon(
-                        Icons.event,
-                        color: AppColors.textHint,
+                        Icons.celebration_outlined,
+                        color: getCategoryColor(event.categories.isNotEmpty ? event.categories.first : 'Разное'),
                         size: 32,
                       ),
                     ),

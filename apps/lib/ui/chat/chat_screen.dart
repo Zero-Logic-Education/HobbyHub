@@ -108,7 +108,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         : otherUserProfileAsync?.valueOrNull?.photoUrl;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFFF8F9FA),
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -118,43 +118,46 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         ),
         title: Row(
           children: [
-            CircleAvatar(
-              radius: 20,
-              backgroundImage: avatarUrl != null && avatarUrl.isNotEmpty
-                  ? NetworkImage(avatarUrl)
-                  : null,
-              backgroundColor: Colors.grey[300],
-              child: avatarUrl == null || avatarUrl.isEmpty
-                  ? Text(
-                      appBarTitle.isNotEmpty ? appBarTitle[0].toUpperCase() : '?',
-                      style: const TextStyle(color: Colors.white, fontSize: 18),
-                    )
-                  : null,
-            ),
+            avatarUrl != null && avatarUrl.isNotEmpty
+                ? CircleAvatar(
+                    radius: 20,
+                    backgroundImage: NetworkImage(avatarUrl),
+                  )
+                : Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: isCommunityChat
+                            ? [
+                                const Color(0xFFFF6B35).withValues(alpha: 0.8),
+                                const Color(0xFFFF8C42).withValues(alpha: 0.6),
+                              ]
+                            : [
+                                Colors.grey[400]!,
+                                Colors.grey[300]!,
+                              ],
+                      ),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      isCommunityChat ? Icons.groups_rounded : Icons.person,
+                      color: Colors.white,
+                      size: 20,
+                    ),
+                  ),
             const SizedBox(width: 12),
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    appBarTitle,
-                    style: const TextStyle(
-                      color: Colors.black,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const Text(
-                    'онлайн',
-                    style: TextStyle(
-                      color: Colors.green,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                ],
+              child: Text(
+                appBarTitle,
+                style: const TextStyle(
+                  color: Colors.black,
+                  fontSize: 17,
+                  fontWeight: FontWeight.w700,
+                ),
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           ],
@@ -173,60 +176,113 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
               data: (messages) {
                 _markIncomingAsRead(messages, currentUserId);
                 if (messages.isEmpty) {
-                  return const Center(
-                    child: Text(
-                      'Нет сообщений',
-                      style: TextStyle(color: Colors.grey, fontSize: 16),
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.chat_bubble_outline,
+                          size: 64,
+                          color: Colors.grey[300],
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          'Нет сообщений',
+                          style: TextStyle(
+                            color: Colors.grey[500],
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
                     ),
                   );
                 }
                 return ListView.builder(
                   reverse: true,
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                   itemCount: messages.length,
                   itemBuilder: (context, index) {
                     final message = messages[index];
                     final isMe = message.senderId == currentUserId;
 
-                    return Align(
-                      alignment: isMe
-                          ? Alignment.centerRight
-                          : Alignment.centerLeft,
-                      child: Container(
-                        margin: const EdgeInsets.only(bottom: 12),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 12,
-                        ),
-                        constraints: BoxConstraints(
-                          maxWidth: MediaQuery.of(context).size.width * 0.7,
-                        ),
-                        decoration: BoxDecoration(
-                          gradient: isMe
-                              ? const LinearGradient(
-                                  colors: [Color(0xFFFF6B35), Color(0xFFFF8C42)],
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                )
-                              : null,
-                          color: isMe ? null : const Color(0xFFF5F5F5),
-                          borderRadius: BorderRadius.circular(20).copyWith(
-                            bottomRight: isMe
-                                ? const Radius.circular(4)
-                                : const Radius.circular(20),
-                            bottomLeft: !isMe
-                                ? const Radius.circular(4)
-                                : const Radius.circular(20),
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: Row(
+                        mainAxisAlignment: isMe
+                            ? MainAxisAlignment.end
+                            : MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          if (!isMe) ...[
+                            CircleAvatar(
+                              radius: 16,
+                              backgroundColor: Colors.grey[300],
+                              child: Icon(
+                                Icons.person,
+                                size: 18,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                          ],
+                          Flexible(
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 12,
+                              ),
+                              decoration: BoxDecoration(
+                                gradient: isMe
+                                    ? const LinearGradient(
+                                        colors: [
+                                          Color(0xFFFF6B35),
+                                          Color(0xFFFF8C42),
+                                        ],
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
+                                      )
+                                    : null,
+                                color: isMe ? null : Colors.white,
+                                borderRadius: BorderRadius.circular(18).copyWith(
+                                  bottomRight: isMe
+                                      ? const Radius.circular(4)
+                                      : const Radius.circular(18),
+                                  bottomLeft: !isMe
+                                      ? const Radius.circular(4)
+                                      : const Radius.circular(18),
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withValues(alpha: 0.05),
+                                    blurRadius: 5,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],
+                              ),
+                              child: Text(
+                                message.text,
+                                style: TextStyle(
+                                  color: isMe ? Colors.white : Colors.black87,
+                                  fontSize: 15,
+                                  height: 1.4,
+                                ),
+                              ),
+                            ),
                           ),
-                        ),
-                        child: Text(
-                          message.text,
-                          style: TextStyle(
-                            color: isMe ? Colors.white : Colors.black87,
-                            fontSize: 15,
-                            height: 1.4,
-                          ),
-                        ),
+                          if (isMe) ...[
+                            const SizedBox(width: 8),
+                            CircleAvatar(
+                              radius: 16,
+                              backgroundColor: const Color(0xFFFF6B35),
+                              child: const Icon(
+                                Icons.person,
+                                size: 18,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ],
                       ),
                     );
                   },
@@ -256,36 +312,41 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             child: SafeArea(
               child: Row(
                 children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFF5F5F5),
-                      borderRadius: BorderRadius.circular(24),
-                    ),
-                    child: IconButton(
-                      icon: const Icon(Icons.add, color: Color(0xFFFF6B35)),
-                      onPressed: () {},
-                    ),
-                  ),
-                  const SizedBox(width: 8),
                   Expanded(
                     child: Container(
                       decoration: BoxDecoration(
                         color: const Color(0xFFF5F5F5),
                         borderRadius: BorderRadius.circular(24),
                       ),
-                      child: TextField(
-                        controller: _messageController,
-                        decoration: const InputDecoration(
-                          hintText: 'Сообщение',
-                          hintStyle: TextStyle(color: Colors.grey),
-                          border: InputBorder.none,
-                          contentPadding: EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 12,
+                      child: Row(
+                        children: [
+                          IconButton(
+                            icon: const Icon(
+                              Icons.add_circle_outline,
+                              color: Color(0xFFFF6B35),
+                            ),
+                            onPressed: () {},
                           ),
-                        ),
-                        onSubmitted: (_) => _sendMessage(),
-                        maxLines: null,
+                          Expanded(
+                            child: TextField(
+                              controller: _messageController,
+                              decoration: const InputDecoration(
+                                hintText: 'Сообщение...',
+                                hintStyle: TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 15,
+                                ),
+                                border: InputBorder.none,
+                                contentPadding: EdgeInsets.symmetric(
+                                  vertical: 12,
+                                ),
+                              ),
+                              onSubmitted: (_) => _sendMessage(),
+                              maxLines: null,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                        ],
                       ),
                     ),
                   ),

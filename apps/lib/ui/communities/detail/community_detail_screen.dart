@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/router/app_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_typography.dart';
+import '../../../core/utils/category_colors.dart';
 import '../../../models/community.dart';
 import '../../../providers/community_provider.dart';
 import '../../../providers/event_provider.dart';
@@ -107,7 +108,7 @@ class CommunityDetailScreen extends ConsumerWidget {
     final currentUserId = ref.watch(currentUserIdProvider);
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Colors.white,
       body: communityAsync.when(
         data: (community) {
           if (community == null) {
@@ -122,100 +123,201 @@ class CommunityDetailScreen extends ConsumerWidget {
           final isModerator =
               currentUserId != null &&
               community.moderators.contains(currentUserId);
+          final category = community.categories.isNotEmpty
+              ? community.categories.first
+              : 'Разное';
+          final categoryColor = getCategoryColor(category);
 
           return CustomScrollView(
             slivers: [
               SliverAppBar(
-                expandedHeight: 200,
+                expandedHeight: 280,
                 pinned: true,
-                flexibleSpace: FlexibleSpaceBar(
-                  title: Text(
-                    community.name,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
+                backgroundColor: Colors.white,
+                elevation: 0,
+                leading: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: CircleAvatar(
+                    backgroundColor: Colors.white,
+                    child: IconButton(
+                      icon: const Icon(Icons.arrow_back, color: Colors.black),
+                      onPressed: () => context.pop(),
+                    ),
                   ),
-                  background: community.coverImageUrl != null
-                      ? Image.network(
-                          community.coverImageUrl!,
-                          fit: BoxFit.cover,
-                        )
-                      : Container(
-                          color: AppColors.primary,
-                          child: const Icon(
-                            Icons.groups,
-                            size: 64,
-                            color: Colors.white,
-                          ),
-                        ),
                 ),
                 actions: [
                   if (isModerator)
-                    IconButton(icon: const Icon(Icons.edit), onPressed: () {}),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: CircleAvatar(
+                        backgroundColor: Colors.white,
+                        child: IconButton(
+                          icon: const Icon(Icons.edit, color: Colors.black),
+                          onPressed: () {},
+                        ),
+                      ),
+                    ),
                 ],
+                flexibleSpace: FlexibleSpaceBar(
+                  background: community.coverImageUrl != null &&
+                          community.coverImageUrl!.isNotEmpty
+                      ? Image.network(
+                          community.coverImageUrl!,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return _buildCommunityPlaceholder(community);
+                          },
+                        )
+                      : _buildCommunityPlaceholder(community),
+                ),
               ),
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.all(24),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      // Title and category
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            'Участников: ${community.members.length}',
-                            style: AppTypography.bodyLarge.copyWith(
-                              color: AppColors.textSecondary,
-                            ),
-                          ),
-                          if (currentUserId != null && !isModerator)
-                            SizedBox(
-                              width: 120,
-                              child: PrimaryButton(
-                                onPressed: () async {
-                                  await _toggleMembership(
-                                    context: context,
-                                    ref: ref,
-                                    community: community,
-                                    currentUserId: currentUserId,
-                                    isMember: isMember,
-                                  );
-                                },
-                                label: isMember ? 'Покинуть' : 'Вступить',
+                          Expanded(
+                            child: Text(
+                              community.name,
+                              style: AppTypography.headingLarge.copyWith(
+                                fontWeight: FontWeight.w800,
                               ),
                             ),
+                          ),
                         ],
                       ),
-                      if (isMember) ...[
-                        const SizedBox(height: 12),
-                        PrimaryButton(
-                          onPressed: () {
-                            _openCommunityChat(
-                              context: context,
-                              ref: ref,
-                              community: community,
-                              currentUserId: currentUserId,
-                            );
-                          },
-                          label: 'Открыть чат группы',
+                      const SizedBox(height: 12),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
                         ),
-                      ],
+                        decoration: BoxDecoration(
+                          color: categoryColor.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          getCategoryDisplayLabel(category),
+                          style: AppTypography.bodyMedium.copyWith(
+                            color: categoryColor,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
                       const SizedBox(height: 16),
-                      Text('О сообществе', style: AppTypography.headingSmall),
-                      const SizedBox(height: 8),
-                      Text(
-                        community.description,
-                        style: AppTypography.bodyLarge,
+                      // Members count
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.people_rounded,
+                            size: 20,
+                            color: AppColors.textSecondary,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            '${community.members.length} участников',
+                            style: AppTypography.bodyLarge.copyWith(
+                              color: AppColors.textSecondary,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
                       ),
                       const SizedBox(height: 24),
+                      // Action buttons
+                      if (currentUserId != null && !isModerator)
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: () async {
+                              await _toggleMembership(
+                                context: context,
+                                ref: ref,
+                                community: community,
+                                currentUserId: currentUserId,
+                                isMember: isMember,
+                              );
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: isMember
+                                  ? AppColors.surfaceSecondary
+                                  : AppColors.primary,
+                              foregroundColor: isMember
+                                  ? AppColors.textPrimary
+                                  : Colors.white,
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              elevation: 0,
+                            ),
+                            child: Text(
+                              isMember ? 'Покинуть группу' : 'Вступить в группу',
+                              style: AppTypography.bodyLarge.copyWith(
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                        ),
+                      if (isMember) ...[
+                        const SizedBox(height: 12),
+                        SizedBox(
+                          width: double.infinity,
+                          child: OutlinedButton.icon(
+                            onPressed: () {
+                              _openCommunityChat(
+                                context: context,
+                                ref: ref,
+                                community: community,
+                                currentUserId: currentUserId,
+                              );
+                            },
+                            icon: const Icon(Icons.chat_bubble_outline),
+                            label: const Text('Открыть чат группы'),
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: AppColors.primary,
+                              side: BorderSide(color: AppColors.primary, width: 1.5),
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                      const SizedBox(height: 32),
+                      // Description
+                      Text(
+                        'О сообществе',
+                        style: AppTypography.headingMedium.copyWith(
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        community.description,
+                        style: AppTypography.bodyMedium.copyWith(
+                          color: AppColors.textSecondary,
+                          height: 1.6,
+                        ),
+                      ),
+                      const SizedBox(height: 32),
+                      // Events section
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            'События сообщества',
-                            style: AppTypography.headingSmall,
+                            'События',
+                            style: AppTypography.headingMedium.copyWith(
+                              fontWeight: FontWeight.w800,
+                            ),
                           ),
                           if (isModerator)
-                            TextButton(
+                            TextButton.icon(
                               onPressed: () {
                                 context.push(
                                   AppRoutes.createEvent,
@@ -228,10 +330,15 @@ class CommunityDetailScreen extends ConsumerWidget {
                                   },
                                 );
                               },
-                              child: const Text('Создать'),
+                              icon: const Icon(Icons.add_circle_outline, size: 20),
+                              label: const Text('Создать'),
+                              style: TextButton.styleFrom(
+                                foregroundColor: AppColors.primary,
+                              ),
                             ),
                         ],
                       ),
+                      const SizedBox(height: 8),
                     ],
                   ),
                 ),
@@ -246,13 +353,24 @@ class CommunityDetailScreen extends ConsumerWidget {
                       if (events.isEmpty) {
                         return SliverToBoxAdapter(
                           child: Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: Text(
-                              'Пока нет событий',
-                              style: AppTypography.bodyLarge.copyWith(
-                                color: AppColors.textSecondary,
+                            padding: const EdgeInsets.all(24.0),
+                            child: Center(
+                              child: Column(
+                                children: [
+                                  Icon(
+                                    Icons.event_busy_outlined,
+                                    size: 64,
+                                    color: AppColors.textHint,
+                                  ),
+                                  const SizedBox(height: 16),
+                                  Text(
+                                    'Пока нет событий',
+                                    style: AppTypography.bodyLarge.copyWith(
+                                      color: AppColors.textSecondary,
+                                    ),
+                                  ),
+                                ],
                               ),
-                              textAlign: TextAlign.center,
                             ),
                           ),
                         );
@@ -283,6 +401,66 @@ class CommunityDetailScreen extends ConsumerWidget {
         },
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, _) => Center(child: Text('Ошибка: $error')),
+      ),
+    );
+  }
+
+  Widget _buildCommunityPlaceholder(Community community) {
+    final category = community.categories.isNotEmpty
+        ? community.categories.first
+        : 'Разное';
+    final color = getCategoryColor(category);
+
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            color.withValues(alpha: 0.2),
+            color.withValues(alpha: 0.05),
+          ],
+        ),
+      ),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.95),
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: color.withValues(alpha: 0.2),
+                    blurRadius: 20,
+                    spreadRadius: 5,
+                  ),
+                ],
+              ),
+              child: Icon(
+                Icons.groups_rounded,
+                color: color,
+                size: 56,
+              ),
+            ),
+            const SizedBox(height: 20),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 32),
+              child: Text(
+                community.name,
+                style: AppTypography.headingMedium.copyWith(
+                  color: color,
+                  fontWeight: FontWeight.w700,
+                ),
+                maxLines: 2,
+                textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

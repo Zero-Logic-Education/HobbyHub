@@ -98,18 +98,19 @@ class EventDetailScreen extends ConsumerWidget {
               ),
             ],
             flexibleSpace: FlexibleSpaceBar(
-              background: Image.network(
-                resolvedEvent.coverImageUrl ?? '',
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    color: categoryColor.withValues(alpha: 0.3),
-                    child: Center(
-                      child: Icon(Icons.image, size: 60, color: categoryColor),
-                    ),
-                  );
-                },
-              ),
+              background: resolvedEvent.coverImageUrl != null &&
+                      resolvedEvent.coverImageUrl!.isNotEmpty
+                  ? Image.network(
+                      resolvedEvent.coverImageUrl!,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return _buildEventPlaceholder(
+                          resolvedEvent,
+                          categoryColor,
+                        );
+                      },
+                    )
+                  : _buildEventPlaceholder(resolvedEvent, categoryColor),
             ),
           ),
           SliverToBoxAdapter(
@@ -688,6 +689,61 @@ class EventDetailScreen extends ConsumerWidget {
     final parts = trimmed.split(RegExp(r'\s+'));
     final initials = parts.take(2).map((part) => part[0]).join();
     return initials.toUpperCase();
+  }
+
+  Widget _buildEventPlaceholder(Event event, Color categoryColor) {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            categoryColor.withValues(alpha: 0.2),
+            categoryColor.withValues(alpha: 0.05),
+          ],
+        ),
+      ),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.95),
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: categoryColor.withValues(alpha: 0.2),
+                    blurRadius: 20,
+                    spreadRadius: 5,
+                  ),
+                ],
+              ),
+              child: Icon(
+                Icons.celebration_outlined,
+                color: categoryColor,
+                size: 56,
+              ),
+            ),
+            const SizedBox(height: 20),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 32),
+              child: Text(
+                event.title,
+                style: AppTypography.headingMedium.copyWith(
+                  color: categoryColor,
+                  fontWeight: FontWeight.w700,
+                ),
+                maxLines: 2,
+                textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   void _showSnackBar(BuildContext context, String message) {

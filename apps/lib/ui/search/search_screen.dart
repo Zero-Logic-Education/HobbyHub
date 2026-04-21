@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../core/router/app_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
-import '../../core/utils/category_icons.dart';
+import '../../core/utils/category_colors.dart';
 import '../../providers/event_provider.dart';
 import '../../providers/interest_provider.dart';
 import '../shared/event_card.dart';
@@ -18,15 +17,9 @@ class SearchScreen extends ConsumerStatefulWidget {
 
 class _SearchScreenState extends ConsumerState<SearchScreen> {
   final TextEditingController _searchController = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-    _searchController.addListener(() {
-      ref.read(eventSearchQueryProvider.notifier).state =
-          _searchController.text;
-    });
-  }
+  String _selectedCategory = 'all';
+  String _selectedPriceFilter = 'all';
+  String _selectedDateFilter = 'all';
 
   @override
   void dispose() {
@@ -36,66 +29,165 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final query = ref.watch(eventSearchQueryProvider);
-    final isSearching = query.isNotEmpty;
-
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
+        child: Column(
+          children: [
             // Header
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
-                child: Text(
-                  'Поиск',
-                  style: AppTypography.headingLarge.copyWith(
-                    fontSize: 32,
-                    fontWeight: FontWeight.w800,
-                    color: AppColors.textPrimary,
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
+              child: Row(
+                children: [
+                  Text(
+                    'Поиск событий',
+                    style: AppTypography.headingLarge.copyWith(
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.textPrimary,
+                    ),
                   ),
-                ),
+                ],
               ),
             ),
 
             // Search Bar
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF5F5F7),
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: TextField(
-                    controller: _searchController,
-                    decoration: InputDecoration(
-                      hintText: 'События, хобби, люди',
-                      hintStyle: AppTypography.bodyLarge.copyWith(
-                        color: AppColors.textTertiary,
-                      ),
-                      prefixIcon: const Icon(
-                        Icons.search_rounded,
-                        color: AppColors.textTertiary,
-                      ),
-                      border: InputBorder.none,
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 16,
-                      ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.05),
+                      blurRadius: 10,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: TextField(
+                  controller: _searchController,
+                  onChanged: (value) => setState(() {}),
+                  decoration: InputDecoration(
+                    hintText: 'Поиск по названию...',
+                    hintStyle: AppTypography.bodyMedium.copyWith(
+                      color: AppColors.textTertiary,
+                    ),
+                    prefixIcon: const Icon(
+                      Icons.search_rounded,
+                      color: AppColors.primary,
+                    ),
+                    suffixIcon: _searchController.text.isNotEmpty
+                        ? IconButton(
+                            icon: const Icon(Icons.clear, size: 20),
+                            onPressed: () {
+                              _searchController.clear();
+                              setState(() {});
+                            },
+                          )
+                        : null,
+                    border: InputBorder.none,
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 16,
                     ),
                   ),
                 ),
               ),
             ),
 
-            if (isSearching)
-              _buildSearchResults()
-            else
-              ..._buildExploreSections(),
+            const SizedBox(height: 16),
 
-            const SliverToBoxAdapter(child: SizedBox(height: 100)),
+            // Filters
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    _buildFilterChip(
+                      label: 'Категория',
+                      icon: Icons.category_outlined,
+                      onTap: () => _showCategoryFilter(),
+                    ),
+                    const SizedBox(width: 8),
+                    _buildFilterChip(
+                      label: 'Цена',
+                      icon: Icons.payments_outlined,
+                      onTap: () => _showPriceFilter(),
+                    ),
+                    const SizedBox(width: 8),
+                    _buildFilterChip(
+                      label: 'Дата',
+                      icon: Icons.calendar_today_outlined,
+                      onTap: () => _showDateFilter(),
+                    ),
+                    const SizedBox(width: 8),
+                    if (_selectedCategory != 'all' ||
+                        _selectedPriceFilter != 'all' ||
+                        _selectedDateFilter != 'all')
+                      TextButton.icon(
+                        onPressed: () {
+                          setState(() {
+                            _selectedCategory = 'all';
+                            _selectedPriceFilter = 'all';
+                            _selectedDateFilter = 'all';
+                          });
+                        },
+                        icon: const Icon(Icons.clear_all, size: 18),
+                        label: const Text('Сбросить'),
+                        style: TextButton.styleFrom(
+                          foregroundColor: AppColors.error,
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 16),
+
+            // Results
+            Expanded(
+              child: _buildSearchResults(),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFilterChip({
+    required String label,
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: AppColors.border),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 18, color: AppColors.primary),
+            const SizedBox(width: 6),
+            Text(
+              label,
+              style: AppTypography.bodySmall.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(width: 4),
+            const Icon(
+              Icons.keyboard_arrow_down,
+              size: 18,
+              color: AppColors.textSecondary,
+            ),
           ],
         ),
       ),
@@ -103,219 +195,307 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
   }
 
   Widget _buildSearchResults() {
-    final query = ref.watch(eventSearchQueryProvider).toLowerCase().trim();
     final eventsAsync = ref.watch(eventsStreamProvider);
 
     return eventsAsync.when(
-      loading: () => SliverPadding(
-        padding: const EdgeInsets.all(24),
-        sliver: SliverList(
-          delegate: SliverChildBuilderDelegate((context, index) {
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 16),
-              child: Container(
-                height: 180,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: const Color(0xFFF0F0F0)),
-                ),
-              ),
-            );
-          }, childCount: 3),
-        ),
-      ),
-      error: (error, stackTrace) => SliverToBoxAdapter(
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (error, stackTrace) => Center(
         child: Padding(
           padding: const EdgeInsets.all(32),
-          child: Center(
-            child: Text(
-              'Ошибка загрузки результатов: $error',
-              style: AppTypography.bodyLarge.copyWith(
-                color: AppColors.textSecondary,
-              ),
+          child: Text(
+            'Ошибка загрузки: $error',
+            style: AppTypography.bodyLarge.copyWith(
+              color: AppColors.textSecondary,
             ),
           ),
         ),
       ),
       data: (events) {
+        final query = _searchController.text.toLowerCase().trim();
+
         final filtered = events.where((event) {
-          if (query.isEmpty) return true;
-          return event.title.toLowerCase().contains(query) ||
-              event.description.toLowerCase().contains(query);
+          // Search filter
+          if (query.isNotEmpty) {
+            if (!event.title.toLowerCase().contains(query) &&
+                !event.description.toLowerCase().contains(query)) {
+              return false;
+            }
+          }
+
+          // Category filter
+          if (_selectedCategory != 'all') {
+            if (event.categories.isEmpty ||
+                !event.categories.any((cat) =>
+                    normalizeCategoryKey(cat) == _selectedCategory)) {
+              return false;
+            }
+          }
+
+          // Price filter
+          if (_selectedPriceFilter == 'free' && event.price > 0) {
+            return false;
+          } else if (_selectedPriceFilter == 'paid' && event.price == 0) {
+            return false;
+          }
+
+          // Date filter
+          final now = DateTime.now();
+          if (_selectedDateFilter == 'today') {
+            if (!_isSameDay(event.startTime, now)) {
+              return false;
+            }
+          } else if (_selectedDateFilter == 'week') {
+            final weekFromNow = now.add(const Duration(days: 7));
+            if (event.startTime.isAfter(weekFromNow)) {
+              return false;
+            }
+          } else if (_selectedDateFilter == 'month') {
+            final monthFromNow = DateTime(now.year, now.month + 1, now.day);
+            if (event.startTime.isAfter(monthFromNow)) {
+              return false;
+            }
+          }
+
+          return true;
         }).toList();
 
         if (filtered.isEmpty) {
-          return SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.all(32),
-              child: Center(
-                child: Text(
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(
+                  Icons.search_off_rounded,
+                  size: 64,
+                  color: AppColors.textHint,
+                ),
+                const SizedBox(height: 16),
+                Text(
                   'Ничего не найдено',
-                  style: AppTypography.bodyLarge.copyWith(
+                  style: AppTypography.headingSmall.copyWith(
                     color: AppColors.textSecondary,
                   ),
                 ),
-              ),
+                const SizedBox(height: 8),
+                Text(
+                  'Попробуйте изменить фильтры',
+                  style: AppTypography.bodyMedium.copyWith(
+                    color: AppColors.textTertiary,
+                  ),
+                ),
+              ],
             ),
           );
         }
 
-        return SliverPadding(
-          padding: const EdgeInsets.all(24),
-          sliver: SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (context, index) => Padding(
-                padding: const EdgeInsets.only(bottom: 16),
-                child: EventCard(event: filtered[index]),
+        return ListView.separated(
+          padding: const EdgeInsets.all(16),
+          itemCount: filtered.length,
+          separatorBuilder: (context, index) => const SizedBox(height: 16),
+          itemBuilder: (context, index) {
+            return EventCard(
+              event: filtered[index],
+              onTap: () => context.push(
+                '/home/event/${filtered[index].id}',
+                extra: filtered[index],
               ),
-              childCount: filtered.length,
-            ),
-          ),
+            );
+          },
         );
       },
     );
   }
 
-  List<Widget> _buildExploreSections() {
-    final interestsAsync = ref.watch(interestsProvider);
+  bool _isSameDay(DateTime date1, DateTime date2) {
+    return date1.year == date2.year &&
+        date1.month == date2.month &&
+        date1.day == date2.day;
+  }
 
-    return [
-      // Browse Categories Title
-      SliverToBoxAdapter(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(24, 32, 24, 16),
-          child: Text(
-            'Просмотр категорий',
-            style: AppTypography.subheadingLarge.copyWith(
-              fontSize: 20,
-              fontWeight: FontWeight.w700,
-              color: AppColors.textPrimary,
+  Future<void> _showCategoryFilter() async {
+    final interestsAsync = ref.read(interestsProvider);
+    final interests = interestsAsync.valueOrNull ?? [];
+
+    final result = await showModalBottomSheet<String>(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Выберите категорию',
+                  style: AppTypography.headingSmall.copyWith(
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    _buildCategoryChip('Все', 'all'),
+                    ...interests.map((interest) => _buildCategoryChip(
+                          interest.name,
+                          normalizeCategoryKey(interest.name),
+                        )),
+                  ],
+                ),
+              ],
             ),
+          ),
+        );
+      },
+    );
+
+    if (result != null) {
+      setState(() {
+        _selectedCategory = result;
+      });
+    }
+  }
+
+  Widget _buildCategoryChip(String label, String value) {
+    final isSelected = _selectedCategory == value;
+    return GestureDetector(
+      onTap: () => Navigator.pop(context, value),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        decoration: BoxDecoration(
+          color: isSelected ? AppColors.primary : AppColors.background,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isSelected ? AppColors.primary : AppColors.border,
+          ),
+        ),
+        child: Text(
+          label,
+          style: AppTypography.bodyMedium.copyWith(
+            color: isSelected ? Colors.white : AppColors.textPrimary,
+            fontWeight: FontWeight.w600,
           ),
         ),
       ),
-
-      // Categories Grid
-      interestsAsync.when(
-        data: (interests) {
-          if (interests.isEmpty) {
-            return SliverToBoxAdapter(child: Container());
-          }
-          return SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            sliver: SliverGrid(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                mainAxisSpacing: 12,
-                crossAxisSpacing: 12,
-                childAspectRatio: 2.5,
-              ),
-              delegate: SliverChildBuilderDelegate((context, index) {
-                final interest = interests[index];
-
-                return _CategoryCard(
-                  title: interest.name,
-                  icon: _getIconForCategory(interest.category),
-                  onTap: () {
-                    ref.read(eventFilterProvider.notifier).setCategoryFilter([
-                      interest.name,
-                    ]);
-                    if (context.canPop()) {
-                      context.pop();
-                    } else {
-                      context.go(AppRoutes.home);
-                    }
-                  },
-                );
-              }, childCount: interests.length),
-            ),
-          );
-        },
-        loading: () => const SliverToBoxAdapter(
-          child: Center(child: CircularProgressIndicator()),
-        ),
-        error: (e, _) =>
-            SliverToBoxAdapter(child: Center(child: Text('Ошибка: $e'))),
-      ),
-    ];
+    );
   }
 
-  IconData _getIconForCategory(String category) {
-    switch (category.toLowerCase()) {
-      case 'sports':
-        return Icons.directions_run_rounded;
-      case 'technology':
-        return Icons.computer_rounded;
-      case 'art':
-        return Icons.palette_outlined;
-      case 'music':
-        return Icons.music_note_rounded;
-      case 'yoga':
-      case 'wellness':
-        return Icons.self_improvement_rounded;
-      case 'cooking':
-        return Icons.restaurant_rounded;
-      case 'photography':
-        return Icons.camera_alt_rounded;
-      case 'reading':
-        return Icons.menu_book_rounded;
-      case 'gaming':
-        return Icons.sports_esports_rounded;
-      case 'dance':
-        return Icons.music_note_rounded;
-      case 'movies':
-        return Icons.movie_rounded;
-      case 'fashion':
-        return Icons.checkroom_rounded;
-      case 'gardening':
-        return Icons.yard_rounded;
-      case 'crafts':
-        return Icons.brush_rounded;
-      case 'travel':
-        return Icons.flight_rounded;
-      default:
-        return categoryIcon(category);
+  Future<void> _showPriceFilter() async {
+    final result = await showModalBottomSheet<String>(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Фильтр по цене',
+                  style: AppTypography.headingSmall.copyWith(
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                _buildPriceOption('Все', 'all'),
+                _buildPriceOption('Бесплатные', 'free'),
+                _buildPriceOption('Платные', 'paid'),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+
+    if (result != null) {
+      setState(() {
+        _selectedPriceFilter = result;
+      });
     }
   }
-}
 
-class _CategoryCard extends StatelessWidget {
-  final String title;
-  final IconData icon;
-  final VoidCallback? onTap;
-
-  const _CategoryCard({required this.title, required this.icon, this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0xFFF0F0F0), width: 1),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 18, color: AppColors.textSecondary),
-            const SizedBox(width: 8),
-            Flexible(
-              child: Text(
-                title,
-                style: AppTypography.bodyMedium.copyWith(
-                  fontWeight: FontWeight.w500,
-                  color: AppColors.textPrimary,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ],
+  Widget _buildPriceOption(String label, String value) {
+    final isSelected = _selectedPriceFilter == value;
+    return ListTile(
+      title: Text(
+        label,
+        style: AppTypography.bodyLarge.copyWith(
+          fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+          color: isSelected ? AppColors.primary : AppColors.textPrimary,
         ),
       ),
+      trailing: isSelected
+          ? const Icon(Icons.check_circle, color: AppColors.primary)
+          : null,
+      onTap: () => Navigator.pop(context, value),
+    );
+  }
+
+  Future<void> _showDateFilter() async {
+    final result = await showModalBottomSheet<String>(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Фильтр по дате',
+                  style: AppTypography.headingSmall.copyWith(
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                _buildDateOption('Все', 'all'),
+                _buildDateOption('Сегодня', 'today'),
+                _buildDateOption('На этой неделе', 'week'),
+                _buildDateOption('В этом месяце', 'month'),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+
+    if (result != null) {
+      setState(() {
+        _selectedDateFilter = result;
+      });
+    }
+  }
+
+  Widget _buildDateOption(String label, String value) {
+    final isSelected = _selectedDateFilter == value;
+    return ListTile(
+      title: Text(
+        label,
+        style: AppTypography.bodyLarge.copyWith(
+          fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+          color: isSelected ? AppColors.primary : AppColors.textPrimary,
+        ),
+      ),
+      trailing: isSelected
+          ? const Icon(Icons.check_circle, color: AppColors.primary)
+          : null,
+      onTap: () => Navigator.pop(context, value),
     );
   }
 }

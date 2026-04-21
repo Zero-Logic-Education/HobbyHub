@@ -123,28 +123,49 @@ class _CreateCommunityScreenState extends ConsumerState<CreateCommunityScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Создать сообщество'),
-        backgroundColor: AppColors.background,
+        title: const Text(
+          'Создать сообщество',
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        backgroundColor: Colors.white,
         elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.black),
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(24.0),
               child: Form(
                 key: _formKey,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    // Cover image picker
                     GestureDetector(
                       onTap: _pickImage,
                       child: Container(
-                        height: 160,
+                        height: 180,
                         decoration: BoxDecoration(
-                          color: Colors.grey[200],
-                          borderRadius: BorderRadius.circular(16),
+                          gradient: _coverImage == null
+                              ? LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                  colors: [
+                                    AppColors.primary.withValues(alpha: 0.1),
+                                    AppColors.primary.withValues(alpha: 0.05),
+                                  ],
+                                )
+                              : null,
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: AppColors.border,
+                            width: 2,
+                          ),
                           image: _coverImage != null
                               ? DecorationImage(
                                   image: FileImage(_coverImage!),
@@ -153,43 +174,98 @@ class _CreateCommunityScreenState extends ConsumerState<CreateCommunityScreen> {
                               : null,
                         ),
                         child: _coverImage == null
-                            ? const Center(
-                                child: Icon(
-                                  Icons.camera_alt,
-                                  size: 40,
-                                  color: Colors.grey,
-                                ),
+                            ? Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.add_photo_alternate_outlined,
+                                    size: 48,
+                                    color: AppColors.primary,
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    'Добавить обложку',
+                                    style: TextStyle(
+                                      color: AppColors.primary,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
                               )
                             : null,
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 24),
+
+                    // Name field
                     TextFormField(
                       controller: _nameController,
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         labelText: 'Название сообщества',
-                        border: OutlineInputBorder(),
+                        hintText: 'Например, Любители бега',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: AppColors.border),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: AppColors.primary, width: 2),
+                        ),
+                        filled: true,
+                        fillColor: AppColors.background,
                       ),
                       validator: (v) =>
                           (v == null || v.isEmpty) ? 'Введите название' : null,
                     ),
                     const SizedBox(height: 16),
+
+                    // Description field
                     TextFormField(
                       controller: _descriptionController,
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         labelText: 'Описание',
-                        border: OutlineInputBorder(),
+                        hintText: 'Расскажите о вашем сообществе',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: AppColors.border),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: AppColors.primary, width: 2),
+                        ),
+                        filled: true,
+                        fillColor: AppColors.background,
                       ),
-                      maxLines: 3,
+                      maxLines: 4,
                       validator: (v) =>
                           (v == null || v.isEmpty) ? 'Введите описание' : null,
                     ),
                     const SizedBox(height: 16),
+
+                    // Category dropdown
                     DropdownButtonFormField<String>(
-                      initialValue: _selectedCategoryKey,
-                      decoration: const InputDecoration(
+                      value: _selectedCategoryKey,
+                      decoration: InputDecoration(
                         labelText: 'Категория',
-                        border: OutlineInputBorder(),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: AppColors.border),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: AppColors.primary, width: 2),
+                        ),
+                        filled: true,
+                        fillColor: AppColors.background,
                       ),
                       items: _availableCategoryKeys
                           .map(
@@ -212,11 +288,25 @@ class _CreateCommunityScreenState extends ConsumerState<CreateCommunityScreen> {
                       },
                     ),
                     const SizedBox(height: 16),
+
+                    // Privacy dropdown
                     DropdownButtonFormField<String>(
-                      initialValue: _privacyLevel,
-                      decoration: const InputDecoration(
+                      value: _privacyLevel,
+                      decoration: InputDecoration(
                         labelText: 'Приватность',
-                        border: OutlineInputBorder(),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: AppColors.border),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: AppColors.primary, width: 2),
+                        ),
+                        filled: true,
+                        fillColor: AppColors.background,
                       ),
                       items: const [
                         DropdownMenuItem(
@@ -230,17 +320,71 @@ class _CreateCommunityScreenState extends ConsumerState<CreateCommunityScreen> {
                       ],
                       onChanged: (v) => setState(() => _privacyLevel = v!),
                     ),
-                    const SizedBox(height: 16),
-                    SwitchListTile(
-                      title: const Text('Вступление по заявкам'),
-                      value: _requiresApproval,
-                      onChanged: (v) => setState(() => _requiresApproval = v),
-                      contentPadding: EdgeInsets.zero,
+                    const SizedBox(height: 20),
+
+                    // Approval switch
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: AppColors.background,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: AppColors.border),
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Вступление по заявкам',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 15,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  'Модерация новых участников',
+                                  style: TextStyle(
+                                    color: AppColors.textSecondary,
+                                    fontSize: 13,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Switch(
+                            value: _requiresApproval,
+                            onChanged: (v) => setState(() => _requiresApproval = v),
+                            activeColor: AppColors.primary,
+                          ),
+                        ],
+                      ),
                     ),
                     const SizedBox(height: 32),
-                    PrimaryButton(
-                      onPressed: _createCommunity,
-                      label: 'Создать',
+
+                    // Create button
+                    SizedBox(
+                      height: 56,
+                      child: ElevatedButton(
+                        onPressed: _createCommunity,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primary,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          elevation: 0,
+                        ),
+                        child: const Text(
+                          'Создать сообщество',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
                     ),
                   ],
                 ),

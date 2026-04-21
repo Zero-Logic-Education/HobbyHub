@@ -10,6 +10,7 @@ import '../../providers/auth_provider.dart';
 import '../../providers/user_provider.dart';
 import '../../providers/event_provider.dart';
 import '../../providers/community_provider.dart';
+import '../shared/event_card.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
@@ -119,225 +120,201 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
     return NestedScrollView(
       headerSliverBuilder: (ctx, _) => [
         SliverToBoxAdapter(
-          child: Stack(
-            clipBehavior: Clip.none,
-            children: [
-              SafeArea(
-                bottom: false,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 12,
-                  ),
+          child: SafeArea(
+            bottom: false,
+            child: Column(
+              children: [
+                // Header with settings
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
                   child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
                         'Профиль',
-                        style: AppTypography.headingSmall.copyWith(
+                        style: AppTypography.headingLarge.copyWith(
                           fontWeight: FontWeight.w800,
                         ),
                       ),
-                      const Spacer(),
-                      GestureDetector(
-                        onTap: () => context.push(AppRoutes.editProfile),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 9,
-                          ),
-                          decoration: BoxDecoration(
-                            color: AppColors.lightCoral,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Text(
-                            'Редактировать',
-                            style: AppTypography.bodySmall.copyWith(
-                              color: AppColors.primary,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      GestureDetector(
-                        onTap: () {
-                          context.push(AppRoutes.settings);
-                        },
-                        child: Container(
-                          width: 36,
-                          height: 36,
-                          decoration: BoxDecoration(
-                            color: AppColors.surfaceSecondary,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: const Icon(
-                            Icons.settings_outlined,
-                            size: 18,
-                            color: AppColors.textSecondary,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.fromLTRB(
-                  16,
-                  MediaQuery.paddingOf(context).top + 60,
-                  16,
-                  0,
-                ),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(24),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.07),
-                        blurRadius: 16,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        height: 100,
-                        decoration: BoxDecoration(
-                          borderRadius: const BorderRadius.vertical(
-                            top: Radius.circular(24),
-                          ),
-                          gradient: LinearGradient(
-                            colors: [
-                              AppColors.primary.withValues(alpha: 0.9),
-                              AppColors.secondary.withValues(alpha: 0.7),
-                              const Color(0xFFFFB5A0).withValues(alpha: 0.5),
-                            ],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: Transform.translate(
-                          offset: const Offset(0, -38),
-                          child: Container(
-                            padding: const EdgeInsets.all(3),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: const Color(0xFFE8B86D),
-                                width: 2.5,
+                      Row(
+                        children: [
+                          GestureDetector(
+                            onTap: () => context.push(AppRoutes.editProfile),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 10,
                               ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: AppColors.primary.withValues(
-                                    alpha: 0.25,
-                                  ),
-                                  blurRadius: 12,
-                                  offset: const Offset(0, 4),
+                              decoration: BoxDecoration(
+                                color: AppColors.lightCoral,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Text(
+                                'Редактировать',
+                                style: AppTypography.bodySmall.copyWith(
+                                  color: AppColors.primary,
+                                  fontWeight: FontWeight.w700,
                                 ),
-                              ],
-                            ),
-                            child: CircleAvatar(
-                              radius: 38,
-                              backgroundColor: AppColors.primary.withValues(
-                                alpha: 0.15,
                               ),
-                              backgroundImage: photoUrl != null
-                                  ? NetworkImage(photoUrl)
-                                  : null,
-                              child: photoUrl == null
-                                  ? Text(
-                                      initials,
-                                      style: AppTypography.headingSmall
-                                          .copyWith(color: AppColors.primary),
-                                    )
-                                  : null,
                             ),
                           ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              displayName,
-                              style: AppTypography.subheadingLarge.copyWith(
-                                fontWeight: FontWeight.w800,
+                          const SizedBox(width: 8),
+                          GestureDetector(
+                            onTap: () => context.push(AppRoutes.settings),
+                            child: Container(
+                              width: 40,
+                              height: 40,
+                              decoration: BoxDecoration(
+                                color: AppColors.surfaceSecondary,
+                                borderRadius: BorderRadius.circular(12),
                               ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              email,
-                              style: AppTypography.bodySmall.copyWith(
-                                color: AppColors.textTertiary,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              bio,
-                              style: AppTypography.bodySmall.copyWith(
+                              child: const Icon(
+                                Icons.settings_outlined,
+                                size: 20,
                                 color: AppColors.textSecondary,
-                                height: 1.5,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                // Profile info
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.05),
+                          blurRadius: 10,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(3),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                gradient: LinearGradient(
+                                  colors: [
+                                    AppColors.primary,
+                                    AppColors.secondary,
+                                  ],
+                                ),
+                              ),
+                              child: Container(
+                                padding: const EdgeInsets.all(3),
+                                decoration: const BoxDecoration(
+                                  color: Colors.white,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: CircleAvatar(
+                                  radius: 36,
+                                  backgroundColor: AppColors.primary.withValues(
+                                    alpha: 0.1,
+                                  ),
+                                  backgroundImage: photoUrl != null
+                                      ? NetworkImage(photoUrl)
+                                      : null,
+                                  child: photoUrl == null
+                                      ? Text(
+                                          initials,
+                                          style: AppTypography.headingSmall.copyWith(
+                                            color: AppColors.primary,
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                        )
+                                      : null,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    displayName,
+                                    style: AppTypography.headingSmall.copyWith(
+                                      fontWeight: FontWeight.w800,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    email,
+                                    style: AppTypography.bodySmall.copyWith(
+                                      color: AppColors.textTertiary,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
                               ),
                             ),
                           ],
                         ),
-                      ),
-                    ],
+                        const SizedBox(height: 16),
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: AppColors.background,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            bio,
+                            style: AppTypography.bodySmall.copyWith(
+                              color: AppColors.textSecondary,
+                              height: 1.4,
+                            ),
+                            maxLines: 3,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            _CompactStatCell(
+                              value: eventsCount.toString(),
+                              label: 'События',
+                            ),
+                            Container(
+                              width: 1,
+                              height: 40,
+                              color: AppColors.border,
+                            ),
+                            _CompactStatCell(
+                              value: communitiesCount.toString(),
+                              label: 'Группы',
+                            ),
+                            Container(
+                              width: 1,
+                              height: 40,
+                              color: AppColors.border,
+                            ),
+                            _CompactStatCell(
+                              value: followersCount.toString(),
+                              label: 'Подписчики',
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ],
-          ),
-        ),
-        SliverToBoxAdapter(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.05),
-                    blurRadius: 12,
-                    offset: const Offset(0, 3),
-                  ),
-                ],
-              ),
-              padding: const EdgeInsets.symmetric(vertical: 18),
-              child: Row(
-                children: [
-                  _StatCell(
-                    icon: Icons.event_outlined,
-                    iconColor: AppColors.primary,
-                    value: eventsCount.toString(),
-                    label: 'События',
-                  ),
-                  Container(width: 1, height: 40, color: AppColors.border),
-                  _StatCell(
-                    icon: Icons.groups_2_outlined,
-                    iconColor: const Color(0xFF2D9CDB),
-                    value: communitiesCount.toString(),
-                    label: 'Группы',
-                  ),
-                  Container(width: 1, height: 40, color: AppColors.border),
-                  _StatCell(
-                    icon: Icons.favorite_border_rounded,
-                    iconColor: const Color(0xFFE84D8A),
-                    value: followersCount.toString(),
-                    label: 'Подписчики',
-                  ),
-                ],
-              ),
+                const SizedBox(height: 24),
+              ],
             ),
           ),
         ),
@@ -348,17 +325,17 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
               controller: _tabController,
               labelColor: AppColors.primary,
               unselectedLabelColor: AppColors.textTertiary,
-              labelStyle: AppTypography.subheadingSmall.copyWith(
+              labelStyle: AppTypography.bodyLarge.copyWith(
                 fontWeight: FontWeight.w700,
               ),
-              unselectedLabelStyle: AppTypography.subheadingSmall,
+              unselectedLabelStyle: AppTypography.bodyLarge,
               indicatorColor: AppColors.primary,
-              indicatorWeight: 2.5,
+              indicatorWeight: 3,
               indicatorSize: TabBarIndicatorSize.label,
               dividerColor: AppColors.border,
               tabs: [
                 const Tab(text: 'О себе'),
-                Tab(text: 'События ($eventsCount)'),
+                Tab(text: 'События'),
               ],
             ),
           ),
@@ -368,11 +345,17 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
         controller: _tabController,
         children: [
           ListView(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
+            padding: const EdgeInsets.all(24),
             children: [
-              const SizedBox(height: 4),
-              const _SectionLabel(label: 'ИНТЕРЕСЫ'),
-              const SizedBox(height: 12),
+              Text(
+                'ИНТЕРЕСЫ',
+                style: AppTypography.labelSmall.copyWith(
+                  color: AppColors.textTertiary,
+                  letterSpacing: 1.2,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 16),
               if (tags.isEmpty)
                 Text(
                   'Нет сохраненных интересов',
@@ -421,92 +404,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
     }
 
     return ListView.separated(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
+      padding: const EdgeInsets.all(16),
       itemCount: userEvents.length,
-      separatorBuilder: (context, index) => const SizedBox(height: 12),
+      separatorBuilder: (context, index) => const SizedBox(height: 16),
       itemBuilder: (context, index) {
         final event = userEvents[index];
-        final imageUrl = event.coverImageUrl;
-
-        return InkWell(
+        return EventCard(
+          event: event,
           onTap: () => context.push('/home/event/${event.id}', extra: event),
-          borderRadius: BorderRadius.circular(18),
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(18),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.04),
-                  blurRadius: 12,
-                  offset: const Offset(0, 3),
-                ),
-              ],
-            ),
-            child: Row(
-              children: [
-                ClipRRect(
-                  borderRadius: const BorderRadius.horizontal(
-                    left: Radius.circular(18),
-                  ),
-                  child: SizedBox(
-                    width: 104,
-                    height: 104,
-                    child: imageUrl != null
-                        ? Image.network(
-                            imageUrl,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) => Container(
-                              color: AppColors.surfaceSecondary,
-                              child: const Icon(Icons.image_outlined),
-                            ),
-                          )
-                        : Container(
-                            color: AppColors.surfaceSecondary,
-                            child: const Icon(Icons.event_outlined),
-                          ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 12, 12, 12),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          event.title,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: AppTypography.bodyLarge.copyWith(
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          event.address?.trim().isNotEmpty == true
-                              ? event.address!
-                              : 'Локация не указана',
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: AppTypography.bodySmall.copyWith(
-                            color: AppColors.textSecondary,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          '${event.participants.length} участн.',
-                          style: AppTypography.bodySmall.copyWith(
-                            color: AppColors.textTertiary,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
         );
       },
     );
@@ -538,6 +443,36 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
           ),
         ],
       ),
+    );
+  }
+}
+
+class _CompactStatCell extends StatelessWidget {
+  final String value;
+  final String label;
+  const _CompactStatCell({
+    required this.value,
+    required this.label,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Text(
+          value,
+          style: AppTypography.headingMedium.copyWith(
+            fontWeight: FontWeight.w800,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          label,
+          style: AppTypography.bodySmall.copyWith(
+            color: AppColors.textSecondary,
+          ),
+        ),
+      ],
     );
   }
 }

@@ -4,5 +4,5 @@ String formatEventPrice(double price, bool isFree) {
   }
 
   final hasFraction = price % 1 != 0;
-  return '${price.toStringAsFixed(hasFraction ? 2 : 0)} ₽';
+  return '${price.toStringAsFixed(hasFraction ? 2 : 0)} ₸';
 }

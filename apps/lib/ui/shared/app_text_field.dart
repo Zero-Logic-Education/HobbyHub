@@ -75,7 +75,7 @@ class _AppTextFieldState extends State<AppTextField> {
       children: [
         // Label
         Padding(
-          padding: EdgeInsets.only(bottom: AppSpacing.xs),
+          padding: const EdgeInsets.only(bottom: AppSpacing.xs),
           child: Text(
             widget.label,
             style: AppTypography.labelLarge.copyWith(
@@ -126,16 +126,16 @@ class _AppTextFieldState extends State<AppTextField> {
               focusedErrorBorder: InputBorder.none,
               disabledBorder: InputBorder.none,
               isDense: true, // Более компактное поле
-              contentPadding: EdgeInsets.symmetric(
+              contentPadding: const EdgeInsets.symmetric(
                 horizontal: AppSpacing.md,
                 vertical:
                     0, // Убираем вертикальные отступы внутри, так как высота фиксирована
               ),
               prefixIcon: widget.prefixIcon != null
                   ? Padding(
-                      padding: EdgeInsets.symmetric(horizontal: AppSpacing.sm),
+                      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
                       child: IconTheme(
-                        data: IconThemeData(
+                        data: const IconThemeData(
                           size: 20,
                           color: AppColors.textSecondary,
                         ),
@@ -145,9 +145,9 @@ class _AppTextFieldState extends State<AppTextField> {
                   : null,
               suffixIcon: widget.suffixIcon != null
                   ? Padding(
-                      padding: EdgeInsets.symmetric(horizontal: AppSpacing.sm),
+                      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
                       child: IconTheme(
-                        data: IconThemeData(
+                        data: const IconThemeData(
                           size: 20,
                           color: AppColors.textSecondary,
                         ),
@@ -174,7 +174,7 @@ class _AppTextFieldState extends State<AppTextField> {
         // Error text
         if (hasError)
           Padding(
-            padding: EdgeInsets.only(top: AppSpacing.xs),
+            padding: const EdgeInsets.only(top: AppSpacing.xs),
             child: Text(
               widget.errorText!,
               style: AppTypography.labelSmall.copyWith(color: AppColors.error),
@@ -260,7 +260,7 @@ class EmailField extends StatelessWidget {
       errorText: errorText,
       keyboardType: TextInputType.emailAddress,
       onChanged: onChanged,
-      prefixIcon: Icon(
+      prefixIcon: const Icon(
         Icons.email_outlined,
         color: AppColors.textSecondary,
         size: 20,

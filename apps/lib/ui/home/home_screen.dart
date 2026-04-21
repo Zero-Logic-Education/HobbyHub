@@ -146,7 +146,7 @@ class HomeScreen extends ConsumerWidget {
                   width: double.infinity,
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
-                    gradient: LinearGradient(
+                    gradient: const LinearGradient(
                       colors: [Color(0xFFFF8A7A), Color(0xFFFF9B8A)],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
@@ -267,7 +267,7 @@ class HomeScreen extends ConsumerWidget {
                     ),
                     TextButton(
                       onPressed: filterNotifier.clearFilters,
-                      child: Text(
+                      child: const Text(
                         'Все',
                         style: TextStyle(
                           color: AppColors.primary,

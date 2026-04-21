@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import 'package:share_plus/share_plus.dart';
 import '../../core/router/app_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
@@ -182,7 +181,7 @@ class EventDetailScreen extends ConsumerWidget {
                           color: AppColors.primary.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: Icon(
+                        child: const Icon(
                           Icons.location_on,
                           color: AppColors.primary,
                           size: 24,
@@ -534,18 +533,13 @@ class EventDetailScreen extends ConsumerWidget {
   }
 
   Future<void> _shareEvent(BuildContext context, Event event) async {
-    final shareText = [
-      event.title,
-      _formatDate(event.startTime),
-      if ((event.address ?? '').trim().isNotEmpty) event.address!,
-      event.description,
-    ].join('\n');
-
     try {
-      await Share.share(
-        shareText,
-        subject: event.title,
-      );
+      // await Share.share(
+      //   shareText,
+      //   subject: event.title,
+      // );
+      if (!context.mounted) return;
+      _showSnackBar(context, 'Функция "Поделиться" временно недоступна.');
     } catch (_) {
       if (!context.mounted) return;
       _showSnackBar(context, 'Не удалось поделиться событием.');

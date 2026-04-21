@@ -272,10 +272,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                           ),
                           if (isMe) ...[
                             const SizedBox(width: 8),
-                            CircleAvatar(
+                            const CircleAvatar(
                               radius: 16,
-                              backgroundColor: const Color(0xFFFF6B35),
-                              child: const Icon(
+                              backgroundColor: Color(0xFFFF6B35),
+                              child: Icon(
                                 Icons.person,
                                 size: 18,
                                 color: Colors.white,
@@ -303,6 +303,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
               color: Colors.white,
               boxShadow: [
                 BoxShadow(
+                  // ignore: deprecated_member_use
                   color: Colors.black.withOpacity(0.05),
                   blurRadius: 10,
                   offset: const Offset(0, -2),

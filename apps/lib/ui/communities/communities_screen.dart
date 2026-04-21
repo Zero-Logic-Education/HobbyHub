@@ -66,7 +66,7 @@ class _CommunitiesScreenState extends ConsumerState<CommunitiesScreen>
                         color: AppColors.lightCoral,
                         borderRadius: BorderRadius.circular(14),
                       ),
-                      child: Icon(
+                      child: const Icon(
                         Icons.add_rounded,
                         color: AppColors.primary,
                         size: 22,
@@ -162,7 +162,7 @@ class _CommunitiesScreenState extends ConsumerState<CommunitiesScreen>
                           color: AppColors.primary.withValues(alpha: 0.1),
                           shape: BoxShape.circle,
                         ),
-                        child: Icon(
+                        child: const Icon(
                           Icons.search_rounded,
                           color: AppColors.primary,
                           size: 32,
@@ -258,15 +258,15 @@ class _CommunitiesScreenState extends ConsumerState<CommunitiesScreen>
                       prefixIcon: const Icon(Icons.search_rounded),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(14),
-                        borderSide: BorderSide(color: AppColors.border),
+                        borderSide: const BorderSide(color: AppColors.border),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(14),
-                        borderSide: BorderSide(color: AppColors.border),
+                        borderSide: const BorderSide(color: AppColors.border),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(14),
-                        borderSide: BorderSide(color: AppColors.primary, width: 1.4),
+                        borderSide:const BorderSide(color: AppColors.primary, width: 1.4),
                       ),
                       filled: true,
                       fillColor: Colors.white,
@@ -472,7 +472,7 @@ class _CompactCommunityCard extends StatelessWidget {
                   const SizedBox(height: 4),
                   Row(
                     children: [
-                      Icon(
+                      const Icon(
                         Icons.people_outline_rounded,
                         size: 14,
                         color: AppColors.textTertiary,
@@ -565,203 +565,6 @@ class _CompactCommunityCard extends StatelessWidget {
           Icons.groups_rounded,
           color: categoryColor,
           size: 48,
-        ),
-      ),
-    );
-  }
-}
-
-class _CommunityCard extends StatelessWidget {
-  final Community item;
-  final Widget? action;
-  final bool showDescription;
-
-  const _CommunityCard({
-    required this.item,
-    this.action,
-    this.showDescription = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    // Generate dynamic colors based on the first category
-    final category = item.categories.isNotEmpty
-        ? item.categories.first
-        : 'Разное';
-    final categoryColor = getCategoryColor(category);
-    final categoryBg = categoryColor.withValues(alpha: 0.1);
-    final membersCount = item.members.length;
-
-    return GestureDetector(
-      onTap: () => context.push('/communities/${item.id}'),
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.06),
-              blurRadius: 12,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Cover image
-            Stack(
-              children: [
-                ClipRRect(
-                  borderRadius: const BorderRadius.vertical(
-                    top: Radius.circular(20),
-                  ),
-                  child: _buildCover(item),
-                ),
-              ],
-            ),
-
-            // Info section
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    item.name,
-                    style: AppTypography.subheadingLarge.copyWith(
-                      fontWeight: FontWeight.w800,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  if (showDescription) ...[
-                    const SizedBox(height: 6),
-                    Text(
-                      item.description,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: AppTypography.bodySmall.copyWith(
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                  ],
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      // Category tag
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: categoryBg,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(
-                          getCategoryDisplayLabel(category),
-                          style: AppTypography.bodySmall.copyWith(
-                            color: categoryColor,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ),
-                      const Spacer(),
-                      // Members
-                      Icon(
-                        Icons.people_outline_rounded,
-                        size: 16,
-                        color: AppColors.textTertiary,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        '$membersCount',
-                        style: AppTypography.bodySmall.copyWith(
-                          color: AppColors.textSecondary,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      if (action != null) ...[
-                        const SizedBox(width: 10),
-                        action!,
-                      ],
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCover(Community item) {
-    final imageUrl = item.coverImageUrl;
-    if (imageUrl != null && imageUrl.trim().isNotEmpty) {
-      return Image.network(
-        imageUrl,
-        height: 160,
-        width: double.infinity,
-        fit: BoxFit.cover,
-        errorBuilder: (context, error, stackTrace) => _buildFallbackCover(item),
-      );
-    }
-    return _buildFallbackCover(item);
-  }
-
-  Widget _buildFallbackCover(Community item) {
-    final category = item.categories.isNotEmpty
-        ? item.categories.first
-        : 'Разное';
-    final color = getCategoryColor(category);
-
-    return Container(
-      height: 160,
-      width: double.infinity,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            color.withValues(alpha: 0.2),
-            color.withValues(alpha: 0.05),
-          ],
-        ),
-      ),
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.9),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.groups_rounded,
-                color: color,
-                size: 40,
-              ),
-            ),
-            const SizedBox(height: 12),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Text(
-                item.name,
-                style: AppTypography.subheadingMedium.copyWith(
-                  color: color,
-                  fontWeight: FontWeight.w700,
-                ),
-                maxLines: 2,
-                textAlign: TextAlign.center,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ],
         ),
       ),
     );

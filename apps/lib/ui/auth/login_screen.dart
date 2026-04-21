@@ -276,7 +276,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              "Нет аккаунта? ",
+                              'Нет аккаунта? ',
                               style: AppTypography.bodyMedium.copyWith(
                                 color: AppColors.textSecondary,
                               ),

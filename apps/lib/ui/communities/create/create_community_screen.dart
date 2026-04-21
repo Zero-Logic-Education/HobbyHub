@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/category_colors.dart';
-import '../../shared/app_button.dart';
 import '../../../providers/user_provider.dart';
 import '../../../providers/auth_provider.dart';
 import '../../../models/community.dart';
@@ -174,7 +173,7 @@ class _CreateCommunityScreenState extends ConsumerState<CreateCommunityScreen> {
                               : null,
                         ),
                         child: _coverImage == null
-                            ? Column(
+                            ? const Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Icon(
@@ -182,7 +181,7 @@ class _CreateCommunityScreenState extends ConsumerState<CreateCommunityScreen> {
                                     size: 48,
                                     color: AppColors.primary,
                                   ),
-                                  const SizedBox(height: 8),
+                                  SizedBox(height: 8),
                                   Text(
                                     'Добавить обложку',
                                     style: TextStyle(
@@ -208,11 +207,11 @@ class _CreateCommunityScreenState extends ConsumerState<CreateCommunityScreen> {
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: AppColors.border),
+                          borderSide: const BorderSide(color: AppColors.border),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: AppColors.primary, width: 2),
+                          borderSide: const BorderSide(color: AppColors.primary, width: 2),
                         ),
                         filled: true,
                         fillColor: AppColors.background,
@@ -233,11 +232,11 @@ class _CreateCommunityScreenState extends ConsumerState<CreateCommunityScreen> {
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: AppColors.border),
+                          borderSide: const BorderSide(color: AppColors.border),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: AppColors.primary, width: 2),
+                          borderSide: const BorderSide(color: AppColors.primary, width: 2),
                         ),
                         filled: true,
                         fillColor: AppColors.background,
@@ -250,7 +249,7 @@ class _CreateCommunityScreenState extends ConsumerState<CreateCommunityScreen> {
 
                     // Category dropdown
                     DropdownButtonFormField<String>(
-                      value: _selectedCategoryKey,
+                      initialValue: _selectedCategoryKey,
                       decoration: InputDecoration(
                         labelText: 'Категория',
                         border: OutlineInputBorder(
@@ -258,11 +257,11 @@ class _CreateCommunityScreenState extends ConsumerState<CreateCommunityScreen> {
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: AppColors.border),
+                          borderSide: const BorderSide(color: AppColors.border),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: AppColors.primary, width: 2),
+                          borderSide: const BorderSide(color: AppColors.primary, width: 2),
                         ),
                         filled: true,
                         fillColor: AppColors.background,
@@ -291,7 +290,7 @@ class _CreateCommunityScreenState extends ConsumerState<CreateCommunityScreen> {
 
                     // Privacy dropdown
                     DropdownButtonFormField<String>(
-                      value: _privacyLevel,
+                      initialValue: _privacyLevel,
                       decoration: InputDecoration(
                         labelText: 'Приватность',
                         border: OutlineInputBorder(
@@ -299,11 +298,11 @@ class _CreateCommunityScreenState extends ConsumerState<CreateCommunityScreen> {
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: AppColors.border),
+                          borderSide: const BorderSide(color: AppColors.border),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: AppColors.primary, width: 2),
+                          borderSide: const BorderSide(color: AppColors.primary, width: 2),
                         ),
                         filled: true,
                         fillColor: AppColors.background,
@@ -332,7 +331,7 @@ class _CreateCommunityScreenState extends ConsumerState<CreateCommunityScreen> {
                       ),
                       child: Row(
                         children: [
-                          Expanded(
+                          const Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -343,7 +342,7 @@ class _CreateCommunityScreenState extends ConsumerState<CreateCommunityScreen> {
                                     fontSize: 15,
                                   ),
                                 ),
-                                const SizedBox(height: 4),
+                                SizedBox(height: 4),
                                 Text(
                                   'Модерация новых участников',
                                   style: TextStyle(
@@ -357,7 +356,7 @@ class _CreateCommunityScreenState extends ConsumerState<CreateCommunityScreen> {
                           Switch(
                             value: _requiresApproval,
                             onChanged: (v) => setState(() => _requiresApproval = v),
-                            activeColor: AppColors.primary,
+                            activeThumbColor: AppColors.primary,
                           ),
                         ],
                       ),

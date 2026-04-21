@@ -52,13 +52,13 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           ? GestureDetector(
               onTap: onLeadingTap ?? () => Navigator.of(context).pop(),
               child: Padding(
-                padding: EdgeInsets.all(AppSpacing.md),
+                padding: const EdgeInsets.all(AppSpacing.md),
                 child: leading,
               ),
             )
           : GestureDetector(
               onTap: onLeadingTap ?? () => Navigator.of(context).pop(),
-              child: Padding(
+              child: const Padding(
                 padding: EdgeInsets.all(AppSpacing.md),
                 child: Icon(
                   Icons.arrow_back,
@@ -70,7 +70,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       actions: actions,
       bottom: showDivider
           ? PreferredSize(
-              preferredSize: Size.fromHeight(1),
+              preferredSize: const Size.fromHeight(1),
               child: Divider(
                 height: 1,
                 color: AppColors.textHint.withValues(alpha: 0.2),
@@ -120,16 +120,16 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
       actions: [
         if (showSearch)
           Padding(
-            padding: EdgeInsets.only(right: AppSpacing.md),
+            padding: const EdgeInsets.only(right: AppSpacing.md),
             child: GestureDetector(
               onTap: onSearchTap,
-              child: Icon(Icons.search, color: AppColors.textPrimary, size: 24),
+              child: const Icon(Icons.search, color: AppColors.textPrimary, size: 24),
             ),
           ),
         if (actions != null) ...actions!,
       ],
       bottom: PreferredSize(
-        preferredSize: Size.fromHeight(1),
+        preferredSize: const Size.fromHeight(1),
         child: Divider(
           height: 1,
           color: AppColors.textHint.withValues(alpha: 0.1),
@@ -139,7 +139,7 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   @override
-  Size get preferredSize => Size.fromHeight(AppSpacing.appBarHeight + 1);
+  Size get preferredSize => const Size.fromHeight(AppSpacing.appBarHeight + 1);
 }
 
 /// AppBar с поиском
@@ -161,7 +161,7 @@ class SearchAppBar extends StatefulWidget implements PreferredSizeWidget {
   State<SearchAppBar> createState() => _SearchAppBarState();
 
   @override
-  Size get preferredSize => Size.fromHeight(AppSpacing.appBarHeight);
+  Size get preferredSize => const Size.fromHeight(AppSpacing.appBarHeight);
 }
 
 class _SearchAppBarState extends State<SearchAppBar> {
@@ -193,7 +193,7 @@ class _SearchAppBarState extends State<SearchAppBar> {
       surfaceTintColor: Colors.transparent,
       leading: GestureDetector(
         onTap: widget.onBackTap ?? () => Navigator.of(context).pop(),
-        child: Padding(
+        child: const Padding(
           padding: EdgeInsets.all(AppSpacing.md),
           child: Icon(Icons.arrow_back, color: AppColors.textPrimary, size: 24),
         ),
@@ -212,11 +212,11 @@ class _SearchAppBarState extends State<SearchAppBar> {
               color: AppColors.textHint,
             ),
             border: InputBorder.none,
-            contentPadding: EdgeInsets.symmetric(
+            contentPadding: const EdgeInsets.symmetric(
               horizontal: AppSpacing.md,
               vertical: AppSpacing.sm,
             ),
-            prefixIcon: Padding(
+            prefixIcon: const Padding(
               padding: EdgeInsets.only(left: AppSpacing.sm),
               child: Icon(Icons.search, color: AppColors.textHint, size: 20),
             ),
@@ -226,7 +226,7 @@ class _SearchAppBarState extends State<SearchAppBar> {
                       _controller.clear();
                       widget.onChanged?.call('');
                     },
-                    child: Padding(
+                    child: const Padding(
                       padding: EdgeInsets.only(right: AppSpacing.sm),
                       child: Icon(
                         Icons.close,
@@ -275,7 +275,7 @@ class ProfileAppBar extends StatelessWidget implements PreferredSizeWidget {
       surfaceTintColor: Colors.transparent,
       leading: GestureDetector(
         onTap: onBackTap ?? () => Navigator.of(context).pop(),
-        child: Padding(
+        child: const Padding(
           padding: EdgeInsets.all(AppSpacing.md),
           child: Icon(Icons.arrow_back, color: AppColors.textPrimary, size: 24),
         ),
@@ -283,7 +283,7 @@ class ProfileAppBar extends StatelessWidget implements PreferredSizeWidget {
       actions: [
         GestureDetector(
           onTap: onSettingsTap,
-          child: Padding(
+          child: const Padding(
             padding: EdgeInsets.only(right: AppSpacing.md),
             child: Icon(
               Icons.more_vert,
@@ -294,7 +294,7 @@ class ProfileAppBar extends StatelessWidget implements PreferredSizeWidget {
         ),
       ],
       bottom: PreferredSize(
-        preferredSize: Size.fromHeight(1),
+        preferredSize: const Size.fromHeight(1),
         child: Divider(
           height: 1,
           color: AppColors.textHint.withValues(alpha: 0.1),
@@ -304,5 +304,5 @@ class ProfileAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   @override
-  Size get preferredSize => Size.fromHeight(AppSpacing.appBarHeight + 1);
+  Size get preferredSize => const Size.fromHeight(AppSpacing.appBarHeight + 1);
 }

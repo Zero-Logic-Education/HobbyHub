@@ -59,3 +59,6 @@ app.*.map.json
 /apps/android/app/debug
 /apps/android/app/profile
 /apps/android/app/release
+
+# Flutter generated files
+/apps/pubspec.lock

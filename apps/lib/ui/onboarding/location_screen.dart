@@ -37,7 +37,7 @@ class _LocationPermissionScreenState
 
       if (permission == LocationPermission.whileInUse ||
           permission == LocationPermission.always) {
-        Position position = await Geolocator.getCurrentPosition();
+        final Position position = await Geolocator.getCurrentPosition();
         await ref
             .read(currentUserProfileNotifierProvider.notifier)
             .updateLocation(position.latitude, position.longitude);

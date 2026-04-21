@@ -37,7 +37,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'Уведомления',
                       style: AppTypography.headingSmall,
                     ),
@@ -92,7 +92,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'Конфиденциальность',
                       style: AppTypography.headingSmall,
                     ),
@@ -276,6 +276,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
+            // ignore: deprecated_member_use
             color: Colors.black.withOpacity(0.06),
             blurRadius: 10,
             offset: const Offset(0, 2),

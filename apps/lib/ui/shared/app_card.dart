@@ -29,7 +29,7 @@ class AppCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final card = Container(
-      padding: padding ?? EdgeInsets.all(AppSpacing.md),
+      padding: padding ?? const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
         color: backgroundColor ?? Colors.white,
         border: border,
@@ -79,10 +79,10 @@ class ProfileCard extends StatelessWidget {
                 ? NetworkImage(avatarUrl!)
                 : null,
             child: avatarUrl == null
-                ? Icon(Icons.person_outline, color: AppColors.primary)
+                ? const Icon(Icons.person_outline, color: AppColors.primary)
                 : null,
           ),
-          SizedBox(width: AppSpacing.md),
+          const SizedBox(width: AppSpacing.md),
 
           // Name and subtitle
           Expanded(
@@ -100,7 +100,7 @@ class ProfileCard extends StatelessWidget {
                 ),
                 if (subtitle != null)
                   Padding(
-                    padding: EdgeInsets.only(top: 4),
+                    padding: const EdgeInsets.only(top: 4),
                     child: Text(
                       subtitle!,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -117,7 +117,7 @@ class ProfileCard extends StatelessWidget {
           // Trailing widget
           if (trailingWidget != null)
             Padding(
-              padding: EdgeInsets.only(left: AppSpacing.md),
+              padding: const EdgeInsets.only(left: AppSpacing.md),
               child: trailingWidget,
             ),
         ],
@@ -150,14 +150,14 @@ class InfoCard extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            padding: EdgeInsets.all(AppSpacing.sm),
-            decoration: BoxDecoration(
+            padding: const EdgeInsets.all(AppSpacing.sm),
+            decoration: const BoxDecoration(
               color: AppColors.lightPink,
               shape: BoxShape.circle,
             ),
             child: Icon(icon, color: iconColor ?? AppColors.primary, size: 24),
           ),
-          SizedBox(width: AppSpacing.md),
+          const SizedBox(width: AppSpacing.md),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -171,7 +171,7 @@ class InfoCard extends StatelessWidget {
                 ),
                 if (subtitle != null)
                   Padding(
-                    padding: EdgeInsets.only(top: 4),
+                    padding: const EdgeInsets.only(top: 4),
                     child: Text(
                       subtitle!,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -184,7 +184,7 @@ class InfoCard extends StatelessWidget {
               ],
             ),
           ),
-          Icon(Icons.chevron_right, color: AppColors.textHint),
+          const Icon(Icons.chevron_right, color: AppColors.textHint),
         ],
       ),
     );
@@ -215,7 +215,7 @@ class EmptyStateCard extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(icon, size: 64, color: iconColor ?? AppColors.textHint),
-          SizedBox(height: AppSpacing.lg),
+          const SizedBox(height: AppSpacing.lg),
           Text(
             title,
             textAlign: TextAlign.center,
@@ -226,7 +226,7 @@ class EmptyStateCard extends StatelessWidget {
           ),
           if (subtitle != null)
             Padding(
-              padding: EdgeInsets.only(top: AppSpacing.sm),
+              padding: const EdgeInsets.only(top: AppSpacing.sm),
               child: Text(
                 subtitle!,
                 textAlign: TextAlign.center,
@@ -237,7 +237,7 @@ class EmptyStateCard extends StatelessWidget {
             ),
           if (action != null)
             Padding(
-              padding: EdgeInsets.only(top: AppSpacing.lg),
+              padding: const EdgeInsets.only(top: AppSpacing.lg),
               child: action,
             ),
         ],
@@ -268,7 +268,7 @@ class BadgeCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
-            padding: EdgeInsets.symmetric(
+            padding: const EdgeInsets.symmetric(
               horizontal: AppSpacing.md,
               vertical: AppSpacing.sm,
             ),
@@ -284,7 +284,7 @@ class BadgeCard extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(width: AppSpacing.md),
+          const SizedBox(width: AppSpacing.md),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -298,7 +298,7 @@ class BadgeCard extends StatelessWidget {
                 ),
                 if (subtitle != null)
                   Padding(
-                    padding: EdgeInsets.only(top: 4),
+                    padding: const EdgeInsets.only(top: 4),
                     child: Text(
                       subtitle!,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(

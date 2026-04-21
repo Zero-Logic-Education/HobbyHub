@@ -52,7 +52,7 @@ class PrimaryButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(16),
           ),
           elevation: 0, // Тень реализована через Container для большей мягкости
-          padding: padding ?? EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+          padding: padding ?? const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
         ),
         child: _buildContent(),
       ),
@@ -74,7 +74,7 @@ class PrimaryButton extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        if (leftIcon != null) ...[leftIcon!, SizedBox(width: AppSpacing.sm)],
+        if (leftIcon != null) ...[leftIcon!, const SizedBox(width: AppSpacing.sm)],
         Text(
           label,
           style: AppTypography.buttonLarge.copyWith(
@@ -123,14 +123,14 @@ class SecondaryButton extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
-          padding: padding ?? EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+          padding: padding ?? const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             if (leftIcon != null) ...[
               leftIcon!,
-              SizedBox(width: AppSpacing.sm),
+              const SizedBox(width: AppSpacing.sm),
             ],
             Text(
               label,
@@ -279,7 +279,7 @@ class SmallButton extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
           ),
-          padding: EdgeInsets.symmetric(horizontal: AppSpacing.md),
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
         ),
         child: Text(
           label,

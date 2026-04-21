@@ -59,7 +59,7 @@ abstract class AppStyles {
 
   // Граница
   static Border get bottomBorder =>
-      Border(bottom: BorderSide(color: AppColors.divider, width: 1));
+      const Border(bottom: BorderSide(color: AppColors.divider, width: 1));
 
   static Border get fullBorder => Border.all(color: AppColors.border, width: 1);
 

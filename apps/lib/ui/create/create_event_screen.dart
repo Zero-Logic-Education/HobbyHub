@@ -637,7 +637,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(16),
-                borderSide: BorderSide(color: AppColors.primary, width: 1.5),
+                borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
               ),
             ),
           ),
@@ -726,7 +726,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                   ? Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.add_photo_alternate_outlined,
                           size: 36,
                           color: AppColors.textSecondary,
@@ -769,7 +769,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                   ? Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.collections_outlined,
                           size: 28,
                           color: AppColors.textSecondary,

@@ -11,7 +11,6 @@ import '../../../providers/event_provider.dart';
 import '../../../providers/user_provider.dart';
 import '../../../providers/auth_provider.dart';
 import '../../../services/chat_service.dart';
-import '../../shared/app_button.dart';
 import '../../shared/event_card.dart';
 
 class CommunityDetailScreen extends ConsumerWidget {
@@ -212,7 +211,7 @@ class CommunityDetailScreen extends ConsumerWidget {
                       // Members count
                       Row(
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.people_rounded,
                             size: 20,
                             color: AppColors.textSecondary,
@@ -280,7 +279,7 @@ class CommunityDetailScreen extends ConsumerWidget {
                             label: const Text('Открыть чат группы'),
                             style: OutlinedButton.styleFrom(
                               foregroundColor: AppColors.primary,
-                              side: BorderSide(color: AppColors.primary, width: 1.5),
+                              side: const BorderSide(color: AppColors.primary, width: 1.5),
                               padding: const EdgeInsets.symmetric(vertical: 16),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
@@ -357,7 +356,7 @@ class CommunityDetailScreen extends ConsumerWidget {
                             child: Center(
                               child: Column(
                                 children: [
-                                  Icon(
+                                  const Icon(
                                     Icons.event_busy_outlined,
                                     size: 64,
                                     color: AppColors.textHint,

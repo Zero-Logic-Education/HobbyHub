@@ -146,7 +146,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          "Давайте начнем ваше приключение в HobbyHub",
+                          'Давайте начнем ваше приключение в HobbyHub',
                           style: AppTypography.bodyLarge.copyWith(
                             color: AppColors.textSecondary,
                           ),
@@ -219,7 +219,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              "Уже есть аккаунт? ",
+                              'Уже есть аккаунт? ',
                               style: AppTypography.bodyMedium.copyWith(
                                 color: AppColors.textSecondary,
                               ),

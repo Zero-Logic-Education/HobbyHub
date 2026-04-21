@@ -46,7 +46,7 @@ class EventCard extends ConsumerWidget {
             Stack(
               children: [
                 ClipRRect(
-                  borderRadius: BorderRadius.vertical(
+                  borderRadius: const BorderRadius.vertical(
                     top: Radius.circular(AppSpacing.radiusMd),
                   ),
                   child: Container(
@@ -87,7 +87,7 @@ class EventCard extends ConsumerWidget {
                         shape: BoxShape.circle,
                         boxShadow: AppStyles.shadowSmallList,
                       ),
-                      padding: EdgeInsets.all(AppSpacing.sm),
+                      padding: const EdgeInsets.all(AppSpacing.sm),
                       child: Icon(
                         isFavorite ? Icons.favorite : Icons.favorite_border,
                         color: isFavorite
@@ -104,7 +104,7 @@ class EventCard extends ConsumerWidget {
                     top: AppSpacing.md,
                     left: AppSpacing.md,
                     child: Container(
-                      padding: EdgeInsets.symmetric(
+                      padding: const EdgeInsets.symmetric(
                         horizontal: AppSpacing.sm,
                         vertical: 4,
                       ),
@@ -127,7 +127,7 @@ class EventCard extends ConsumerWidget {
                   bottom: AppSpacing.md,
                   left: AppSpacing.md,
                   child: Container(
-                    padding: EdgeInsets.symmetric(
+                    padding: const EdgeInsets.symmetric(
                       horizontal: AppSpacing.sm,
                       vertical: 4,
                     ),
@@ -149,7 +149,7 @@ class EventCard extends ConsumerWidget {
 
             // Content section
             Padding(
-              padding: EdgeInsets.all(AppSpacing.md),
+              padding: const EdgeInsets.all(AppSpacing.md),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -162,21 +162,21 @@ class EventCard extends ConsumerWidget {
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  SizedBox(height: AppSpacing.sm),
+                  const SizedBox(height: AppSpacing.sm),
 
                   // Date and time
                   _buildInfoRow(
                     icon: Icons.calendar_today_outlined,
                     text: _formatDate(event.startTime),
                   ),
-                  SizedBox(height: AppSpacing.xs),
+                  const SizedBox(height: AppSpacing.xs),
 
                   // Time
                   _buildInfoRow(
                     icon: Icons.access_time_outlined,
                     text: _formatTime(event.startTime),
                   ),
-                  SizedBox(height: AppSpacing.xs),
+                  const SizedBox(height: AppSpacing.xs),
 
                   // Location
                   if (event.address != null && event.address!.isNotEmpty)
@@ -185,7 +185,7 @@ class EventCard extends ConsumerWidget {
                       text: event.address!,
                       maxLines: 1,
                     ),
-                  SizedBox(height: AppSpacing.md),
+                  const SizedBox(height: AppSpacing.md),
 
                   // Bottom row: price, participants, rating
                   Row(
@@ -193,7 +193,7 @@ class EventCard extends ConsumerWidget {
                     children: [
                       // Price or Free
                       Container(
-                        padding: EdgeInsets.symmetric(
+                        padding: const EdgeInsets.symmetric(
                           horizontal: AppSpacing.sm,
                           vertical: 4,
                         ),
@@ -218,7 +218,7 @@ class EventCard extends ConsumerWidget {
                       Row(
                         children: [
                           _ParticipantsPreview(participantIds: participantIds),
-                          SizedBox(width: AppSpacing.xs),
+                          const SizedBox(width: AppSpacing.xs),
                           Text(
                             '${event.participants.length}/${event.maxParticipants}',
                             style: AppTypography.labelSmall.copyWith(
@@ -232,12 +232,12 @@ class EventCard extends ConsumerWidget {
                       if (event.rating > 0)
                         Row(
                           children: [
-                            Icon(
+                            const Icon(
                               Icons.star_rounded,
                               size: 16,
                               color: AppColors.warning,
                             ),
-                            SizedBox(width: 4),
+                            const SizedBox(width: 4),
                             Text(
                               event.rating.toStringAsFixed(1),
                               style: AppTypography.labelSmall.copyWith(
@@ -266,7 +266,7 @@ class EventCard extends ConsumerWidget {
     return Row(
       children: [
         Icon(icon, size: 16, color: AppColors.textSecondary),
-        SizedBox(width: AppSpacing.xs),
+        const SizedBox(width: AppSpacing.xs),
         Expanded(
           child: Text(
             text,
@@ -298,7 +298,7 @@ class EventCard extends ConsumerWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            padding: EdgeInsets.all(AppSpacing.lg),
+            padding: const EdgeInsets.all(AppSpacing.lg),
             decoration: BoxDecoration(
               color: Colors.white.withValues(alpha: 0.9),
               shape: BoxShape.circle,
@@ -309,7 +309,7 @@ class EventCard extends ConsumerWidget {
               size: 48,
             ),
           ),
-          SizedBox(height: AppSpacing.md),
+          const SizedBox(height: AppSpacing.md),
           Text(
             event.title,
             style: AppTypography.labelLarge.copyWith(
@@ -349,7 +349,7 @@ class _ParticipantsPreview extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     if (participantIds.isEmpty) {
-      return Icon(Icons.group_outlined, size: 16, color: AppColors.textSecondary);
+      return const Icon(Icons.group_outlined, size: 16, color: AppColors.textSecondary);
     }
 
     final avatars = <Widget>[];
@@ -411,12 +411,12 @@ class _ParticipantCircle extends StatelessWidget {
           ),
         );
       },
-      loading: () => CircleAvatar(
+      loading: () => const CircleAvatar(
         radius: 10,
         backgroundColor: Colors.white,
         child: CircleAvatar(radius: 9, backgroundColor: AppColors.surfaceSecondary),
       ),
-      error: (error, stackTrace) => CircleAvatar(
+      error: (error, stackTrace) => const CircleAvatar(
         radius: 10,
         backgroundColor: Colors.white,
         child: CircleAvatar(radius: 9, backgroundColor: AppColors.surfaceSecondary),
@@ -505,7 +505,7 @@ class CompactEventCard extends StatelessWidget {
               left: 0,
               right: 0,
               child: Padding(
-                padding: EdgeInsets.all(AppSpacing.md),
+                padding: const EdgeInsets.all(AppSpacing.md),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
@@ -519,7 +519,7 @@ class CompactEventCard extends StatelessWidget {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    SizedBox(height: 4),
+                    const SizedBox(height: 4),
                     Text(
                       _formatDate(event.startTime),
                       style: AppTypography.labelSmall.copyWith(

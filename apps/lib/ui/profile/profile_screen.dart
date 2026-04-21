@@ -202,7 +202,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                           children: [
                             Container(
                               padding: const EdgeInsets.all(3),
-                              decoration: BoxDecoration(
+                              decoration: const BoxDecoration(
                                 shape: BoxShape.circle,
                                 gradient: LinearGradient(
                                   colors: [
@@ -333,8 +333,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
               indicatorWeight: 3,
               indicatorSize: TabBarIndicatorSize.label,
               dividerColor: AppColors.border,
-              tabs: [
-                const Tab(text: 'О себе'),
+              tabs: const [
+                Tab(text: 'О себе'),
                 Tab(text: 'События'),
               ],
             ),
@@ -386,7 +386,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
+            const Icon(
               Icons.event_outlined,
               size: 60,
               color: AppColors.textTertiary,
@@ -428,7 +428,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
             color: AppColors.textSecondary,
           ),
           const SizedBox(height: 16),
-          Text('Вы не авторизованы', style: AppTypography.headingMedium),
+          const Text('Вы не авторизованы', style: AppTypography.headingMedium),
           const SizedBox(height: 24),
           ElevatedButton(
             onPressed: () => context.push(AppRoutes.login),
@@ -473,62 +473,6 @@ class _CompactStatCell extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-}
-
-class _StatCell extends StatelessWidget {
-  final IconData icon;
-  final Color iconColor;
-  final String value;
-  final String label;
-  const _StatCell({
-    required this.icon,
-    required this.iconColor,
-    required this.value,
-    required this.label,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Column(
-        children: [
-          Icon(icon, color: iconColor, size: 22),
-          const SizedBox(height: 6),
-          Text(
-            value,
-            style: AppTypography.subheadingLarge.copyWith(
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-          const SizedBox(height: 2),
-          Text(
-            label,
-            style: AppTypography.bodySmall.copyWith(
-              color: AppColors.textTertiary,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _SectionLabel extends StatelessWidget {
-  final String label;
-  const _SectionLabel({required this.label});
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      label,
-      style: const TextStyle(
-        fontSize: 12,
-        color: AppColors.textTertiary,
-        letterSpacing: 1.2,
-        fontWeight: FontWeight.w700,
-      ),
     );
   }
 }
